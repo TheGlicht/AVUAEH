@@ -1,0 +1,324 @@
+/* Estilos para el fondo de la pagina */
+html, body{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main{
+  flex: 1;
+}
+/* Seccion estilos de botones */
+/* From Uiverse.io by FColombati */ 
+.button {
+    all: unset;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    position: relative;
+    border-radius: 100em;
+    background-color: rgba(0, 0, 0, 0.75);
+    box-shadow:
+      -0.15em -0.15em 0.15em -0.075em rgba(5, 5, 5, 0.25),
+      0.0375em 0.0375em 0.0675em 0 rgba(5, 5, 5, 0.1);
+  }
+  
+  .button::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    width: calc(100% + 0.3em);
+    height: calc(100% + 0.3em);
+    top: -0.15em;
+    left: -0.15em;
+    border-radius: inherit;
+    background: linear-gradient(
+      -135deg,
+      rgba(5, 5, 5, 0.5),
+      transparent 20%,
+      transparent 100%
+    );
+    filter: blur(0.0125em);
+    opacity: 0.25;
+    mix-blend-mode: multiply;
+  }
+  
+  .button .button-outer {
+    position: relative;
+    z-index: 1;
+    border-radius: inherit;
+    transition: box-shadow 300ms ease;
+    will-change: box-shadow;
+    box-shadow:
+      0 0.05em 0.05em -0.01em rgba(5, 5, 5, 1),
+      0 0.01em 0.01em -0.01em rgba(5, 5, 5, 0.5),
+      0.15em 0.3em 0.1em -0.01em rgba(5, 5, 5, 0.25);
+  }
+  
+  .button:hover .button-outer {
+    box-shadow:
+      0 0 0 0 rgba(5, 5, 5, 1),
+      0 0 0 0 rgba(5, 5, 5, 0.5),
+      0 0 0 0 rgba(5, 5, 5, 0.25);
+  }
+  
+  .button-inner {
+    --inset: 0.035em;
+    position: relative;
+    z-index: 1;
+    border-radius: inherit;
+    padding: 1em 1.5em;
+    background-image: linear-gradient(
+      135deg,
+      rgba(230, 230, 230, 1),
+      rgba(180, 180, 180, 1)
+    );
+    transition:
+      box-shadow 300ms ease,
+      clip-path 250ms ease,
+      background-image 250ms ease,
+      transform 250ms ease;
+    will-change: box-shadow, clip-path, background-image, transform;
+    overflow: clip;
+    clip-path: inset(0 0 0 0 round 100em);
+    box-shadow:
+          /* 1 */
+      0 0 0 0 inset rgba(5, 5, 5, 0.1),
+      /* 2 */ -0.05em -0.05em 0.05em 0 inset rgba(5, 5, 5, 0.25),
+      /* 3 */ 0 0 0 0 inset rgba(5, 5, 5, 0.1),
+      /* 4 */ 0 0 0.05em 0.2em inset rgba(255, 255, 255, 0.25),
+      /* 5 */ 0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 1),
+      /* 6 */ 0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+      /* 7 */ -0.075em -0.25em 0.25em 0.1em inset rgba(5, 5, 5, 0.25);
+  }
+  
+  .button:hover .button-inner {
+    clip-path: inset(
+      clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px)
+        clamp(1px, 0.0625em, 2px) clamp(1px, 0.0625em, 2px) round 100em
+    );
+    box-shadow:
+          /* 1 */
+      0.1em 0.15em 0.05em 0 inset rgba(5, 5, 5, 0.75),
+      /* 2 */ -0.025em -0.03em 0.05em 0.025em inset rgba(5, 5, 5, 0.5),
+      /* 3 */ 0.25em 0.25em 0.2em 0 inset rgba(5, 5, 5, 0.5),
+      /* 4 */ 0 0 0.05em 0.5em inset rgba(255, 255, 255, 0.15),
+      /* 5 */ 0 0 0 0 inset rgba(255, 255, 255, 1),
+      /* 6 */ 0.12em 0.12em 0.12em inset rgba(255, 255, 255, 0.25),
+      /* 7 */ -0.075em -0.12em 0.2em 0.1em inset rgba(5, 5, 5, 0.25);
+  }
+  
+  .button .button-inner span {
+    position: relative;
+    z-index: 4;
+    font-family: "Inter", sans-serif;
+    letter-spacing: -0.05em;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0);
+    background-image: linear-gradient(
+      135deg,
+      rgba(25, 25, 25, 1),
+      rgba(75, 75, 75, 1)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: transform 250ms ease;
+    display: block;
+    will-change: transform;
+    text-shadow: rgba(0, 0, 0, 0.1) 0 0 0.1em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  .button:hover .button-inner span {
+    transform: scale(0.975);
+  }
+  
+  .button:active .button-inner {
+    transform: scale(0.975);
+  }    
+  /* Espacio entre botones con margin */
+  .btn-role {
+    margin: 0.5rem 0.75rem;
+    min-width: 180px;
+    border-radius: 50rem;
+    font-weight: 600;
+    font-family: "Inter", sans-serif;
+    /* aplicar sombra y gradientes desde los estilos actuales */
+    background: linear-gradient(135deg, #e6e6e6, #b4b4b4);
+    box-shadow:
+      -2px -2px 6px #fff,
+      4px 4px 8px rgba(0, 0, 0, 0.2);
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+  }
+  .btn-role:hover {
+    background: linear-gradient(135deg, #f5f5f5, #c9c9c9);
+    box-shadow:
+      inset 2px 2px 6px rgba(255, 255, 255, 0.7),
+      1px 1px 5px rgba(0, 0, 0, 0.15);
+    color: #333;
+  }
+
+  /* Asegurar que el formulario deontro del modal este centrado correctamente */
+  .modal-dialog{
+    /* min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0; */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .modal-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+/* Seccion estilos formulario modal */
+/* From Uiverse.io by alexruix */ 
+.form-box {
+  margin: 0 auto;
+  max-width: 300px;
+  background: #f1f7fe;
+  overflow: hidden;
+  border-radius: 16px;
+  color: #010101;
+}
+
+.form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px 24px;
+  gap: 16px;
+  text-align: center;
+}
+
+/*Form text*/
+.title {
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #666;
+}
+
+/*Inputs box*/
+.form-container {
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #fff;
+  margin: 1rem 0 .5rem;
+  width: 100%;
+}
+
+.input {
+  background: none;
+  border: 0;
+  outline: 0;
+  height: 40px;
+  width: 100%;
+  border-bottom: 1px solid #eee;
+  font-size: .9rem;
+  padding: 8px 15px;
+}
+
+.form-section {
+  padding: 16px;
+  font-size: .85rem;
+  background-color: #e0ecfb;
+  box-shadow: rgb(0 0 0 / 8%) 0 -1px;
+}
+
+.form-section a {
+  font-weight: bold;
+  color: #0066ff;
+  transition: color .3s ease;
+}
+
+.form-section a:hover {
+  color: #005ce6;
+  text-decoration: underline;
+}
+
+/*Button*/
+.form button {
+  background-color: #0066ff;
+  color: #fff;
+  border: 0;
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .3s ease;
+}
+
+.form button:hover {
+  background-color: #005ce6;
+}
+
+ /* Formulario centrado y con sombra */
+ #loginForm {
+    background: #f8f9fa;
+    max-width: 360px;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+  }
+  #formOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1040;
+  }
+/* Título del formulario */
+#formTitle {
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #0d6efd;
+    text-align: center;
+  }
+  /* Botón cerrar */
+  #closeFormBtn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.8rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #6c757d;
+    cursor: pointer;
+  }
+  
+  footer {
+    text-align: center;
+    color: #f6f6f6aa;
+    font-size: 0.9rem;
+    padding: 14px 0;
+    margin-top: 40px;
+    border-top: 1px solid #00508055;
+    background-color: #007bff; /* Match the bg-primary blue */
+}
