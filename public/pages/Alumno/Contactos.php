@@ -59,5 +59,26 @@
     <script src="../../components/js/Contactos.js"></script>
     <!-- Descomentar este script en caso de ser necesario -->
     <!-- <script src=".../../components/js/funcionesModulares.js"></script> -->
+
+    <!-- Modal de chat privado -->
+<div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chatModalLabel">Chat con <span id="chatContactName"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="chatMessages" style="max-height: 400px; overflow-y: auto; background-color: #f9f9f9;">
+        <!-- Mensajes del chat se insertan aquí -->
+      </div>
+      <div class="modal-footer">
+        <input type="text" id="chatInput" class="form-control" placeholder="Escribe un mensaje..." />
+        <button class="btn btn-primary" onclick="sendChatMessage()">Enviar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>

@@ -49,20 +49,16 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="./entregas.php">
-                            <i class="fa-solid fa-hand-holding-box"></i> Entregas / Devoluciones
-                        </a>
-                    </li>
-                    <li>
                         <a class="dropdown-item" href="./reportes.php">
                             <i class="fa-solid fa-file-circle-exclamation"></i> Reportes de Daños
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="./configuracion.php">
-                            <i class="fa-solid fa-sliders"></i> Configuración
+                        <a class="dropdown-item" href="./soporte.php">
+                            <i class="fa-solid fa-wrench"></i> Soporte
                         </a>
                     </li>
+                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a></li>
                 </ul>
             </li>
 

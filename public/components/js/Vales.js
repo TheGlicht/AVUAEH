@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Establecer fecha mínima y máxima (hoy a 3 días)
   const today = new Date();
+  const minDate = new Date();
   const maxDate = new Date();
+  minDate.setDate(today.getDate() + 1);
   maxDate.setDate(today.getDate() + 3);
-  fechaInput.min = today.toISOString().split('T')[0];
+  fechaInput.min = minDate.toISOString().split('T')[0];
   fechaInput.max = maxDate.toISOString().split('T')[0];
 
   // Actualizar opciones de kits según la materia

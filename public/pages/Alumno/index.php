@@ -46,6 +46,10 @@
               <input type="text" class="form-control" id="eventTitle" required>
             </div>
             <div class="mb-3">
+              <label for="eventTitle" class="form-label">Descripción</label>
+              <input type="text" class="form-control" id="eventDescription" required>
+            </div>
+            <div class="mb-3">
               <label for="eventDate" class="form-label">Fecha del Evento</label>
               <input type="date" class="form-control" id="eventDate" required>
             </div>

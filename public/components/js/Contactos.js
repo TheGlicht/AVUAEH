@@ -34,6 +34,10 @@ function renderContacts() {
             <h5 class="card-title">${contact.nombre}</h5>
             <p class="card-text"><strong>Tel:</strong> ${contact.telefono}</p>
             <p class="card-text"><strong>Email:</strong> ${contact.correo}</p>
+            
+            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#chatModal" onclick="openChat(${i})">
+            <i class="fa-solid fa-comments"></i> Mensaje</button>
+
             <button class="btn btn-sm btn-primary me-2" onclick="editContact(${i})"><i class="fa-solid fa-pen"></i> Editar</button>
             <button class="btn btn-sm btn-danger" onclick="deleteContact(${i})"><i class="fa-solid fa-trash"></i> Eliminar</button>
           </div>
@@ -57,3 +61,46 @@ function deleteContact(index) {
     renderContacts();
   }
 }
+
+const chatHistory = {}; // { index: [ { from: "yo/contacto", text: "mensaje" } ] }
+let currentChatIndex = null;
+
+
+// Funciones para los mensajes
+function openChat(index) {
+  currentChatIndex = index;
+  const contact = contacts[index];
+  document.getElementById('chatContactName').innerText = contact.nombre;
+  document.getElementById('chatInput').value = '';
+  loadChatMessages(index);
+}
+
+function loadChatMessages(index) {
+  const chatBox = document.getElementById('chatMessages');
+  chatBox.innerHTML = '';
+  const history = chatHistory[index] || [];
+
+  history.forEach(msg => {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `p-2 my-1 rounded text-white w-75 ${msg.from === 'yo' ? 'bg-primary ms-auto text-end' : 'bg-secondary me-auto text-start'}`;
+    msgDiv.textContent = msg.text;
+    chatBox.appendChild(msgDiv);
+  });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (message === '') return;
+
+  if (!chatHistory[currentChatIndex]) {
+    chatHistory[currentChatIndex] = [];
+  }
+
+  chatHistory[currentChatIndex].push({ from: 'yo', text: message });
+  input.value = '';
+  loadChatMessages(currentChatIndex);
+}
+

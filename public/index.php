@@ -30,6 +30,9 @@
           <li class="nav-item activate">
             <a class="nav-link mx-3 text-white" href="./pages/creaCuenta.php">Crear Cuenta</a>
           </li>
+          <li class="nav-item activate">
+            <a class="nav-link mx-3 text-white" href="./pages/recuperarCuenta.php">Recuperar Contraseña</a>
+          </li>
         </ul>
       </div>
     </nav>

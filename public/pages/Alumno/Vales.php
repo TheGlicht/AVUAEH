@@ -47,6 +47,11 @@
                 </div>
 
                 <div class="mb-3">
+                  <label for="hora" class="form-label">Hora de Laboratorio</label>
+                  <input type="time" id="hora" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
                   <label for="laboratorio" class="form-label">Laboratorio</label>
                   <select id="laboratorio" class="form-select" required>
                     <option value="" disabled selected>Selecciona un laboratorio</option>
