@@ -57,7 +57,7 @@
                             <i class="fa-solid fa-wrench"></i> Soporte
                         </a>
                     </li>
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a></li>
+                    <li><a class="dropdown-item" href="../../index.php"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a></li>
                 </ul>
             </li>
 
