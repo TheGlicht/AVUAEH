@@ -1,12 +1,12 @@
-<!-- php de logica de programacion -->
+<!-- php logica de programacion -->
 
-<!-- Estructura sitio web -->
+<!-- Estructutra del sitio web -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+  <title>Calendario-Alumnos</title>
   
   <!-- Estilos -->
   <link rel="stylesheet" href="../../components/css/bootstrap.min.css">
@@ -18,11 +18,9 @@
 
 </head>
 <body>
-
-  <?php include '../../../resources/templates/menuAlumno.php';?>
-
-  <header class="container text-center mt-5 mb-3">
-    <h1 class="fw-bold text-primary"><i class="fa-solid fa-house"></i> Home</h1>
+    <?php include '../../../resources/templates/menuDocente.php';?>
+    <header class="container text-center mt-5 mb-3">
+    <h1 class="fw-bold text-primary"><i class="fa-solid fa-calendar-days"></i> Calendario Alumnos</h1>
   </header>
 
   <!-- Calendario -->
@@ -44,10 +42,26 @@
             <div class="mb-3">
               <label for="eventTitle" class="form-label">Título del Evento</label>
               <input type="text" class="form-control" id="eventTitle" required>
-            </div>
+            </div>            
             <div class="mb-3">
               <label for="eventTitle" class="form-label">Descripción</label>
               <input type="text" class="form-control" id="eventDescription" required>
+            </div>
+            <div class="mb-3">
+              <label for="eventHour" class="form-label">Hora</label>
+              <input type="time" class="form-control" id="eventHour" required>
+            </div>
+            <div class="mb-3">
+              <label for="eventMateria" class="form-label">Materia</label>
+              <select name="materia" id="eventMateria" class="form-control" placeholder="Selecciona una..." required></select>
+            </div>
+            <div class="mb-3">
+            <label for="eventSemestre" class="form-label">Semestre</label>
+            <select name="semestre" id="eventSemestre" class="form-control" placeholder="Selecciona una..." required></select>
+            </div>
+            <div class="mb-3">
+              <label for="eventGrupo" class="form-label">Grupo</label>
+              <input type="number" class="form-control" id="eventGrupo" min="1">
             </div>
             <div class="mb-3">
               <label for="eventDate" class="form-label">Fecha del Evento</label>
@@ -84,17 +98,14 @@
 <div class="my-4">
   <br>
 </div>
-
-  <?php include '../../../resources/templates/footer.php';?>
-
-  <!-- Scripts -->
-  <script src="../../components/js/jquery-3.7.1.js"></script>
-  <script src="../../components/js/bootstrap.bundle.min.js"></script>
-  <script src="../../components/js/KitFontAwesome.js"></script>
-
-  <!-- FullCalendar JS -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-
-  <script src="../../components/js/Alu/CalendarJS.js"></script>
+    
+    <?php include '../../../resources/templates/footer.php';?>
+    
+    <!-- Scripts -->
+    <script src="../../components/js/jquery-3.7.1.js"></script>
+    <script src="../../components/js/bootstrap.bundle.min.js"></script>
+    <script src="../../components/js/KitFontAwesome.js"></script>
+    <script src="../../components/js/Doc/Calendar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </body>
 </html>

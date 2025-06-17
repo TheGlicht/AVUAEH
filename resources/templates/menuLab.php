@@ -37,7 +37,6 @@
                     <i class="fa-solid fa-envelope-open-text"></i> Solicitudes
                 </a>
             </li>
-
             <li class="nav-item dropdown mx-2">
                 <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-gear"></i> Más

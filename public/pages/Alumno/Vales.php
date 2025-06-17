@@ -101,7 +101,7 @@
     <script src="../../components/js/jquery-3.7.1.js"></script>
     <script src="../../components/js/bootstrap.bundle.min.js"></script>
     <script src="../../components/js/KitFontAwesome.js"></script>
-    <script src="../../components/js/Vales.js"></script>
+    <script src="../../components/js/Alu/Vales.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
 </body>

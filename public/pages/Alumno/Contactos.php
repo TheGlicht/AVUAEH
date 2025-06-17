@@ -56,7 +56,7 @@
     <script src="../../components/js/jquery-3.7.1.js"></script>
     <script src="../../components/js/bootstrap.bundle.min.js"></script>
     <script src="../../components/js/KitFontAwesome.js"></script>
-    <script src="../../components/js/Contactos.js"></script>
+    <script src="../../components/js/Alu/Contactos.js"></script>
     <!-- Descomentar este script en caso de ser necesario -->
     <!-- <script src=".../../components/js/funcionesModulares.js"></script> -->
 

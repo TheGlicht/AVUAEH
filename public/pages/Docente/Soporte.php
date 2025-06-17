@@ -13,7 +13,7 @@
 </head>
 <body>
   <!-- php de invocacion de menú -->
-    <?php include '../../../resources/templates/menuAlumno.php';?>
+    <?php include '../../../resources/templates/menuDocente.php';?>
   
       <header class="container text-center mt-5 mb-3">
         <h1 class="fw-bold text-primary"><i class="fa-solid fa-wrench"></i> Soporte</h1>        
