@@ -109,6 +109,6 @@
     <script src="./components/js/jquery-3.7.1.js"></script>
     <script src="./components/js/bootstrap.bundle.min.js"></script>
     <script src="./components/js/KitFontAwesome.js"></script>
-    <script src="./components/js/funcionesModulares.js"></script>
+    <script src="./components/js/Alu/funcionesModulares.js"></script>
   </body>
 </html>
