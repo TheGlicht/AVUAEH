@@ -25,7 +25,7 @@
         <div class="collapse navbar-collapse" id="collapsibleNavId">
           <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
             <li class="nav-item">
-              <a class="nav-link text-white">Ta tengo una cuenta</a>
+              <a class="nav-link text-white">Ya tengo una cuenta</a>
             </li>
             <li class="nav-item activate">
               <a class="nav-link mx-3 text-white" href="../index.php"
@@ -46,37 +46,36 @@
 
     <!-- Formulario para registrarse -->
       <main class="text-center align-items-center">
-        <form class="form">
+        <form id="registroForm" class="form">
             <p class="title">Registro </p>
                 <div class="flex">
                 <label>
-                    <input class="input" type="text" placeholder="" required="">
-                    <span>Username</span>
+                  <input id="username" class="input" type="text" placeholder="" required />
+                  <span>Username</span>
                 </label>
         
                 <label>
-                    <select class="input" required>
+                    <select id="rol" class="input" required>
                       <option value="" disabled selected>Selecciona tu rol</option>
                       <option value="alumno">Alumno</option>
                       <option value="laboratorio">Laboratorio</option>
                       <option value="profesor">Profesor</option>
                     </select>
                     <span>Rol</span>
-                  </label>
-                  
+                  </label>                  
             </div>  
-                    
+            <!-- Para registrar el correo -->
             <label>
-                <input class="input" type="email" placeholder="" required="">
+                <input id="email" class="input" type="email" placeholder="" required="">
                 <span>Email</span>
             </label> 
-                
+            <!-- Para registrar la contraseña -->
             <label class="password-container">
                 <input id="password" class="input" type="password" placeholder="" required="">
                 <span>Contraseña</span>
                 <i class="fa-solid fa-eye toggle-password" data-target="password"></i>
               </label>
-              
+              <!-- Para verificar la contraseña -->
               <label class="password-container">
                 <input id="confirmPassword" class="input" type="password" placeholder="" required="">
                 <span>Confirmar contraseña</span>
@@ -84,10 +83,13 @@
               </label>
               
             <button class="submit">Submit</button>
-        </form>
-      </main>
+        </form>      
+
+      </main>  
       
-      
+        <!-- Para mostrar mensajes -->
+        <div id="mensajeRegistro" class="mt-3"></div>
+
       <footer class="bg-primary">
         <p>&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>
       </footer>  
@@ -96,17 +98,6 @@
     <script src="../components/js/jquery-3.7.1.js"></script>
     <script src="../components/js/bootstrap.bundle.min.js"></script>
     <script src="../components/js/KitFontAwesome.js"></script>
-    <script>    
-        document.querySelectorAll(".toggle-password").forEach(icon => {
-            icon.addEventListener("click", () => {
-            const targetId = icon.getAttribute("data-target");
-            const input = document.getElementById(targetId);
-            const type = input.getAttribute("type") === "password" ? "text" : "password";
-            input.setAttribute("type", type);
-            icon.classList.toggle("fa-eye");
-            icon.classList.toggle("fa-eye-slash");
-            });
-        });
-    </script>
+    <script src="../components/js/crearCuenta.js"></script>
   </body>
 </html>

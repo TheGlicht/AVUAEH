@@ -33,11 +33,21 @@
   </header>
 
   <main class="text-center align-items-center">
-    <form class="form">
+    <form id="passwordForm" class="form">
       <p class="title">Actualizar Contraseña</p>
 
       <label>
-        <input class="input" type="email" placeholder="" required />
+        <select id="rol" class="input" required>
+          <option value="" disabled selected>Selecciona tu rol</option>
+          <option value="alumno">Alumno</option>
+          <option value="laboratorio">Laboratorio</option>
+          <option value="profesor">Profesor</option>
+        </select>
+        <span>Rol</span>
+      </label>  
+
+      <label>
+        <input id="email" class="input" type="email" placeholder="" required />
         <span>Correo institucional</span>
       </label> 
 
@@ -48,14 +58,18 @@
       </label>
 
       <label class="password-container">
-        <input id="confirmNewPassword" class="input" type="password" placeholder="" required />
+        <input id="CNewPassword" class="input" type="password" placeholder="" required />
         <span>Confirmar nueva contraseña</span>
-        <i class="fa-solid fa-eye toggle-password" data-target="confirmNewPassword"></i>
+        <i class="fa-solid fa-eye toggle-password" data-target="CNewPassword"></i>
       </label>
 
-      <button class="submit" type="submit">Actualizar</button>
+      <button class="submit" id="btnActualizar type="submit">Actualizar</button>
     </form>
   </main>
+  
+  <!-- Para mostrar mensajes -->
+  <div id="mensajeRegistro" class="mt-3"></div>
+
 
   <footer class="bg-primary mt-4">
     <p>&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>
@@ -65,17 +79,6 @@
   <script src="../components/js/jquery-3.7.1.js"></script>
   <script src="../components/js/bootstrap.bundle.min.js"></script>
   <script src="../components/js/KitFontAwesome.js"></script>
-  <script>    
-    document.querySelectorAll(".toggle-password").forEach(icon => {
-      icon.addEventListener("click", () => {
-        const targetId = icon.getAttribute("data-target");
-        const input = document.getElementById(targetId);
-        const type = input.getAttribute("type") === "password" ? "text" : "password";
-        input.setAttribute("type", type);
-        icon.classList.toggle("fa-eye");
-        icon.classList.toggle("fa-eye-slash");
-      });
-    });
-  </script>
+  <script src="../components/js/recuperarPas.js"></script>
 </body>
 </html>

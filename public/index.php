@@ -45,8 +45,8 @@
       </p>
     </header>
 
-    <main class="text-center align-items-center">
-      <button class="button" onclick="showForm('Alumno')">
+    <main class="text-center align-items-center" id="selectorSesion">
+      <button class="button" id="Alumno" onclick="showForm('Alumno')">
         <div class="button-outer">
           <div class="button-inner">
             <span>Alumno</span>
@@ -54,7 +54,7 @@
         </div>
       </button>
 
-      <button class="button" onclick="showForm('Laboratorio')">
+      <button class="button" id="Laboratorio" onclick="showForm('Laboratorio')">
         <div class="button-outer">
           <div class="button-inner">
             <span>Laboratorio</span>
@@ -62,7 +62,7 @@
         </div>
       </button>
 
-      <button class="button" onclick="showForm('Profesor')">
+      <button class="button" id="Profesor" onclick="showForm('Profesor')">
         <div class="button-outer">
           <div class="button-inner">
             <span>Profesor</span>
@@ -86,12 +86,12 @@
           </div>
           <div class="modal-body">
             <div class="form-box">
-              <form class="form">
+              <form class="form" id="loginForm">
                 <span class="title">Entrar</span>
                 <span class="subtitle">Ingresa con tu correo institucional</span>
                 <div class="form-container">
-                  <input type="email" class="input" placeholder="Email" />
-                  <input type="password" class="input" placeholder="Password" />
+                  <input type="email" id="email" class="input" placeholder="Email" />
+                  <input type="password" id="password" class="input" placeholder="Password" />
                 </div>
                 <button type="submit">Sign up</button>
               </form>
@@ -100,6 +100,10 @@
         </div>
       </div>
     </div>
+
+     <!-- Para mostrar mensajes -->
+     <div id="mensajeRegistro" class="mt-3"></div>
+
 
     <footer class="bg-primary text-white text-center py-3 mt-auto">
       <p class="mb-0">&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>
@@ -110,5 +114,6 @@
     <script src="./components/js/bootstrap.bundle.min.js"></script>
     <script src="./components/js/KitFontAwesome.js"></script>
     <script src="./components/js/Alu/funcionesModulares.js"></script>
+    <script src="./components/js/acceso.js"></script>
   </body>
 </html>

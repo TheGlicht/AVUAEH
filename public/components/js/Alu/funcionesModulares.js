@@ -1,6 +1,7 @@
-// Verificacion de archivo funcionando
+// Verificación de carga de archivo
 console.log("Archivo modales funcionando");
-// Funciones para el index
+
+// Instancia global del modal
 let loginModalInstance = null;
 
 function showForm(role) {
@@ -9,14 +10,26 @@ function showForm(role) {
     "Entrar como " + role.charAt(0).toUpperCase() + role.slice(1);
 
   const modalElement = document.getElementById("loginModal");
-  const modalInstance = new bootstrap.Modal(modalElement);
-  
-  modalInstance.show();
 
-  // Esperar a que el modal se abra antes de enfocar
-  modalElement.addEventListener("shown.bs.modal", () => {
-    modalElement.querySelector("input[type='email']").focus();
-  }, { once: true });
+  // Si ya existe una instancia, reutilizarla
+  if (!loginModalInstance) {
+    loginModalInstance = new bootstrap.Modal(modalElement);
+  }
+
+  // Mostrar el modal
+  loginModalInstance.show();
+
+  // Solo aplicar el focus cuando el modal está completamente mostrado
+  modalElement.addEventListener(
+    "shown.bs.modal",
+    () => {
+      const emailInput = modalElement.querySelector("input[type='email'], input[type='text']");
+      if (emailInput) {
+        emailInput.focus();
+      }
+    },
+    { once: true }
+  );
 }
 
 
