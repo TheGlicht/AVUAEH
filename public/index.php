@@ -267,5 +267,6 @@
     <script src="./components/js/bootstrap.bundle.min.js"></script>
     <script src="./components/js/funcionesModulares.js"></script>
     <script src="./components/js/acceso.js"></script>
+    
 </body>
 </html>

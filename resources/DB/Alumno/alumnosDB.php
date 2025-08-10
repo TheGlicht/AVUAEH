@@ -3,6 +3,7 @@ include_once __DIR__ . '/../conexion.php';
 
 class AlumnoDb {
     
+    // Funcion para agregar a un Alumno
     public function addAlumno($username, $email, $pass) {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
@@ -33,20 +34,23 @@ class AlumnoDb {
         }
     }
 
-    //Función para mostrar datos
-    public function showAlumno(){
+    //Función para mostrar datos de un solo alumno
+    public function showAlumno($username){
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
-        try{
-            $consulta = 'SELECT username, email FROM Alumno';
+        try {
+            $consulta = 'SELECT username, email FROM Alumno WHERE username = :username';
             $stmt = $dbh->prepare($consulta);
+            $stmt->bindParam(':username', $username);
             $stmt->execute();
-            $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $datos = $stmt->fetch(PDO::FETCH_ASSOC); // Solo un resultado
             return $datos;
         } catch(PDOException $e){
             echo $e->getMessage();
+            return null;
         }
     }
+
 
     // Funcion para actualizar contraseña
     public function updatePasAlumno($email, $pass){
@@ -85,5 +89,22 @@ class AlumnoDb {
             throw new Exception("Error al obtener contraseña.");
         }
     }    
+
+    // Funcion para obtener el username por el email
+    public function getUsernameByEmail($email) {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+        try {
+            $consulta = 'SELECT username FROM Alumno WHERE email = :email';
+            $stmt = $dbh->prepare($consulta);
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $datos = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $datos['username'] ?? null;
+        } catch (PDOException $e) {
+            return null;
+        }
+    }
+ 
     
 }

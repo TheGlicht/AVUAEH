@@ -12,8 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashedPasswordFromDB = $alumno->getPasswordByEmail($email);
 
             if ($hashedPasswordFromDB && password_verify($password, $hashedPasswordFromDB)) {
-                $_SESSION['usuario'] = $email;
-                echo "Inicio de sesión exitoso";
+                $username = $alumno->getUsernameByEmail($email); 
+
+                if ($username) {
+                    $_SESSION['username'] = $username; 
+                    $_SESSION['email'] = $email;      
+                    echo "Inicio de sesión exitoso";
+                } else {
+                    echo "Error al obtener el usuario.";
+                }
             } else {
                 echo "Correo o contraseña incorrectos.";
             }

@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-sm navbar-light bg-primary">
-    <a class="navbar-brand mx-3 text-white">Menú</a>
+    <a id="username-menu" class="navbar-brand mx-3 text-white">Menú</a>
     <button
         class="navbar-toggler d-lg-none"
         type="button"
@@ -32,9 +32,35 @@
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">                    
                     <li><a class="dropdown-item" href="./Perfil.php"><i class="fa-solid fa-circle-user"></i> Perfil</a></li>
                     <li><a class="dropdown-item" href="./AtencionCliente.php"><i class="fa-solid fa-wrench"></i> Soporte</a></li>
-                    <li><a class="dropdown-item" href="../../index.php"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a></li>
+                    <li><a class="dropdown-item" onclick="cerrarSesion()"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a></li>                    
                 </ul>
             </li>
         </ul>
     </div>
 </nav>
+
+<script>
+    // Para obtener los datos del alumno en el menu
+    fetch('../../../resources/api/Alumnos/apiData.php')
+    .then(response => {
+        if(!response.ok) throw new Error("No autorizado");
+        return response.json();
+    })
+    .then(data =>{
+        const username = data.username || 'Menú';
+        document.getElementById('username-menu').textContent = username;
+    })
+    .catch(error => {
+        console.warm('Error al obtener el nombre de usuario:', error);
+        document.getElementById('username-menu').textContent = 'Menú';
+    });
+
+    // Para cerrar sesion correctamente
+    function cerrarSesion(){
+        fetch("../../../resources/api/apiLogout.php")
+        .then(()=> {
+            window.location.href = "../../../public/index.php";
+        })
+        .catch(err => console.warm("Error al cerrar sesión", err));
+    }
+</script>

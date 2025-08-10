@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="mt-2">Verificando credenciales...</p>
             </div>`;
 
+            let rolSeleccionado = "Alumno";
+
             // Enviar solicitud como en tu ejemplo funcional
             const response = await fetch("../resources/api/Alumnos/apiLogin.php", {
                 method: "POST",
@@ -72,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Verificar respuesta como en tu ejemplo funcional
             if (resultText.includes("Inicio de sesión exitoso")) {
                 // Redirigir según el rol
-                window.location.href = `./pages/${rolSeleccionado}/index.php`;
+                window.location.href = `./pages/Alumno/index.php`;
             } else {
                 mensaje.innerHTML = `<div class="alert alert-danger">${resultText}</div>`;
             }
