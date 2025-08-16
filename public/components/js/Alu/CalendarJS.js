@@ -1,88 +1,70 @@
-// Corroboracion de carga de archivo
-console.log("Archivo Calendar Cargado Correctamente");
+// Archivo: CalendarJS.js
+// Versión mejorada con cierre automático de modal y actualización en tiempo real
 
-// Funcion para el calendario
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     let calendar;
-    // let events = [];
-
-    // Modal references
+    
+    // Referencias a elementos del DOM
     const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
     const eventForm = document.getElementById('eventForm');
     const eventTitleInput = document.getElementById('eventTitle');
+    const eventDescriptionInput = document.getElementById('eventDescription');
     const eventDateInput = document.getElementById('eventDate');
     const eventIdInput = document.getElementById('eventId');
     const deleteEventBtn = document.getElementById('deleteEventBtn');
 
-  //   function fetchEvents() {
-  //     fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
-  //         .then(response => response.text())
-  //         .then(data => {
-  //             document.getElementById('eventTableBody').innerHTML = data; // Asegúrate de que esto esté correcto
-  //             refreshCalendarEvents();
-  //         })
-  //         .catch(error => console.error('Error al obtener eventos:', error));
-  // }
-  
-    // function refreshCalendarEvents() {
-    //     calendar.removeAllEvents();
-    //     events.forEach(ev => {
-    //         calendar.addEvent({
-    //             id: ev.id,
-    //             title: ev.title,
-    //             start: ev.start,
-    //             allDay: true
-    //         });
-    //     });
-    // }
-
-
-    // Función para extraer eventos del HTML de la tabla
+    // Función para parsear eventos desde la tabla HTML
     function parseEventsFromTable() {
-      const rows = document.querySelectorAll('#eventTableBody tr');
-      const events = [];
-      
-      rows.forEach(row => {
-          const title = row.cells[0].textContent;
-          const date = row.cells[1].textContent;
-          const id = row.querySelector('button').getAttribute('data-id');
-          
-          events.push({
-              id: id,
-              title: title,
-              start: date,
-              allDay: true
-          });
-      });
-      
-      return events;
-  }
-
-  function loadAndDisplayEvents() {
-    fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
-        .then(response => response.text())
-        .then(html => {
-            // Actualizar la tabla
-            document.getElementById('eventTableBody').innerHTML = html;
+        const rows = document.querySelectorAll('#eventTableBody tr');
+        const events = [];
+        
+        rows.forEach(row => {
+            const title = row.cells[0].textContent;
+            const date = row.cells[1].textContent;
+            const id = row.querySelector('button')?.getAttribute('data-id');
             
-            // Extraer eventos del HTML y mostrarlos en el calendario
-            calendar.getEvents().forEach(event => event.remove()); // Limpiar eventos existentes
-            const events = parseEventsFromTable();
-            
-            events.forEach(ev => {
-                calendar.addEvent({
-                    id: ev.id,
-                    title: ev.title,
-                    start: ev.start,
+            if (id) {
+                events.push({
+                    id: id,
+                    title: title,
+                    start: date,
                     allDay: true
                 });
-            });
-        })
-        .catch(error => console.error('Error:', error));
-}
+            }
+        });
+        
+        return events;
+    }
 
-    // Inicializar FullCalendar
+    // Función principal para cargar y mostrar eventos
+    function loadAndDisplayEvents() {
+        fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
+            .then(response => response.text())
+            .then(html => {
+                // Actualizar la tabla de eventos
+                document.getElementById('eventTableBody').innerHTML = html;
+                
+                // Extraer eventos del HTML
+                const events = parseEventsFromTable();
+                
+                // Limpiar y actualizar calendario
+                calendar.getEvents().forEach(event => event.remove());
+                
+                events.forEach(ev => {
+                    calendar.addEvent({
+                        id: ev.id,
+                        title: ev.title,
+                        start: ev.start,
+                        allDay: true,
+                        description: ev.description // Asegúrate que tu API devuelva esto
+                    });
+                });
+            })
+            .catch(error => console.error('Error al cargar eventos:', error));
+    }
+
+    // Configuración e inicialización del calendario
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
@@ -92,81 +74,57 @@ document.addEventListener('DOMContentLoaded', function() {
             right: ''
         },
         dateClick(info) {
-            // Abrir modal para agregar evento
+            // Configurar modal para nuevo evento
             eventIdInput.value = '';
             eventTitleInput.value = '';
+            eventDescriptionInput.value = '';
             eventDateInput.value = info.dateStr;
             deleteEventBtn.classList.add('d-none');
             eventModal.show();
             document.getElementById('eventModalLabel').textContent = 'Agregar Evento';
         },
         eventClick(info) {
-            // Abrir modal para editar evento
-            const ev = events.find(e => e.id === info.event.id);
-            if (ev) {
-                eventIdInput.value = ev.id;
-                eventTitleInput.value = ev.title;
-                eventDateInput.value = ev.start;
-                deleteEventBtn.classList.remove('d-none');
-                eventModal.show();
-                document.getElementById('eventModalLabel').textContent = 'Editar Evento';
-            }
-        }
+            // Configurar modal para editar evento
+            eventIdInput.value = info.event.id;
+            eventTitleInput.value = info.event.title;
+            eventDescriptionInput.value = info.event.extendedProps.description || ''; // Asegúrate de que esto esté correcto
+            eventDateInput.value = info.event.startStr.split('T')[0];
+            deleteEventBtn.classList.remove('d-none');
+            eventModal.show();
+            document.getElementById('eventModalLabel').textContent = 'Editar Evento';
+        }        
     });
+
+    // Renderizar calendario
     calendar.render();
 
-    // Cargar eventos al inicio
-    // fetchEvents();
+    // Cargar eventos iniciales
     loadAndDisplayEvents();
 
-    // Form submit para guardar evento
+    // Manejar envío del formulario
     eventForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const id = eventIdInput.value;
-      const title = eventTitleInput.value.trim();
-      const description = document.getElementById('eventDescription').value.trim(); // Agregar esta línea
-      const date = eventDateInput.value;
-
-      if (!title || !date) {
-          alert('Por favor, ingresa título y fecha del evento.');
-          return;
-      }
-
-      const action = id ? 'editar' : 'agregar';
-      const formData = new FormData();
-      formData.append('action', action);
-      formData.append('titulo', title);
-      formData.append('descripcion', description); // Agregar esta línea
-      formData.append('fecha', date);
-      if (id) {
-          formData.append('id_evento', id);
-      }
-
-      fetch('../../../resources/api/Alumnos/apiEventos.php', {
-          method: 'POST',
-          body: formData
-      })
-      .then(response => response.text())
-      .then(result => {
-          if (result === "OK") {
-              fetchEvents(); // Recargar eventos
-              eventModal.hide();
-          } else {
-              alert('Error al guardar el evento: ' + result); // Mostrar el mensaje de error
-          }
-      })
-      .catch(error => console.error('Error al guardar el evento:', error));
-    });
-
-
-    // Botón eliminar evento
-    deleteEventBtn.addEventListener('click', () => {
+        e.preventDefault();
+        
         const id = eventIdInput.value;
-        if (!id) return;
+        const title = eventTitleInput.value.trim();
+        const description = eventDescriptionInput.value.trim();
+        const date = eventDateInput.value;
 
+        if (!title || !date) {
+            alert('Por favor, complete todos los campos obligatorios.');
+            return;
+        }
+
+        const action = id ? 'editar' : 'agregar';
         const formData = new FormData();
-        formData.append('action', 'eliminar');
-        formData.append('id_evento', id);
+        formData.append('action', action);
+        formData.append('titulo', title);
+        formData.append('descripcion', description);
+        formData.append('fecha', date);
+        
+        if (id) {
+            formData.append('id_evento', id);
+        }
 
         fetch('../../../resources/api/Alumnos/apiEventos.php', {
             method: 'POST',
@@ -175,35 +133,75 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.text())
         .then(result => {
             if (result === "OK") {
-                fetchEvents(); // Recargar eventos
-                eventModal.hide();
+                loadAndDisplayEvents(); // Actualizar vista
+                eventModal.hide(); // Cerrar modal
+                
+                // Resetear formulario
+                eventForm.reset();
+                eventIdInput.value = '';
             } else {
-                alert('Error al eliminar el evento.');
+                alert('Error: ' + result);
             }
         })
-        .catch(error => console.error('Error al eliminar el evento:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al procesar la solicitud');
+        });
     });
 
-    // Delegación de eventos para botones editar y eliminar en la tabla
+   // Manejar eliminación de evento
+deleteEventBtn.addEventListener('click', () => {
+    const id = eventIdInput.value;
+    if (!id || !confirm('¿Está seguro que desea eliminar este evento?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'eliminar');
+    formData.append('id_evento', id);
+
+    fetch('../../../resources/api/Alumnos/apiEventos.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(result => {
+        if (result === "OK") {
+            loadAndDisplayEvents(); // Actualizar vista
+            eventModal.hide(); // Cerrar modal
+        } else {
+            alert('Error al eliminar: ' + result);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+    // Delegación de eventos para la tabla
     document.getElementById('eventTableBody').addEventListener('click', function(e) {
-        const target = e.target.closest('button');
-        if (!target) return;
-        const eventId = target.getAttribute('data-id');
+        const target = e.target;
+        
+        // Manejar clic en botones de editar
         if (target.classList.contains('edit-btn')) {
-            const ev = events.find(e => e.id === eventId);
-            if (ev) {
-                eventIdInput.value = ev.id;
-                eventTitleInput.value = ev.title;
-                eventDateInput.value = ev.start;
-                deleteEventBtn.classList.remove('d-none');
-                eventModal.show();
-                document.getElementById('eventModalLabel').textContent = 'Editar Evento';
-            }
-        } else if (target.classList.contains('delete-btn')) {
-            if (confirm('¿Seguro que quieres eliminar este evento?')) {
+            const row = target.closest('tr');
+            const id = target.getAttribute('data-id');
+            const title = row.cells[0].textContent;
+            const description = row.getAttribute('data-description') || '';
+            const date = row.cells[1].textContent;
+
+            eventIdInput.value = id;
+            eventTitleInput.value = title;
+            eventDescriptionInput.value = description;
+            eventDateInput.value = date;
+            deleteEventBtn.classList.remove('d-none');
+            eventModal.show();
+            document.getElementById('eventModalLabel').textContent = 'Editar Evento';
+        } 
+        // Manejar clic en botones de eliminar
+      else if (target.classList.contains('delete-btn')) {
+            const id = target.getAttribute('data-id');
+            if (id && confirm('¿Seguro que desea eliminar este evento permanentemente?')) {
                 const formData = new FormData();
                 formData.append('action', 'eliminar');
-                formData.append('id_evento', eventId);
+                formData.append('id_evento', id);
 
                 fetch('../../../resources/api/Alumnos/apiEventos.php', {
                     method: 'POST',
@@ -212,13 +210,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.text())
                 .then(result => {
                     if (result === "OK") {
-                        fetchEvents(); // Recargar eventos
+                        loadAndDisplayEvents(); // Actualizar la vista
                     } else {
-                        alert('Error al eliminar el evento.');
+                        alert('Error al eliminar: ' + result);
                     }
                 })
-                .catch(error => console.error('Error al eliminar el evento:', error));
+                .catch(error => console.error('Error:', error));
             }
         }
     });
+
+    // Console log para confirmar carga
+    console.log("CalendarJS cargado correctamente con las siguientes mejoras:");
+    console.log("- Cierre automático del modal al guardar");
+    console.log("- Actualización en tiempo real de eventos");
+    console.log("- Validación mejorada de formularios");
+    console.log("- Manejo de descripciones de eventos");
 });

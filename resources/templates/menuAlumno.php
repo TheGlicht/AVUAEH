@@ -67,7 +67,7 @@ $username = $_SESSION['username'] ?? 'Menú';
         function cerrarSesion() {
             fetch("../../../resources/api/apiLogout.php")
                 .then(() => {
-                    window.location.href = "../../public/index.php";
+                    window.location.href = "../../index.php";
                 })
                 .catch(err => console.warn("Error al cerrar sesión", err));
         }

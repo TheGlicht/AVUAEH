@@ -1,14 +1,17 @@
-<!-- php de lógica de programación -->
 <?php
-$materiasDisponibles = [
-  "Matemáticas I",
-  "Física Básica",
-  "Programación",
-  "Química",
-  "Inglés Técnico",
-  "Bases de Datos",
-  "Redacción Académica"
-];
+session_start();
+
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if(isset($_SESSION['username'])){
+  // Parte de código para traer las materias al Select
+  require_once dirname(__DIR__, 3) . '/resources/DB/Alumno/materiasDB.php';
+  $materiaDb = new MateriaDb();
+  $materias = $materiaDb->showMateria();
+
 ?>
 
 <!-- Estructura sitio web -->
@@ -41,16 +44,20 @@ $materiasDisponibles = [
     <div class="card-body">
       <div class="row align-items-center">
         <div class="col-md-8">
-          <select id="materiaSelect" class="form-select">
-            <option value="">Selecciona una materia</option>
-            <?php foreach ($materiasDisponibles as $materia): ?>
-              <option value="<?= htmlspecialchars($materia) ?>"><?= $materia ?></option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="col-md-4 text-end">
-          <button type="button" id="agregarMateria" class="btn btn-success"><i class="fa-solid fa-plus"></i> Agregar</button>
-        </div>
+          <form action="procesarMateria.php" method="POST">
+            <select name="materia" id="materia" required>
+              <option value="">Seleccione una materia</option>
+              <?php foreach ($materias as $materia): ?>
+                  <option value="<?= htmlspecialchars($materia['id_materias']) ?>">
+                      <?= htmlspecialchars($materia['nombre']) ?> - Semestre <?= htmlspecialchars($materia['semestre']) ?>
+                  </option>
+              <?php endforeach; ?>
+            </select>
+            </div>
+            <div class="col-md-4 text-end">
+              <button type="button" id="agregarMateria" class="btn btn-success"><i class="fa-solid fa-plus"></i> Agregar</button>
+            </div>
+          </form>
       </div>
     </div>
   </div>
@@ -87,62 +94,12 @@ $materiasDisponibles = [
 <script src="../../components/js/jquery-3.7.1.js"></script>
 <script src="../../components/js/bootstrap.bundle.min.js"></script>
 <script src="../../components/js/KitFontAwesome.js"></script>
+<script src="../../components/js/Alu/Materias.js"></script>
 
-<script>
-  const tabla = document.querySelector('#tablaMaterias tbody');
-  const btnAgregar = document.getElementById('agregarMateria');
-  const materiaSelect = document.getElementById('materiaSelect');
-  let materiasAgregadas = [];
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
 
-  btnAgregar.addEventListener('click', () => {
-    const materia = materiaSelect.value;
-    if (!materia || materiasAgregadas.includes(materia)) return;
-
-    materiasAgregadas.push(materia);
-
-    const fila = document.createElement('tr');
-    fila.innerHTML = `
-      <td><input type="text" name="materia[]" class="form-control-plaintext text-center" readonly value="${materia}"></td>
-      <td><input type="number" class="form-control calificacion" name="parcial1[]" min="0" max="100"></td>
-      <td><input type="number" class="form-control calificacion" name="parcial2[]" min="0" max="100"></td>
-      <td><input type="number" class="form-control calificacion" name="ordinario[]" min="0" max="100"></td>
-      <td class="promedio fw-bold text-primary">0.0</td>
-      <td class="faltante fw-bold text-danger">0.0</td>
-      <td><button type="button" class="btn btn-sm btn-danger eliminar"><i class="fa-solid fa-trash"></i></button></td>
-    `;
-    tabla.appendChild(fila);
-    actualizarEventos();
-  });
-
-  function actualizarEventos() {
-    tabla.querySelectorAll('.calificacion').forEach(input => {
-      input.addEventListener('input', calcularPromedios);
-    });
-
-    tabla.querySelectorAll('.eliminar').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const fila = e.target.closest('tr');
-        const materia = fila.querySelector('input[name="materia[]"]').value;
-        materiasAgregadas = materiasAgregadas.filter(m => m !== materia);
-        fila.remove();
-      });
-    });
-  }
-
-  function calcularPromedios() {
-    tabla.querySelectorAll('tr').forEach(fila => {
-      const p1 = parseFloat(fila.querySelector('input[name="parcial1[]"]').value) || 0;
-      const p2 = parseFloat(fila.querySelector('input[name="parcial2[]"]').value) || 0;
-      const ord = parseFloat(fila.querySelector('input[name="ordinario[]"]').value) || 0;
-
-      const promedio = (p1 * 0.3 + p2 * 0.3 + ord * 0.4).toFixed(1);
-      fila.querySelector('.promedio').textContent = promedio;
-
-      const falta = Math.max(0, (60 - promedio)).toFixed(1);
-      fila.querySelector('.faltante').textContent = falta > 0 ? falta : "0.0";
-    });
-  }
-</script>
-
-</body>
-</html>
+?>

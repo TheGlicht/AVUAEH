@@ -71,6 +71,16 @@ CREATE TABLE ContactosA(
     id_alumno INT
 );
 
+-- Tabla para relacionar alumnos con materias
+CREATE TABLE AluMateria(
+    id_relacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_alumno INT,
+    id_materias INT,
+    calf_primer FLOAT,
+    calf_second FLOAT,
+    calf_ordina FLOAT
+)
+
 --------------------------------------------------------
 -- Tablas para docentes
 CREATE TABLE Docentes(

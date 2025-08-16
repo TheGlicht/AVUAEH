@@ -13,9 +13,9 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 try {
     switch ($action) {
         case 'listar':
-            $eventos = $eventoDb->getEventosByEmail($_SESSION['username']); // Asegúrate de que esto esté correcto
+            $eventos = $eventoDb->getEventosByEmail($_SESSION['username']);
             foreach ($eventos as $ev) {
-                echo "<tr>
+                echo "<tr data-description='".htmlspecialchars($ev['descripcion'], ENT_QUOTES)."'>
                         <td>{$ev['tituloEvento']}</td>
                         <td>{$ev['fechaEvento']}</td>
                         <td>
@@ -45,12 +45,13 @@ try {
 
         case 'eliminar':
             $id = $_POST['id_evento'] ?? '';
-            if($eventoDb->deleteEvento($id, $_SESSION['username'])) {
+            if($eventoDb->deleteEvento($id, $_SESSION['username'])){
                 echo "OK";
             } else {
-                echo "ERROR";
+                echo "ERROR: No se pudo eliminar el evento";
             }
-            break;
+        break;
+
 
         case 'editar':
             $id = $_POST['id_evento'] ?? '';

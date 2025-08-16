@@ -47,32 +47,60 @@ class EventoDb {
     
 
     // Editar evento
-    public function updateEvento($id_evento, $titulo, $descripcion, $fecha, $email) {
+    public function updateEvento($id_evento, $titulo, $descripcion, $fecha, $username) {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
-        $sql = 'UPDATE EventosA e
-                JOIN Alumno a ON a.id_alumno = e.id_alumno
-                SET e.tituloEvento = ?, e.descripcion = ?, e.fechaEvento = ?
-                WHERE e.id_evento = ? AND a.email = ?';
+        
+        // Primero obtener el id_alumno
+        $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(1, $username);
+        $stmt->execute();
+        $id_alumno = $stmt->fetchColumn();
+    
+        if (!$id_alumno) return false;
+    
+        // Actualizar el evento
+        $sql = 'UPDATE EventosA SET 
+                tituloEvento = ?,
+                descripcion = ?,
+                fechaEvento = ?
+                WHERE id_evento = ? AND id_alumno = ?';
+        
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(1, $titulo);
         $stmt->bindParam(2, $descripcion);
         $stmt->bindParam(3, $fecha);
         $stmt->bindParam(4, $id_evento);
-        $stmt->bindParam(5, $email);
+        $stmt->bindParam(5, $id_alumno);
+        
+        return $stmt->execute();
+    }
+    
+
+    // Eliminar evento
+    public function deleteEvento($id_evento, $username) {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+        
+        // Primero, obtenemos el id_alumno del usuario
+        $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(1, $username);
+        $stmt->execute();
+        $id_alumno = $stmt->fetchColumn();
+
+        if (!$id_alumno) {
+            return false; // Usuario no encontrado
+        }
+
+        // Ahora eliminamos el evento
+        $sql = 'DELETE FROM EventosA WHERE id_evento = ? AND id_alumno = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(1, $id_evento);
+        $stmt->bindParam(2, $id_alumno);
         return $stmt->execute();
     }
 
-    // Eliminar evento
-    public function deleteEvento($id_evento, $email) {
-        $conexion = Conexion::getInstancia();
-        $dbh = $conexion->getDbh();
-        $sql = 'DELETE e FROM EventosA e
-                JOIN Alumno a ON a.id_alumno = e.id_alumno
-                WHERE e.id_evento = ? AND a.email = ?';
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(1, $id_evento);
-        $stmt->bindParam(2, $email);
-        return $stmt->execute();
-    }
 }
+?>

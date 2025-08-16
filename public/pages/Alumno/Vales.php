@@ -1,4 +1,14 @@
 <!-- php de logica de programacion -->
+<?php
+session_start();
+
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if(isset($_SESSION['username'])){
+?>
 
 <!-- Estructura sitio web -->
 <!DOCTYPE html>
@@ -55,9 +65,13 @@
                   <label for="laboratorio" class="form-label">Laboratorio</label>
                   <select id="laboratorio" class="form-select" required>
                     <option value="" disabled selected>Selecciona un laboratorio</option>
-                    <option value="Lab 1">Lab 1</option>
-                    <option value="Lab 2">Lab 2</option>
-                    <option value="Lab 3">Lab 3</option>
+                    <option value="labElctronica" id="labElctronica">Lab. Electrónica</option>
+                    <option value="labControl" id="labControl">Lab. Control</option>
+                    <option value="labFisQui" id="labFisQui">Lab. Fisico-Quimica</option>
+                    <option value="lab1" id="lab1">Laboratorio 1</option>
+                    <option value="lab2" id="lab2">Laboratorio 2</option>
+                    <option value="lab3" id="lab3">Laboratorio 3</option>
+                    <option value="lab4" id="lab4">Laboratorio 4</option>
                   </select>
                 </div>
 
@@ -106,3 +120,11 @@
     
 </body>
 </html>
+
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
+
+?>
