@@ -7,7 +7,11 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-if(isset($_SESSION['username'])){
+if(isset($_SESSION['username'])){ 
+
+  // Para obtener la informacion del usuario en el input menu
+  $usernname = $_SESSION['username'] ?? 'usuario'; 
+
 ?>
 
 <!-- Estructura sitio web -->
@@ -36,19 +40,19 @@ if(isset($_SESSION['username'])){
             <i class="fa-solid fa-user-pen"></i> Información del Perfil
           </div>
           <div class="card-body">
-            <form id="profileForm">
+            <form id="formPerfil">
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label">Nombre Completo</label>
-                  <input type="text" class="form-control" id="nombre" required>
+                  <input type="text" class="form-control" id="nombre" name="nombreCompleto" required>
                 </div>
                 <div class="col-md-6">
                   <label class="form-label">Nombre de Usuario</label>
-                  <input type="text" class="form-control" id="usuario" required>
+                  <input type="text" class="form-control" id="usuario" name="username" required>
                 </div>
                 <div class="col-md-4">
                   <label class="form-label">Semestre</label>
-                  <select class="form-select" id="semestre">
+                  <select class="form-select" id="semestre" name="semestre">
                     <option value="">Selecciona</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -60,15 +64,11 @@ if(isset($_SESSION['username'])){
                 </div>
                 <div class="col-md-4">
                   <label class="form-label">Grupo</label>
-                  <input type="number" class="form-control" id="grupo">
-                </div>
-                <div class="col-md-12">
-                  <label class="form-label">Materias Cursando</label>
-                  <textarea class="form-control" id="materias" rows="2"></textarea>
+                  <input type="number" class="form-control" id="grupo" name="grupo" min="1">
                 </div>
                 <div class="col-md-12">
                   <label class="form-label">Certificados o Reconocimientos (PDF)</label>
-                  <input type="file" class="form-control" id="certificados" accept="application/pdf" multiple>
+                  <input type="file" class="form-control" id="certificados" id="certificados" accept="application/pdf" multiple>
                 </div>
               </div>
               <div class="d-grid mt-4">

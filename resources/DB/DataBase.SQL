@@ -36,9 +36,9 @@ CREATE TABLE DatosA(
     nombreCompleto VARCHAR(50),
     semestre INT,
     grupo INT,
-    id_materias INT,
     rutaPDF VARCHAR(255),
-    id_alumno INT
+    id_alumno INT,
+    id_relacion INT
 );
 
 -- Tabla los eventos

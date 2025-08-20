@@ -6,17 +6,6 @@ const materiaSelect = document.getElementById('materiaSelect');
 const searchInput = document.getElementById('searchInput');
 let materiasAgregadas = [];
 
-// Evento para la búsqueda
-//  searchInput.addEventListener('input', () => {
-//   const filter = searchInput.value.toLowerCase();
-//   const options = materiaSelect.options;
-
-//   for (let i = 1; i < options.length; i++) {
-//     const materia = options[i].text.toLowerCase();
-//     options[i].style.display = materia.includes(filter) ? "" : "none";
-//   }
-// });
-
 // Evento para cargar las materias en el select
 document.addEventListener('DOMContentLoaded', () => {
   // Verificamos que el select existe

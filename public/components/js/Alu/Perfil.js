@@ -1,30 +1,66 @@
- // Simulación de almacenamiento temporal
- const profileForm = document.getElementById('profileForm');
+console.log("Archivo Perfil.js cargado correctamente");
 
- profileForm.addEventListener('submit', function (e) {
-   e.preventDefault();
+// Cargar datos del perfil al cargar la página
+// Cargar datos del perfil al cargar la página
+window.addEventListener('DOMContentLoaded', () => {
+    fetch('../../../resources/api/Alumnos/apiDatosA.php?action=mostrar')
+    .then(response => response.json())
+    .then(result => {
+        if (!result.success) {
+            alert(result.message);
+            return;
+        }
 
-   const data = {
-     nombre: document.getElementById('nombre').value,
-     usuario: document.getElementById('usuario').value,
-     semestre: document.getElementById('semestre').value,
-     grupo: document.getElementById('grupo').value,
-     materias: document.getElementById('materias').value
-   };
+        const profileData = result.data;
 
-   localStorage.setItem('perfilAlumno', JSON.stringify(data));
-   alert('Perfil guardado temporalmente.');
- });
+        document.getElementById('nombre').value = profileData.nombreCompleto || "";
+        document.getElementById('usuario').value = profileData.username || "";
+        document.getElementById('semestre').value = profileData.semestre || "";
+        document.getElementById('grupo').value = profileData.grupo || "";
+    })
+    .catch(error => {
+        console.error('Error al cargar el perfil:', error);
+        alert("Ocurrió un error al cargar el perfil.");
+    });
 
- // Cargar datos si existen
- window.addEventListener('DOMContentLoaded', () => {
-   const saved = localStorage.getItem('perfilAlumno');
-   if (saved) {
-     const data = JSON.parse(saved);
-     document.getElementById('nombre').value = data.nombre;
-     document.getElementById('usuario').value = data.usuario;
-     document.getElementById('semestre').value = data.semestre;
-     document.getElementById('grupo').value = data.grupo;
-     document.getElementById('materias').value = data.materias;
-   }
- });
+});
+
+
+// Función para guardar los datos del perfil
+document.getElementById('profileForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evitar el envío del formulario por defecto
+
+    const formData = new FormData(this); // Crear un objeto FormData con los datos del formulario
+
+    fetch('../../../resources/api/Alumnos/apiDatosA.php?action=editar', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())  
+    .then(result => {
+        if (result.success) {
+            alert(result.message);
+        } else {
+            alert("Error: " + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Ocurrió un error al actualizar el perfil.");
+    });
+});
+
+// Función para mostrar los datos (si es necesario)
+function loadData() {
+    fetch('../../../resources/api/Alumnos/apiDatosA.php?action=mostrar')
+    .then(response => response.text())
+    .then(html => {
+        // Actualizar los datos en el DOM
+        document.getElementById('avanceMaterias').innerHTML = html;
+
+        // En caso de no encontrar ninguno, poner que los datos no se han registrado aun
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

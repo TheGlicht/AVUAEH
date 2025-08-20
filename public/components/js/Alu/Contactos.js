@@ -1,106 +1,129 @@
-const contacts = [];
-
-const contactForm = document.getElementById('contactForm');
-const contactList = document.getElementById('contactList');
-
-contactForm.addEventListener('submit', function (e) {
-  e.preventDefault();
-
-  const nombre = document.getElementById('nombre').value.trim();
-  const telefono = document.getElementById('telefono').value.trim();
-  const correo = document.getElementById('correo').value.trim();
-  const index = document.getElementById('contactIndex').value;
-
-  if (nombre === '' || telefono === '' || correo === '') return;
-
-  if (index === '') {
-    contacts.push({ nombre, telefono, correo });
-  } else {
-    contacts[index] = { nombre, telefono, correo };
-    document.getElementById('contactIndex').value = '';
-  }
-
-  contactForm.reset();
-  renderContacts();
-});
-
-function renderContacts() {
-  contactList.innerHTML = '';
-  contacts.forEach((contact, i) => {
-    contactList.innerHTML += `
-      <div class="col">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">${contact.nombre}</h5>
-            <p class="card-text"><strong>Tel:</strong> ${contact.telefono}</p>
-            <p class="card-text"><strong>Email:</strong> ${contact.correo}</p>
-            
-            <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#chatModal" onclick="openChat(${i})">
-            <i class="fa-solid fa-comments"></i> Mensaje</button>
-
-            <button class="btn btn-sm btn-primary me-2" onclick="editContact(${i})"><i class="fa-solid fa-pen"></i> Editar</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteContact(${i})"><i class="fa-solid fa-trash"></i> Eliminar</button>
-          </div>
-        </div>
-      </div>
-    `;
+// Archivo: Contactos.js
+document.addEventListener('DOMContentLoaded', function () {
+    // Referencias a elementos del DOM
+    const contactForm = document.getElementById('contactForm');
+    const idInput = document.getElementById('id_contacto');
+    const nombreInput = document.getElementById('nombre');
+    const telefonoInput = document.getElementById('telefono');
+    const correoInput = document.getElementById('correo');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const tbody = document.getElementById('contactTableBody');
+  
+    // Cargar contactos al iniciar
+    loadAndDisplayContacts();
+  
+    // Función principal para cargar y mostrar contactos
+    function loadAndDisplayContacts() {
+      fetch('../../../resources/api/Alumnos/apiContactos.php?action=listar')
+        .then((response) => response.text())
+        .then((html) => {
+          tbody.innerHTML = html;
+        })
+        .catch((err) => console.error('Error al cargar contactos:', err));
+    }
+  
+    // Envío de formulario (agregar/editar)
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+  
+      const id = idInput.value;
+      const nombre = nombreInput.value.trim();
+      const telefono = telefonoInput.value.trim();
+      const correo = correoInput.value.trim();
+  
+      if (!nombre || !telefono || !correo) {
+        alert('Por favor, completa todos los campos.');
+        return;
+      }
+  
+      const action = id ? 'editar' : 'agregar';
+      const formData = new FormData();
+      formData.append('action', action);
+      formData.append('nombre', nombre);
+      formData.append('telefono', telefono);
+      formData.append('correo', correo);
+      if (id) formData.append('id_contacto', id);
+  
+      fetch('../../../resources/api/Alumnos/apiContactos.php', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((res) => res.text())
+        .then((result) => {
+          if (result === 'OK') {
+            loadAndDisplayContacts(); // Actualiza lista
+            resetForm();               // Limpia formulario y estado
+          } else {
+            alert('Error: ' + result);
+          }
+        })
+        .catch((err) => {
+          console.error('Error:', err);
+          alert('Error al procesar la solicitud');
+        });
+    });
+  
+    // Delegación de eventos para botones Editar/Eliminar dentro de la tabla
+    tbody.addEventListener('click', function (e) {
+      const target = e.target.closest('button');
+      if (!target) return;
+  
+      // Editar
+      if (target.classList.contains('edit-btn')) {
+        const id = target.getAttribute('data-id');
+        const nombre = target.getAttribute('data-nombre') || '';
+        const telefono = target.getAttribute('data-telefono') || '';
+        const correo = target.getAttribute('data-correo') || '';
+  
+        idInput.value = id;
+        nombreInput.value = nombre;
+        telefonoInput.value = telefono;
+        correoInput.value = correo;
+  
+        cancelEditBtn.classList.remove('d-none');
+        nombreInput.focus();
+      }
+  
+      // Eliminar
+      if (target.classList.contains('delete-btn')) {
+        const id = target.getAttribute('data-id');
+        if (!id) return;
+        if (!confirm('¿Seguro que deseas eliminar este contacto?')) return;
+  
+        const formData = new FormData();
+        formData.append('action', 'eliminar');
+        formData.append('id_contacto', id);
+  
+        fetch('../../../resources/api/Alumnos/apiContactos.php', {
+          method: 'POST',
+          body: formData,
+        })
+          .then((res) => res.text())
+          .then((result) => {
+            if (result === 'OK') {
+              loadAndDisplayContacts();
+              if (idInput.value === id) resetForm(); // Si estaba editando este mismo
+            } else {
+              alert('Error al eliminar: ' + result);
+            }
+          })
+          .catch((err) => console.error('Error:', err));
+      }
+    });
+  
+    // Cancelar edición
+    cancelEditBtn.addEventListener('click', function () {
+      resetForm();
+    });
+  
+    // Utilidad: resetear formulario/estado
+    function resetForm() {
+      contactForm.reset();
+      idInput.value = '';
+      cancelEditBtn.classList.add('d-none');
+    }
+  
+    // Console log para confirmar carga
+    console.log('Contactos.js cargado. Flujo similar a CalendarJS.js (listar/agregar/editar/eliminar).');
   });
-}
-
-function editContact(index) {
-  const c = contacts[index];
-  document.getElementById('nombre').value = c.nombre;
-  document.getElementById('telefono').value = c.telefono;
-  document.getElementById('correo').value = c.correo;
-  document.getElementById('contactIndex').value = index;
-}
-
-function deleteContact(index) {
-  if (confirm('¿Estás seguro de eliminar este contacto?')) {
-    contacts.splice(index, 1);
-    renderContacts();
-  }
-}
-
-const chatHistory = {}; // { index: [ { from: "yo/contacto", text: "mensaje" } ] }
-let currentChatIndex = null;
-
-
-// Funciones para los mensajes
-function openChat(index) {
-  currentChatIndex = index;
-  const contact = contacts[index];
-  document.getElementById('chatContactName').innerText = contact.nombre;
-  document.getElementById('chatInput').value = '';
-  loadChatMessages(index);
-}
-
-function loadChatMessages(index) {
-  const chatBox = document.getElementById('chatMessages');
-  chatBox.innerHTML = '';
-  const history = chatHistory[index] || [];
-
-  history.forEach(msg => {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `p-2 my-1 rounded text-white w-75 ${msg.from === 'yo' ? 'bg-primary ms-auto text-end' : 'bg-secondary me-auto text-start'}`;
-    msgDiv.textContent = msg.text;
-    chatBox.appendChild(msgDiv);
-  });
-
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function sendChatMessage() {
-  const input = document.getElementById('chatInput');
-  const message = input.value.trim();
-  if (message === '') return;
-
-  if (!chatHistory[currentChatIndex]) {
-    chatHistory[currentChatIndex] = [];
-  }
-
-  chatHistory[currentChatIndex].push({ from: 'yo', text: message });
-  input.value = '';
-  loadChatMessages(currentChatIndex);
-}
-
+  

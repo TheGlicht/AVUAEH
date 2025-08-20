@@ -1,8 +1,8 @@
 <?php
 include_once __DIR__ . '/../conexion.php';
 
+// Clase relacionada con el email, nombre de usuario y contraseña
 class AlumnoDb {
-    
     // Funcion para agregar a un Alumno
     public function addAlumno($username, $email, $pass) {
         $conexion = Conexion::getInstancia();
@@ -104,7 +104,88 @@ class AlumnoDb {
         } catch (PDOException $e) {
             return null;
         }
-    }
- 
-    
+    }   
 }
+
+// Clase relacionada con el perfil general del usuario.
+class DataAlumnoDb{
+    // Funcion para agregar los informacion del alumno
+    public function addADatos($nombre, $semestre, $grupo, $username){
+        $conexion = Conexion::getInstancia();
+        $dbh= $conexion->getDbh();
+
+        try{
+            // Primero obtener el id_alumno
+            $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindParam(1, $username);
+            $stmt->execute();
+            $id_alumno = $stmt->fetchColumn();
+            if (!$id_alumno) return false;
+
+            // Insertar datos nuevos
+            $consulta = 'INSERT INTO DatosA(nombreCompleto, semestre, grupo, id_alumno) VALUES(?, ?, ?, ?)';
+            $stmt = $dbh->prepare($consulta);
+            $stmt->bindParam(1, $nombre);
+            $stmt->bindParam(2, $semestre);
+            $stmt->bindParam(3, $grupo);
+            $stmt->bindParam(4, $id_alumno);
+            return $stmt->execute();
+            $dbh = null;
+        } catch (PODException $e){
+            return false;
+        }
+    }
+
+   // Funcion para obtener la información del alumno
+   public function getADatos($username) {
+    try {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+
+        $sql = 'SELECT d.id_DatosA, d.nombreCompleto, d.semestre, d.grupo, a.username
+                FROM DatosA d 
+                JOIN Alumno a ON a.id_alumno = d.id_alumno
+                WHERE a.username = ?';
+
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute([$username]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        throw new Exception("Error en getADatos: " . $e->getMessage());
+    }
+}
+
+    // Funcion para actualizar los datos
+    public function updateADatos($nombre, $semestre, $grupo, $username){
+    $conexion = Conexion::getInstancia();
+    $dbh = $conexion->getDbh();
+
+    try {
+        // Obtener id_alumno
+        $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindParam(1, $username);
+        $stmt->execute();
+        $id_alumno = $stmt->fetchColumn();
+        if (!$id_alumno) return false;
+
+        // Actualizar DatosA
+        $consulta = 'UPDATE DatosA SET nombreCompleto = ?, semestre = ?, grupo = ? WHERE id_alumno = ?';
+        $stmt = $dbh->prepare($consulta);
+        $stmt->execute([$nombre, $semestre, $grupo, $id_alumno]);
+
+        // Actualizar Alumno
+        $consulta2 = 'UPDATE Alumno SET username = ? WHERE id_alumno = ?';
+        $stmt = $dbh->prepare($consulta2);
+        $stmt->execute([$username, $id_alumno]);
+
+        return true;  // 👈 AHORA sí devuelve true
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+}
+?>

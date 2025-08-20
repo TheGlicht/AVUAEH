@@ -1,5 +1,4 @@
 <?php
-
 class Conexion{
     private $dbh;
     private static $instancia;
