@@ -2,58 +2,60 @@
 include_once __DIR__ . '/../conexion.php';
 
 class RelacionDb{
-    // Funcion para crear las relaciones
-    public function createRelation($username, $id_materias){
-        $conexion = Conexion::getInstancia();
-        $dbh = $conexion->getDbh();
-        try{   
-            $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
-            $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(1, $username);
-            $stmt->execute();
+    public function createRelation($username,$id_materias){
+        $conexion = Conexion::getInstancia()->getDbh();
+        try{
+            $stmt = $conexion->prepare('SELECT id_alumno FROM Alumno WHERE username=?');
+            $stmt->execute([$username]);
             $id_alumno = $stmt->fetchColumn();
-    
-            if (!$id_alumno) {
-                throw new Exception("Este usuario no está registrado.");
-            }
+            if(!$id_alumno) throw new Exception("Usuario no registrado");
 
-            // Crear relacion
-            $consulta = 'INSERT INTO AluMateria(id_alumno, id_materias) VALUES (?, ?)';
-            $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $id_alumno);
-            $stmt->bindParam(2, $id_materias);
-            return $stmt->execute();
-
-        } catch(PDOException $e){
-            error_log("Error en showMateria: " . $e->getMessage());
-            throw new Exception("Error al obtener las materias: " . $e->getMessage());
-        }
+            $stmt = $conexion->prepare('INSERT INTO AluMateria(id_alumno,id_materias,calf_primer, calf_second, calf_ordina) VALUES(?,?,?,?,?)');
+            return $stmt->execute([$id_alumno,$id_materias,0,0,0]);
+        } catch(PDOException $e){ error_log($e->getMessage()); throw new Exception($e->getMessage()); }
     }
-    // Funcion para mostrar las relaciones
-    public function showRelationbyID($username){
-        $conexion = Conexion::getInstancia();
-        $dbh = $conexion->getDbh();
-        try{   
-            $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
-            $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(1, $username);
-            $stmt->execute();
-            $id_alumno = $stmt->fetchColumn();
-    
-            if (!$id_alumno) {
-                throw new Exception("Este usuario no está registrado.");
-            }
 
-            // Buscar datos de relacion
-            $consulta = 'SELECT * FROM AluMateria WHERE id_alumno = ?';
-            $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $id_alumno);
-            $stmt->execute();
+    public function showRelationbyID($username){
+        $conexion = Conexion::getInstancia()->getDbh();
+        try{
+            $stmt = $conexion->prepare('SELECT id_alumno FROM Alumno WHERE username=?');
+            $stmt->execute([$username]);
+            $id_alumno = $stmt->fetchColumn();
+            if(!$id_alumno) throw new Exception("Usuario no registrado");
+
+            $stmt = $conexion->prepare('SELECT M.id_materias, M.nombre, AM.calf_primer, AM.calf_second, AM.calf_ordina
+                                       FROM AluMateria AM
+                                       JOIN Materias M ON AM.id_materias=M.id_materias
+                                       WHERE AM.id_alumno=?');
+            $stmt->execute([$id_alumno]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch(PDOException $e){
-            error_log("Error en showMateria: " . $e->getMessage());
-            throw new Exception("Error al obtener las materias: " . $e->getMessage());
-        }
+        } catch(PDOException $e){ error_log($e->getMessage()); throw new Exception($e->getMessage()); }
+    }
+
+    public function updateRelation($username,$id_materias,$p1,$p2,$ord){
+        $conexion = Conexion::getInstancia()->getDbh();
+        try{
+            $stmt = $conexion->prepare('SELECT id_alumno FROM Alumno WHERE username=?');
+            $stmt->execute([$username]);
+            $id_alumno = $stmt->fetchColumn();
+            if(!$id_alumno) throw new Exception("Usuario no registrado");
+
+            $stmt = $conexion->prepare('UPDATE AluMateria SET calf_primer=?, calf_second=?, calf_ordina=? WHERE id_alumno=? AND id_materias=?');
+            return $stmt->execute([$p1,$p2,$ord,$id_alumno,$id_materias]);
+        } catch(PDOException $e){ error_log($e->getMessage()); throw new Exception($e->getMessage()); }
+    }
+
+    public function deleteRelation($username,$id_materias){
+        $conexion = Conexion::getInstancia()->getDbh();
+        try{
+            $stmt = $conexion->prepare('SELECT id_alumno FROM Alumno WHERE username=?');
+            $stmt->execute([$username]);
+            $id_alumno = $stmt->fetchColumn();
+            if(!$id_alumno) throw new Exception("Usuario no registrado");
+
+            $stmt = $conexion->prepare('DELETE FROM AluMateria WHERE id_alumno=? AND id_materias=?');
+            return $stmt->execute([$id_alumno,$id_materias]);
+        } catch(PDOException $e){ error_log($e->getMessage()); throw new Exception($e->getMessage()); }
     }
 }
 ?>
