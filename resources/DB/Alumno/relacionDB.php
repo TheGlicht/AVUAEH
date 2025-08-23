@@ -23,10 +23,14 @@ class RelacionDb{
             $id_alumno = $stmt->fetchColumn();
             if(!$id_alumno) throw new Exception("Usuario no registrado");
 
-            $stmt = $conexion->prepare('SELECT M.id_materias, M.nombre, AM.calf_primer, AM.calf_second, AM.calf_ordina
-                                       FROM AluMateria AM
-                                       JOIN Materias M ON AM.id_materias=M.id_materias
-                                       WHERE AM.id_alumno=?');
+            $stmt = $conexion->prepare('SELECT M.id_materias, M.nombre,
+                                   AM.calf_primer  AS parcial1,
+                                   AM.calf_second  AS parcial2,
+                                   AM.calf_ordina  AS ordinario
+                             FROM AluMateria AM
+                             JOIN Materias M ON AM.id_materias=M.id_materias
+                             WHERE AM.id_alumno=?');
+
             $stmt->execute([$id_alumno]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch(PDOException $e){ error_log($e->getMessage()); throw new Exception($e->getMessage()); }

@@ -108,84 +108,139 @@ class AlumnoDb {
 }
 
 // Clase relacionada con el perfil general del usuario.
-class DataAlumnoDb{
-    // Funcion para agregar los informacion del alumno
-    public function addADatos($nombre, $semestre, $grupo, $username){
-        $conexion = Conexion::getInstancia();
-        $dbh= $conexion->getDbh();
 
-        try{
-            // Primero obtener el id_alumno
+class DataAlumnoDb
+{
+    // Funcion para obtener los del perfil de los alumnos
+    public function getADatos(string $username)
+    {
+        try {
+            $conexion = Conexion::getInstancia();
+            $dbh = $conexion->getDbh();
+
+            $sql = 'SELECT 
+                        a.id_alumno,
+                        a.username,
+                        d.id_DatosA,
+                        d.nombreCompleto,
+                        d.semestre,
+                        d.grupo
+                    FROM Alumno a
+                    LEFT JOIN DatosA d ON d.id_alumno = a.id_alumno
+                    WHERE a.username = ?';
+
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute([$username]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                return null;
+            }
+
+            return [
+                'nombreCompleto' => $row['nombreCompleto'] ?? '',
+                'semestre'       => $row['semestre'] ?? '',
+                'grupo'          => $row['grupo'] ?? '',
+                'username'       => $row['username'],
+            ];
+        } catch (PDOException $e) {
+            throw new Exception("Error en getADatos: " . $e->getMessage());
+        }
+    }
+
+
+    // Funcion para agregar los datos del perfil del usuario
+    public function addADatos(string $nombre, int $semestre, int $grupo, string $currentUsername)
+    {
+        try {
+            $conexion = Conexion::getInstancia();
+            $dbh = $conexion->getDbh();
+
+            // id_alumno a partir del username actual
             $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
             $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(1, $username);
-            $stmt->execute();
+            $stmt->execute([$currentUsername]);
             $id_alumno = $stmt->fetchColumn();
-            if (!$id_alumno) return false;
+            if (!$id_alumno) {
+                return false;
+            }
 
-            // Insertar datos nuevos
-            $consulta = 'INSERT INTO DatosA(nombreCompleto, semestre, grupo, id_alumno) VALUES(?, ?, ?, ?)';
-            $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $nombre);
-            $stmt->bindParam(2, $semestre);
-            $stmt->bindParam(3, $grupo);
-            $stmt->bindParam(4, $id_alumno);
-            return $stmt->execute();
-            $dbh = null;
-        } catch (PODException $e){
+            // Verificar si ya existe registro en DatosA
+            $check = $dbh->prepare('SELECT COUNT(1) FROM DatosA WHERE id_alumno = ?');
+            $check->execute([$id_alumno]);
+            $exists = (int)$check->fetchColumn() > 0;
+
+            if ($exists) {
+                // Ya existe, actualiza
+                $upd = $dbh->prepare('UPDATE DatosA SET nombreCompleto=?, semestre=?, grupo=? WHERE id_alumno=?');
+                return $upd->execute([$nombre, $semestre, $grupo, $id_alumno]);
+            }
+
+            // No existe, inserta
+            $ins = $dbh->prepare('INSERT INTO DatosA (nombreCompleto, semestre, grupo, id_alumno) VALUES (?, ?, ?, ?)');
+            return $ins->execute([$nombre, $semestre, $grupo, $id_alumno]);
+        } catch (PDOException $e) {
             return false;
         }
     }
 
-   // Funcion para obtener la información del alumno
-   public function getADatos($username) {
-    try {
+    // Funcion para actualizar los datos del perfil
+    public function upsertADatos(string $nombre, int $semestre, int $grupo, string $newUsername, string $currentUsername)
+    {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
 
-        $sql = 'SELECT d.id_DatosA, d.nombreCompleto, d.semestre, d.grupo, a.username
-                FROM DatosA d 
-                JOIN Alumno a ON a.id_alumno = d.id_alumno
-                WHERE a.username = ?';
+        try {
+            $dbh->beginTransaction();
 
-        $stmt = $dbh->prepare($sql);
-        $stmt->execute([$username]);
+            // Obtener id_alumno del dueño (username actual de sesión)
+            $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute([$currentUsername]);
+            $id_alumno = $stmt->fetchColumn();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        throw new Exception("Error en getADatos: " . $e->getMessage());
+            if (!$id_alumno) {
+                $dbh->rollBack();
+                return "Alumno no encontrado";
+            }
+
+            // Si desea cambiar el username, validar que no esté en uso por otro
+            if ($newUsername !== $currentUsername) {
+                $ver = $dbh->prepare('SELECT COUNT(1) FROM Alumno WHERE username = ? AND id_alumno <> ?');
+                $ver->execute([$newUsername, $id_alumno]);
+                if ((int)$ver->fetchColumn() > 0) {
+                    $dbh->rollBack();
+                    return "El nombre de usuario ya está en uso";
+                }
+            }
+
+            // Upsert en DatosA
+            $check = $dbh->prepare('SELECT COUNT(1) FROM DatosA WHERE id_alumno = ?');
+            $check->execute([$id_alumno]);
+            $exists = (int)$check->fetchColumn() > 0;
+
+            if ($exists) {
+                $upd = $dbh->prepare('UPDATE DatosA SET nombreCompleto = ?, semestre = ?, grupo = ? WHERE id_alumno = ?');
+                $upd->execute([$nombre, $semestre, $grupo, $id_alumno]);
+            } else {
+                $ins = $dbh->prepare('INSERT INTO DatosA (nombreCompleto, semestre, grupo, id_alumno) VALUES (?, ?, ?, ?)');
+                $ins->execute([$nombre, $semestre, $grupo, $id_alumno]);
+            }
+
+            // Actualizar username si cambió
+            if ($newUsername !== $currentUsername) {
+                $updUser = $dbh->prepare('UPDATE Alumno SET username = ? WHERE id_alumno = ?');
+                $updUser->execute([$newUsername, $id_alumno]);
+            }
+
+            $dbh->commit();
+            return true;
+        } catch (PDOException $e) {
+            if ($dbh->inTransaction()) {
+                $dbh->rollBack();
+            }
+            return false;
+        }
     }
-}
-
-    // Funcion para actualizar los datos
-    public function updateADatos($nombre, $semestre, $grupo, $username){
-    $conexion = Conexion::getInstancia();
-    $dbh = $conexion->getDbh();
-
-    try {
-        // Obtener id_alumno
-        $sql = 'SELECT id_alumno FROM Alumno WHERE username = ?';
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(1, $username);
-        $stmt->execute();
-        $id_alumno = $stmt->fetchColumn();
-        if (!$id_alumno) return false;
-
-        // Actualizar DatosA
-        $consulta = 'UPDATE DatosA SET nombreCompleto = ?, semestre = ?, grupo = ? WHERE id_alumno = ?';
-        $stmt = $dbh->prepare($consulta);
-        $stmt->execute([$nombre, $semestre, $grupo, $id_alumno]);
-
-        // Actualizar Alumno
-        $consulta2 = 'UPDATE Alumno SET username = ? WHERE id_alumno = ?';
-        $stmt = $dbh->prepare($consulta2);
-        $stmt->execute([$username, $id_alumno]);
-
-        return true;  // 👈 AHORA sí devuelve true
-    } catch (PDOException $e) {
-        return false;
-    }
-}
-
 }
 ?>

@@ -1,59 +1,81 @@
 <?php
-require_once("../../../DB/Alumno/datosDB.php");
 session_start();
+require_once __DIR__ . '/../../DB/Alumno/alumnosDB.php';
 
-$alumnoDb = new Alumno();
-
-if (!isset($_GET['action'])) {
-    echo "Acción no especificada";
+// Verificar autenticación
+if (!isset($_SESSION['username'])) {
+    header('Content-Type: application/json');
+    echo json_encode(["success" => false, "message" => "Acceso no autorizado"]);
     exit;
 }
 
-$action = $_GET['action'];
+$alumnosDb = new DataAlumnoDb();
+$action = $_GET['action'] ?? $_POST['action'] ?? '';
 
-switch ($action) {
-    case 'mostrar':
-        $result = $alumnoDb->getADatos($_SESSION['username']);
-        if ($result && count($result) > 0) {
-            // Retorna datos en texto plano separados por |
-            $row = $result[0];
-            echo $row['nombreCompleto'] . "|" . $row['username'] . "|" . $row['semestre'] . "|" . $row['grupo'];
-        } else {
-            echo "NO_DATOS";
+header('Content-Type: application/json');
+
+try {
+    switch ($action) {
+        case 'mostrar': {
+            // Trae datos (LEFT JOIN): si no hay en DatosA, regresa username y nulls
+            $data = $alumnosDb->getADatos($_SESSION['username']);
+            if ($data && is_array($data)) {
+                echo json_encode(["success" => true, "data" => $data]);
+            } else {
+                // Sin registro en DatosA; devolvemos al menos el username de sesión
+                echo json_encode([
+                    "success" => true,
+                    "data" => [
+                        "nombreCompleto" => "",
+                        "semestre"       => "",
+                        "grupo"          => "",
+                        "username"       => $_SESSION['username']
+                    ],
+                    "message" => "Aún no hay datos de perfil, completa y guarda."
+                ]);
+            }
+            break;
         }
-        break;
 
-    case 'editar':
-        // Validar campos
-        if (empty($_POST['nombreCompleto']) || empty($_POST['username']) || empty($_POST['semestre']) || empty($_POST['grupo'])) {
-            echo "ERROR:Campos incompletos";
-            exit;
+        case 'editar': {
+            // Datos recibidos del formulario
+            $nombre       = trim($_POST['nombreCompleto'] ?? '');
+            $semestreRaw  = $_POST['semestre'] ?? '';
+            $grupoRaw     = $_POST['grupo'] ?? '';
+            $newUsername  = trim($_POST['username'] ?? '');
+
+            // Validación básica
+            if ($nombre === '' || $semestreRaw === '' || $grupoRaw === '' || $newUsername === '') {
+                echo json_encode(["success" => false, "message" => "Datos incompletos"]);
+                break;
+            }
+
+            $semestre = (int)$semestreRaw;
+            $grupo    = (int)$grupoRaw;
+            if ($semestre < 1 || $semestre > 6 || $grupo < 1) {
+                echo json_encode(["success" => false, "message" => "Valores de semestre/grupo inválidos"]);
+                break;
+            }
+
+            $currentUsername = $_SESSION['username'];
+
+            $ok = $alumnosDb->upsertADatos($nombre, $semestre, $grupo, $newUsername, $currentUsername);
+
+            if ($ok === true) {
+                // Si se cambió el username, actualizamos la sesión
+                $_SESSION['username'] = $newUsername;
+                echo json_encode(["success" => true, "message" => "Perfil actualizado correctamente"]);
+            } else {
+                // $ok puede ser string con el mensaje de error (por ejemplo, username duplicado)
+                $msg = is_string($ok) ? $ok : "No se pudo actualizar el perfil";
+                echo json_encode(["success" => false, "message" => $msg]);
+            }
+            break;
         }
 
-        // Verificar si ya existe
-        $existe = $alumnoDb->getADatos($_SESSION['username']);
-
-        if ($existe && count($existe) > 0) {
-            // Actualizar
-            $result = $alumnoDb->updateADatos(
-                trim($_POST['nombreCompleto']),
-                intval($_POST['semestre']),
-                intval($_POST['grupo']),
-                trim($_POST['username'])
-            );
-            echo $result ? "OK_UPDATE" : "ERROR_UPDATE";
-        } else {
-            // Insertar
-            $result = $alumnoDb->addADatos(
-                trim($_POST['nombreCompleto']),
-                intval($_POST['semestre']),
-                intval($_POST['grupo']),
-                $_SESSION['username']
-            );
-            echo $result ? "OK_INSERT" : "ERROR_INSERT";
-        }
-        break;
-
-    default:
-        echo "Acción no válida";
+        default:
+            echo json_encode(["success" => false, "message" => "Acción no válida"]);
+    }
+} catch (Exception $e) {
+    echo json_encode(["success" => false, "message" => "ERROR: " . $e->getMessage()]);
 }
