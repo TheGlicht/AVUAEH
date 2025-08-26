@@ -34,31 +34,64 @@ document.getElementById("registroForm").addEventListener("submit", async functio
     }
   
     // Validacion de los roles
-    if (rol !== "alumno") {
-      mensaje.innerHTML = `<div class="alert alert-warning">Solo se permite registrar alumnos desde esta interfaz.</div>`;
-      return;
+    // if (rol !== "alumno") {
+    //   mensaje.innerHTML = `<div class="alert alert-warning">Solo se permite registrar alumnos desde esta interfaz.</div>`;
+    //   return;
+    // }
+  
+    switch (rol){
+      case "alumno":
+        try{
+          const formData = new FormData();
+          formData.append("username", username);
+          formData.append("email", email);
+          formData.append("password", password);
+          
+          const response = await fetch("../../resources/api/Alumnos/apiRegistrerAlumno.php", {
+            method: "POST",
+            body: formData 
+          });
+      
+          const resultText = await response.text();
+      
+          mensaje.innerHTML = `<div class="alert alert-success">${resultText}</div>`;
+          document.getElementById("registroForm").reset();
+      
+         } catch (error){
+          mensaje.innerHTML = `<div class="alert alert-danger">Error al registrar. Intenta más tarde.</div>`;
+              console.error(error);
+         }
+        break;
+
+      case "profesor":
+        try{
+          const formData = new FormData();
+          formData.append("username", username);
+          formData.append("email", email);
+          formData.append("password", password);
+
+          const response = await fetch("../../resources/api/Docente/apiRegistrerDocente.php", { //Completar ruta
+            method: "POST",
+            body: formData
+          });
+
+          const resultText = await response.text();
+
+          mensaje.innerHTML = `<div class="alert alert-success">${resultText}</div>`;
+          document.getElementById("registroForm").reset();
+        } catch(error){
+          mensaje.innerHTML = `<div class="alert alert-danger">Error al registrar. Intenta más tarde.</div>`;
+          console.error(error);
+        }
+        break;
+
+      case "laboratorio":
+        break;
+      
+        default:
+          console.log("No se encuentra dicho metodo");
     }
   
-   try{
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("email", email);
-    formData.append("password", password);
-    
-    const response = await fetch("../../resources/api/Alumnos/apiRegistrerAlumno.php", {
-      method: "POST",
-      body: formData 
-    });
-
-    const resultText = await response.text();
-
-    mensaje.innerHTML = `<div class="alert alert-success">${resultText}</div>`;
-    document.getElementById("registroForm").reset();
-
-   } catch (error){
-    mensaje.innerHTML = `<div class="alert alert-danger">Error al registrar. Intenta más tarde.</div>`;
-        console.error(error);
-   }
 
 
 });

@@ -215,6 +215,8 @@
             </div>
         </div>
 
+        <div id="mensajeRegistro" class="mt-4 text-center"></div>
+        
         <div id="loginContainer" class="login-container">
             <div class="card">
                 <div class="card-header">
@@ -239,7 +241,6 @@
             </div>
         </div>
 
-        <div id="mensajeRegistro" class="mt-4 text-center"></div>
     </main>
 
     <footer class="bg-primary text-white py-4">

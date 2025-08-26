@@ -21,34 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // // Crear FormData como en tu ejemplo funcional
-        // const formData = new FormData();
-        // formData.append("email", email);
-        // formData.append("password", password);
-
-        // let url = "";
-        // let endpoint = "";
-
-        // switch (rolSeleccionado.toLowerCase()) {
-        //     case "alumno":
-        //         endpoint = "Alumnos";
-        //         break;
-        //     case "profesor":
-        //         endpoint = "Profesor";
-        //         break;
-        //     case "laboratorio":
-        //         endpoint = "Laboratorio";
-        //         break;
-        //     default:
-        //         mensaje.innerHTML = `<div class="alert alert-warning">Rol no reconocido.</div>`;
-        //         return;
-        // }
-
-        // // Construir URL como en tu ejemplo funcional
-        // url = `../../resources/api/${endpoint}/apiLogin.php`;
-
         try {
-
             const formData = new FormData();
             formData.append("email", email);
             formData.append("password", password);
@@ -63,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let rolSeleccionado = "Alumno";
 
-            // Enviar solicitud como en tu ejemplo funcional
+            // Enviar solicitud para alumno
             const response = await fetch("../resources/api/Alumnos/apiLogin.php", {
                 method: "POST",
                 body: formData 
@@ -78,6 +51,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 mensaje.innerHTML = `<div class="alert alert-danger">${resultText}</div>`;
             }
+
+            // Enviar solicitud para docente
+
+
+            // Enviar solicitud para laboratorio
 
         } catch (error) {
             mensaje.innerHTML = `<div class="alert alert-danger">Error al conectar con el servidor. Por favor intenta nuevamente.</div>`;
