@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../DB/Docente/docenteDB.php';
+include_once __DIR__ . '/../../DB/Laboratorio/laboratorioDB.php';
 
 // Obtener datos del registro
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -9,17 +9,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $email = trim($_POST['email']);
         $pass = $_POST['password'];
 
-        // Validacion de los campos no vacios
+        // Validación de los campos no vacios
         if(!empty($username) || !empty($email) || !empty($pass)){
             try{
                 // Encriptar la contraseña de forma segura
                 $hashedPass = password_hash($pass, PASSWORD_DEFAULT);
                 // Crear objeto y guardar en la base de datos
-                $docente = new DocenteDb();
-                $docente->addDocente($username, $email, $hashedPass);
+                $laboratorio = new LaboratorioDb();
+                $laboratorio->addLab($username, $email, $hashedPass);
                 echo "Registro exitoso.";
-            } catch (Exception $e){
-                echo "Error" . $e->getMessage();
+            }catch(Exception $e){
+                echo "Error". $e->getMessage();
             }
         } else{
             echo "Todos los campos son obligatorios";

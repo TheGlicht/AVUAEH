@@ -1,3 +1,33 @@
+let rolSeleccionado2 = null;
+
+// Mostrar y ocultar contraseña
+document.addEventListener("DOMContentLoaded", function () {
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    togglePassword.addEventListener("click", function () {
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+        passwordInput.setAttribute("type", type);
+
+        // Cambiar ícono
+        this.querySelector("i").classList.toggle("fa-eye");
+        this.querySelector("i").classList.toggle("fa-eye-slash");
+    });
+
+    // Selleccionar rol
+    document.querySelectorAll(".role-card").forEach(card => {
+        card.addEventListener("click", function () {
+            rolSeleccionado2 = this.getAttribute("data-role"); // alumno, profesor, laboratorio
+
+            // Mensaje opcional
+            document.getElementById("mensajeRegistro").innerHTML =
+                `<div class="alert alert-info">Rol seleccionado: <b>${rolSeleccionado2}</b></div>`;
+        });
+    });
+});
+
+
+// Funciones de programacion y control de acceso
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("loginForm").addEventListener("submit", async function(e) {
         e.preventDefault();
@@ -33,30 +63,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <p class="mt-2">Verificando credenciales...</p>
             </div>`;
+        
 
-            let rolSeleccionado = "Alumno";
-
-            // Enviar solicitud para alumno
-            const response = await fetch("../resources/api/Alumnos/apiLogin.php", {
-                method: "POST",
-                body: formData 
-              });
-          
-            const resultText = await response.text();
-
-            // Verificar respuesta como en tu ejemplo funcional
-            if (resultText.includes("Inicio de sesión exitoso")) {
-                // Redirigir según el rol
-                window.location.href = `./pages/Alumno/index.php`;
-            } else {
-                mensaje.innerHTML = `<div class="alert alert-danger">${resultText}</div>`;
+            switch (rolSeleccionado2){
+                // Caso para alumnos
+                case "Alumno":
+                    try{
+                        const response = await fetch("../resources/api/Alumnos/apiLogin.php", {
+                            method: "POST",
+                            body: formData 
+                        });
+                        const resultText = await response.text();
+                        // Si la respuesta es correcta redirige de acuerdo al perfil Alumno
+                        if (resultText.includes("Inicio de sesión exitoso")) {
+                            window.location.href = `./pages/Alumno/index.php`;
+                        } else {
+                            mensaje.innerHTML = `<div class="alert alert-danger">${resultText}</div>`;
+                        }
+                    }catch(error){
+                        mensaje.innerHTML = `<div class="alert alert-danger">Error al ingresar. Intenta más tarde.</div>`;
+                        console.error(error);
+                    }
+                break;
+                // Caso para Docentes
+                case "Docente":
+                    try{
+                        const response = await fetch("../resources/api/Docente/apiLoginD.php", {
+                            method: "POST",
+                            body: formData
+                        });
+                        const resultText = await response.text();
+                        // Si la respuesta es correcta redirige al index docente
+                        if(resultText.includes("Inicio de sesión exitoso")){
+                            window.location.href = `./pages/Docente/index.php`;
+                        } else{
+                            mensaje.innerHTML = `<div class="alert alert-danger">${resultText}</div>`;
+                        }
+                    }catch(error){
+                        mensaje.innerHTML = `<div class="alert alert-danger">Error al ingresar. Intenta más tarde.</div>`;
+                        console.error(error);
+                    }
+                break;
+                // Caso para Laboratorio
+                case "Laboratorio":
+                    try{
+                        const response = await fetch("../resources/api/Laboratorio/apiLoginL.php", {
+                            method: "POST",
+                            body: formData
+                        });
+                        const resultText = await response.text();
+                        // Si la respuesta es correcta redirige al index Laboratorio
+                        if(resultText.includes("Inicio de sesión exitoso")){
+                            window.location.href = `./pages/Laboratorio/index.php`;
+                        }else{
+                            mensaje.innerHTML = `<div class="alert alert-danger">${resultText}</div>`;
+                        }
+                    }catch(error){
+                        mensaje.innerHTML = `<div class="alert alert-danger">Error al ingresar. Intenta más tarde.</div>`;
+                        console.error(error);
+                    }
+                break;
             }
-
-            // Enviar solicitud para docente
-
-
-            // Enviar solicitud para laboratorio
-
         } catch (error) {
             mensaje.innerHTML = `<div class="alert alert-danger">Error al conectar con el servidor. Por favor intenta nuevamente.</div>`;
             console.error("Error en login:", error);

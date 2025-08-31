@@ -7,146 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="icon" href="./components/assets/Garza/Garza3.png">
-    <style>
-        :root {
-            --primary: #0d6efd;
-            --secondary: #6c757d;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #198754;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .navbar {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            padding: 1.5rem;
-            text-align: center;
-        }
-        
-        .login-form {
-            padding: 2rem;
-            background: white;
-        }
-        
-        .form-control {
-            border-radius: 50px;
-            padding: 12px 20px;
-            margin-bottom: 1.5rem;
-            border: 2px solid #e1e5ee;
-            transition: all 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        
-        .btn-submit {
-            background: var(--primary);
-            border: none;
-            border-radius: 50px;
-            padding: 12px 30px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 1rem;
-        }
-        
-        .btn-submit:hover {
-            background: #0b5ed7;
-            transform: translateY(-2px);
-        }
-        
-        .role-selector {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-            margin: 3rem 0;
-        }
-        
-        .role-card {
-            width: 280px;
-            cursor: pointer;
-            border: 3px solid transparent;
-            text-align: center;
-        }
-        
-        .role-card:hover {
-            border-color: var(--primary);
-        }
-        
-        .role-card.selected {
-            border-color: var(--success);
-        }
-        
-        .role-icon {
-            font-size: 3rem;
-            margin: 1.5rem 0;
-            color: var(--primary);
-        }
-        
-        .role-card.selected .role-icon {
-            color: var(--success);
-        }
-        
-        .role-title {
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .login-container {
-            max-width: 500px;
-            margin: 2rem auto;
-            display: none;
-        }
-        
-        .login-container.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .back-btn {
-            background: var(--secondary);
-            margin-top: 1rem;
-        }
-        
-        footer {
-            margin-top: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="./components/css/style.css">
+  
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -183,8 +45,11 @@
             </p>
         </div>
 
+        <div id="mensajeRegistro" class="mt-4 text-center"></div>
+
+
         <div class="role-selector" id="roleSelector">
-            <div class="role-card card" data-role="alumno">
+            <div class="role-card card" data-role="Alumno" id="Alumno">
                 <div class="card-body">
                     <div class="role-icon">
                         <i class="fas fa-user-graduate"></i>
@@ -194,7 +59,7 @@
                 </div>
             </div>
             
-            <div class="role-card card" data-role="profesor">
+            <div class="role-card card" data-role="Docente" id="Docente">
                 <div class="card-body">
                     <div class="role-icon">
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -204,7 +69,7 @@
                 </div>
             </div>
             
-            <div class="role-card card" data-role="laboratorio">
+            <div class="role-card card" data-role="Laboratorio" id="Laboratorio">
                 <div class="card-body">
                     <div class="role-icon">
                         <i class="fas fa-flask"></i>
@@ -214,8 +79,6 @@
                 </div>
             </div>
         </div>
-
-        <div id="mensajeRegistro" class="mt-4 text-center"></div>
         
         <div id="loginContainer" class="login-container">
             <div class="card">
@@ -230,8 +93,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
+
                         <button type="submit" class="btn btn-submit">Iniciar Sesión</button>
                         <button type="button" id="backButton" class="btn btn-submit back-btn">
                             <i class="fas fa-arrow-left me-2"></i> Volver
@@ -267,6 +136,7 @@
     <script src="./components/js/jquery-3.7.1.js"></script>
     <script src="./components/js/bootstrap.bundle.min.js"></script>
     <script src="./components/js/funcionesModulares.js"></script>
+    <script src="./components/js/KitFontAwesome.js"></script>
     <script src="./components/js/acceso.js"></script>
     
 </body>

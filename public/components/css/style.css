@@ -1,0 +1,146 @@
+:root {
+    --primary: #0d6efd;
+    --secondary: #6c757d;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --success: #198754;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.login-form {
+    padding: 2rem;
+    background: white;
+}
+
+.form-control {
+    border-radius: 50px;
+    padding: 12px 20px;
+    margin-bottom: 1.5rem;
+    border: 2px solid #e1e5ee;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.password-container .toggle-password {
+    border-left: none; /* para que no se vea la línea doble */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+
+.btn-submit {
+    background: var(--primary);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-submit:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+}
+
+.role-selector {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin: 3rem 0;
+}
+
+.role-card {
+    width: 280px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    text-align: center;
+}
+
+.role-card:hover {
+    border-color: var(--primary);
+}
+
+.role-card.selected {
+    border-color: var(--success);
+}
+
+.role-icon {
+    font-size: 3rem;
+    margin: 1.5rem 0;
+    color: var(--primary);
+}
+
+.role-card.selected .role-icon {
+    color: var(--success);
+}
+
+.role-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.login-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    display: none;
+}
+
+.login-container.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.back-btn {
+    background: var(--secondary);
+    margin-top: 1rem;
+}
+
+footer {
+    margin-top: auto;
+}

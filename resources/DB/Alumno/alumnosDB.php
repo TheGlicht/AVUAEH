@@ -111,7 +111,7 @@ class AlumnoDb {
 
 class DataAlumnoDb
 {
-    // Funcion para obtener los del perfil de los alumnos
+    // Funcion para obtener los datos del perfil de los alumnos
     public function getADatos(string $username)
     {
         try {
@@ -169,6 +169,9 @@ class DataAlumnoDb
             $check = $dbh->prepare('SELECT COUNT(1) FROM DatosA WHERE id_alumno = ?');
             $check->execute([$id_alumno]);
             $exists = (int)$check->fetchColumn() > 0;
+        
+
+            // VEridicar a configuracion y de ser posible cambiar el uso del username al correo del alumno, para garantizar la seguridad
 
             if ($exists) {
                 // Ya existe, actualiza

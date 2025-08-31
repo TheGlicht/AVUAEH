@@ -52,7 +52,43 @@ document.getElementById("passwordForm").addEventListener("submit", async functio
           mensaje.innerHTML = `<div class="alert alert-danger">Error al actualizar. Intenta más tarde.</div>`;
           console.error(error);
         }
-    } else {
-        mensaje.innerHTML = `<div class="alert alert-warning">Actualmente solo está habilitada la recuperación para alumnos.</div>`;
+    } else if(rol === "profesor"){
+      try{
+        const formData = new FormData();
+          formData.append("email", email);
+          formData.append("password", password); // nombre corregido
+    
+          const response = await fetch("../../resources/api/Docente/apiUpdatePass.php", {
+            method: "POST",
+            body: formData
+          });
+    
+          const resultText = await response.text();
+          mensaje.innerHTML = `<div class="alert alert-success">${resultText}</div>`;
+          document.getElementById("passwordForm").reset();
+    
+      }catch(error){
+        mensaje.innerHTML = `<div class="alert alert-danger">Error al actualizar. Intenta más tarde.</div>`;
+        console.error(error);
       }
+    } else if(rol === "laboratorio"){
+      try{
+          const formData = new FormData();
+            formData.append("email", email);
+            formData.append("password", password); // nombre corregido
+      
+            const response = await fetch("../../resources/api/Laboratorio/apiUpdatePass.php", {
+              method: "POST",
+              body: formData
+            });
+      
+            const resultText = await response.text();
+            mensaje.innerHTML = `<div class="alert alert-success">${resultText}</div>`;
+            document.getElementById("passwordForm").reset();
+      }catch(error){
+        mensaje.innerHTML = `<div class="alert alert-danger">Error al actualizar. Intenta más tarde.</div>`;
+        console.error(error);
+      }
+    }
+
 });

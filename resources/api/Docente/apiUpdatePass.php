@@ -1,5 +1,5 @@
 <?php
-include_once __DIR__ . '/../../DB/Alumno/alumnosDB.php';
+include_once __DIR__ . '/../../DB/Docente/docenteDB.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['email'], $_POST['password'])) {
@@ -9,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($email) && !empty($pass)) {
             try {
                 $hashedPass = password_hash($pass, PASSWORD_DEFAULT);
-                $alumno = new AlumnoDB();
-                $alumno->updatePasAlumno($email, $hashedPass);
+                $docente = new DocenteDb();
+                $docente->updatePasDocente($email, $hashedPass);
 
                 echo "Actualización exitosa.";
             } catch (Exception $e) {

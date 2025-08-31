@@ -86,7 +86,27 @@ document.getElementById("registroForm").addEventListener("submit", async functio
         break;
 
       case "laboratorio":
-        break;
+        try{
+          const formData = new FormData();
+          formData.append("username", username);
+          formData.append("email", email);
+          formData.append("password", password);
+
+          const response = await fetch("../../resources/api/Laboratorio/apiRegistrerLab.php", {
+            method: "POST",
+            body: formData
+          });
+
+          const resultText = await response.text();
+
+          mensaje.innerHTML = `<div class="alert alert-success">${resultText}</div>`;
+          document.getElementById("registroForm").reset();
+
+        } catch(error){
+          mensaje.innerHTML = `<div class="alert alert-danger">Error al registrar. Intenta más tarde.</div>`;
+          console.error(error);
+        }
+      break;
       
         default:
           console.log("No se encuentra dicho metodo");
