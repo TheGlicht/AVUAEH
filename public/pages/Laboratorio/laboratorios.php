@@ -16,7 +16,7 @@ if(isset($_SESSION['username'])){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+  <title>Laboratorios</title>
   
   <!-- Estilos -->
   <link rel="stylesheet" href="../../components/css/bootstrap.min.css">
@@ -73,37 +73,48 @@ if(isset($_SESSION['username'])){
       <div class="modal-content">
         <form id="formPreprogramar">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title">Preprogramar Práctica</h5>
+            <h5 class="modal-title">Programar Práctica</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body row g-3">
             <div class="col-md-6">
               <label for="materia" class="form-label">Materia</label>
-              <select id="materia" class="form-select" required>
-                <option selected disabled>Selecciona</option>
-                <option value="quimica">Química</option>
-                <option value="fisica">Física</option>
-              </select>
+              <!-- Select para cargar materias con labortaorio -->
+             <select class="form-select" name="materiaKit" id="materiaKit"></select>
             </div>
             <div class="col-md-6">
               <label for="docente" class="form-label">Docente</label>
-              <select id="docente" class="form-select" required>
-                <option selected disabled>Selecciona</option>
-                <option value="profa">Profa. García</option>
-                <option value="profb">Prof. Ramírez</option>
+              <!-- Select para cargar a los profesores que tengan esa materia -->
+              <select id="docenteLab" class="form-select" required>                
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="grupo" class="form-label">Semestre</label>
+              <select name="semestre" id="semestre"  class="form-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
               </select>
             </div>
             <div class="col-md-6">
               <label for="grupo" class="form-label">Grupo</label>
-              <input type="text" class="form-control" id="grupo" required>
+              <input type="number" min="1" class="form-control" id="grupo" required>
             </div>
             <div class="col-md-6">
               <label for="laboratorio" class="form-label">Laboratorio</label>
-              <select id="laboratorio" class="form-select" required>
-                <option selected disabled>Selecciona</option>
-                <option value="lab1">Laboratorio 1</option>
-                <option value="lab2">Laboratorio 2</option>
-              </select>
+                  <select id="laboratorio" class="form-select" required>
+                    <option value="" disabled selected>Selecciona un laboratorio</option>
+                    <option value="labElctronica" id="labElctronica">Lab. Electrónica</option>
+                    <option value="labControl" id="labControl">Lab. Control</option>
+                    <option value="labFisQui" id="labFisQui">Lab. Fisico-Quimica</option>
+                    <option value="lab1" id="lab1">Laboratorio 1</option>
+                    <option value="lab2" id="lab2">Laboratorio 2</option>
+                    <option value="lab3" id="lab3">Laboratorio 3</option>
+                    <option value="lab4" id="lab4">Laboratorio 4</option>
+                  </select>
             </div>
             <div class="col-md-6">
               <label for="fecha" class="form-label">Fecha</label>
@@ -112,18 +123,11 @@ if(isset($_SESSION['username'])){
             <div class="col-md-6">
               <label for="hora" class="form-label">Hora</label>
               <input type="time" id="hora" class="form-control" required>
-            </div>
-            <div class="col-md-12">
-              <label for="guia" class="form-label">Guía de práctica (PDF)</label>
-              <input type="file" id="guia" class="form-control" accept=".pdf">
-            </div>
+            </div>            
             <div class="col-md-12">
               <label for="kit" class="form-label">Kit de materiales</label>
-              <select id="kit" class="form-select">
-                <option selected disabled>Selecciona un kit</option>
-                <option value="kit1">Kit de Química Básica</option>
-                <option value="kit2">Kit Física Óptica</option>
-              </select>
+              <!-- Este select sera automatico de acuerdo a la materia de la practica -->
+              <select id="kit" class="form-select"></select>
             </div>
           </div>
           <div class="modal-footer">

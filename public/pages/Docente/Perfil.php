@@ -1,4 +1,17 @@
 <!-- php logica de programacion -->
+<?php
+session_start();
+
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if(isset($_SESSION['username'])){
+  require_once dirname(__DIR__, 3) . '/resources/DB/Alumno/materiasDB.php';
+    $materiaDb = new MateriaDb();
+    $materias = $materiaDb->showMateria();
+?>
 
 <!-- Estructura del sitio web -->
 <!DOCTYPE html>
@@ -37,99 +50,74 @@
             <div class="col-md-6">
               <label class="form-label">Nombre de Usuario</label>
               <input type="text" class="form-control" id="usuario" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Semestre</label>
-              <select class="form-select" id="semestre">
-                <option value="">Selecciona</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Grupo</label>
-              <input type="number" class="form-control" id="grupo">
-            </div>
+            </div>           
             <div class="col-md-12">
-              <label class="form-label">Certificados o Reconocimientos (PDF)</label>
-              <input type="file" class="form-control" id="certificados" accept="application/pdf" multiple>
+              <label class="form-label">Correo electronico</label>
+              <!-- Aqui debe de ir un input para mostrar el correo electronico -->
             </div>
           </div>
           <div class="d-grid mt-4">
+            <!-- Boton para guardar datos del docente -->
             <button type="submit" class="btn btn-success">Guardar Perfil</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- Sección: Materias asignadas -->
+        <!-- Tabla de materias agregadas -->
+        <div class="container my-5" style="max-width: 1000px;">
+          <div class="card mb-4 shadow">
+            <div class="card-header bg-primary text-white fw-bold">
+              <i class="fa-solid fa-plus"></i> Agregar Materia
+            </div>
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <div class="input-group mb-2">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar materia...">
+                    <button class="btn btn-outline-secondary" id="searchBtn" type="button">Buscar</button>
+                  </div>
+                  <select id="materiaSelect" class="form-select" required>
+                    <option value="">Seleccione una materia</option>
+                    <?php foreach ($materias as $materia): ?>
+                        <option value="<?= htmlspecialchars($materia['id_materias']) ?>">
+                            <?= htmlspecialchars($materia['nombre']) ?> - Semestre <?= htmlspecialchars($materia['semestre']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="col-md-6 text-end">
+                  <!-- Boton para guardar la relacion DocMAterias -->
+                  <button type="button" id="agregarMateria" class="btn btn-success mt-2">
+                    <i class="fa-solid fa-plus"></i> Agregar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form id="formMaterias">
     <div class="card shadow">
       <div class="card-header bg-secondary text-white fw-bold">
-        <i class="fa-solid fa-chalkboard-user"></i> Materias Asignadas
+        <i class="fa-solid fa-list-check"></i> Materias Registradas
       </div>
-      <div class="card-body">
-        <form id="formMaterias" class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="form-label">Nombre de la Materia</label>
-            <select class="form-select" id="materia" required>
-              <option value="">Selecciona una materia</option>
-              <option value="Matemáticas">Matemáticas</option>
-              <option value="Física">Física</option>
-              <option value="Química">Química</option>
-              <option value="Biología">Biología</option>
-              <option value="Programación">Programación</option>
-              <option value="Bases de Datos">Bases de Datos</option>
-              <option value="Redes">Redes</option>
-              <option value="Inglés">Inglés</option>
-              <option value="Ética Profesional">Ética Profesional</option>
-              <!-- Puedes agregar más opciones según lo que manejen en tu plantel -->
-            </select>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Semestre</label>
-            <select class="form-select" id="semestreMateria" required>
-              <option value="">Selecciona</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Grupo</label>
-            <input type="text" class="form-control" id="grupoMateria" required>
-          </div>
-          <div class="col-md-12 d-grid">
-            <button type="submit" class="btn btn-outline-primary"><i class="fa-solid fa-plus"></i> Agregar Materia</button>
-          </div>
-        </form>
-
-        <!-- Tabla de materias agregadas -->
-        <div class="table-responsive">
-          <table class="table table-bordered align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>Materia</th>
-                <th>Semestre</th>
-                <th>Grupo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaMaterias">
-              <!-- Aquí se insertarán las materias -->
-            </tbody>
-          </table>
-        </div>
+      <div class="card-body table-responsive">
+        <table class="table table-bordered text-center align-middle" id="tablaMaterias">
+          <thead class="table-dark">
+            <tr>
+              <th>Materia</th>              
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
+  </form>
+</div>
+</div>
 
-  </div>
+
 
   <?php include '../../../resources/templates/footer.php';?>
 
@@ -137,32 +125,10 @@
   <script src="../../components/js/jquery-3.7.1.js"></script>
   <script src="../../components/js/bootstrap.bundle.min.js"></script>
   <script src="../../components/js/KitFontAwesome.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('formMaterias');
-      const tabla = document.getElementById('tablaMaterias');
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const materia = document.getElementById('materia').value.trim();
-        const semestre = document.getElementById('semestreMateria').value;
-        const grupo = document.getElementById('grupoMateria').value.trim();
-
-        if (materia && semestre && grupo) {
-          const fila = document.createElement('tr');
-          fila.innerHTML = `
-            <td>${materia}</td>
-            <td>${semestre}</td>
-            <td>${grupo}</td>
-            <td><button class="btn btn-sm btn-danger borrar"><i class="fa-solid fa-trash"></i></button></td>
-          `;
-          tabla.appendChild(fila);
-
-          // Limpia el formulario
-          form.reset();
-        }
-      });
-
-      // Delegar evento para borra
+  <script src="../../components/js/Doc/Perfil.js"></script>
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
+?>
