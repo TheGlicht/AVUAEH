@@ -1,28 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const grupos = [
-      {
-        materia: "Química",
-        grupo: "4A",
-        semestre: "4°",
-        alumnos: [
-          { nombre: "Juan Pérez", cuenta: "2023001" },
-          { nombre: "Ana García", cuenta: "2023002" },
-        ]
-      },
-      {
-        materia: "Física",
-        grupo: "3B",
-        semestre: "3°",
-        alumnos: [
-          { nombre: "Luis Hernández", cuenta: "2023003" },
-          { nombre: "María López", cuenta: "2023004" },
-        ]
+document.addEventListener('DOMContentLoaded', async () => {
+  const container = document.getElementById("grupoContainer");
+
+  try {
+    const resp = await fetch("../../../resources/api/Docente/apiGrupos.php");
+    const alumnos = await resp.json();
+
+    // Agrupar por semestre y grupo
+    const gruposMap = {};
+    alumnos.forEach(al => {
+      const key = `${al.semestre}-${al.grupo}`;
+      if (!gruposMap[key]) {
+        gruposMap[key] = {
+          semestre: al.semestre,
+          grupo: al.grupo,
+          alumnos: []
+        };
       }
-    ];
+      gruposMap[key].alumnos.push(al);
+    });
 
-    const container = document.getElementById("grupoContainer");
-
-    grupos.forEach((g, index) => {
+    Object.values(gruposMap).forEach(g => {
       const col = document.createElement("div");
       col.className = "col-md-6";
 
@@ -31,23 +28,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.innerHTML = `
         <div class="card-header bg-secondary text-white">
-          <strong>${g.materia}</strong> - Grupo: ${g.grupo} (${g.semestre})
+          <strong> Semestre ${g.semestre}</strong> - Grupo: ${g.grupo}
         </div>
         <div class="card-body">
           <ul class="list-group list-group-flush">
             ${g.alumnos.map(al => `
               <li class="list-group-item d-flex justify-content-between align-items-center">
-                ${al.nombre}
-                <a href="detalleAlumno.php?cuenta=${al.cuenta}" class="btn btn-outline-primary btn-sm">
+                ${al.nombreCompleto}
+                <a href="detalleAlumno.php?id=${al.id_alumno}" class="btn btn-outline-primary btn-sm">
                   Ver <i class="fa-solid fa-arrow-right"></i>
                 </a>
               </li>
             `).join("")}
           </ul>
         </div>
-      `;
+      `;      
 
       col.appendChild(card);
       container.appendChild(col);
     });
-  });
+
+  } catch (error) {
+    console.error("Error cargando grupos:", error);
+    container.innerHTML = `<div class="alert alert-danger">No se pudieron cargar los grupos</div>`;
+  }
+});
