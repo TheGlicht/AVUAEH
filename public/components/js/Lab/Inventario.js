@@ -1,72 +1,151 @@
- // Ejecutar cuando el DOM esté completamente cargado
- document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", () => {
+  cargarMateriales();
 
-    // Botón para abrir modal de agregar
-    const btnAgregar = document.querySelector('.btn-success');
-    if (btnAgregar) {
-      btnAgregar.addEventListener('click', function () {
-        const modalAgregar = new bootstrap.Modal(document.getElementById('modalAgregarMaterial'));
-        modalAgregar.show();
-      });
-    }
+  document.getElementById("formAgregar").addEventListener("submit", agregarMaterial);
+  document.getElementById("formEditar").addEventListener("submit", actualizarMaterial);
+  document.getElementById("formKit").addEventListener("submit", guardarKit);
+});
 
-    // Botones para abrir modal de editar
-    const botonesEditar = document.querySelectorAll('.btn-warning');
-    botonesEditar.forEach(btn => {
-      btn.addEventListener('click', function () {
-        document.getElementById('nombreEditar').value = 'Ejemplo';
-        document.getElementById('tipoEditar').value = 'vidrio';
-        document.getElementById('cantidadEditar').value = '10';
-        document.getElementById('estadoEditar').value = 'Funcional';
-        const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarMaterial'));
-        modalEditar.show();
-      });
-    });
+async function cargarMateriales() {
+  const res = await fetch("../../../resources/api/Laboratorio/apiInventario.php");
+  const materiales = await res.json();
 
-    // Envío de formularios
-    document.getElementById('formAgregarMaterial').addEventListener('submit', function (e) {
-      e.preventDefault();
-      alert('Material agregado (simulado)');
-      bootstrap.Modal.getInstance(document.getElementById('modalAgregarMaterial')).hide();
-    });
+  const estadoTexto = {
+    1: '<span class="badge bg-success">Funcional</span>',
+    2: '<span class="badge bg-warning">Dañado</span>',
+    3: '<span class="badge bg-danger">Faltante</span>'
+  };
 
-    document.getElementById('formEditarMaterial').addEventListener('submit', function (e) {
-      e.preventDefault();
-      alert('Material actualizado (simulado)');
-      bootstrap.Modal.getInstance(document.getElementById('modalEditarMaterial')).hide();
-    });
-
-    // Inicializar filtro por defecto
-    filtrarMateriales();
+  let html = '';
+  materiales.forEach(mat => {
+    html += `
+      <tr>
+        <td><input type="checkbox" class="material-checkbox" data-id="${mat.id_material}"></td>
+        <td>${mat.nombre}</td>
+        <td>${mat.tipo}</td>
+        <td>${mat.cantidad}</td>
+        <td>${estadoTexto[mat.estado] || mat.estado}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="editarMaterial(${mat.id_material}, '${mat.nombre}', '${mat.tipo}', ${mat.cantidad}, ${mat.estado})"><i class="fa fa-pen"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarMaterial(${mat.id_material})"><i class="fa fa-trash"></i></button>
+        </td>
+      </tr>
+    `;
   });
 
-  // Función para filtrar materiales por tipo
-  function filtrarMateriales() {
-    const tipo = document.getElementById('filtroTipo').value;
-    const filas = document.querySelectorAll('#tablaMateriales tr');
+  document.getElementById('tablaMateriales').innerHTML = html;
+}
 
-    filas.forEach(fila => {
-      const tipoFila = fila.getAttribute('data-tipo');
-      if (tipo === 'todos' || tipo === tipoFila) {
-        fila.style.display = '';
-      } else {
-        fila.style.display = 'none';
-      }
-    });
+// Agregar material
+async function agregarMaterial(e) {
+  e.preventDefault();
+  const data = {
+    nombre: document.getElementById('nombreMaterial').value,
+    tipo: document.getElementById('tipoMaterial').value,
+    cantidad: parseInt(document.getElementById('cantidadMaterial').value),
+    estado: parseInt(document.getElementById('estadoMaterial').value)
+  };
+
+  await fetch("../../../resources/api/Laboratorio/apiInventario.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  bootstrap.Modal.getInstance(document.getElementById('modalAgregar')).hide();
+  cargarMateriales();
+}
+
+function editarMaterial(id, nombre, tipo, cantidad, estado) {
+  document.getElementById('idEditar').value = id;
+  document.getElementById('nombreEditar').value = nombre;
+  document.getElementById('tipoEditar').value = tipo;
+  document.getElementById('cantidadEditar').value = cantidad;
+  document.getElementById('estadoEditar').value = estado;
+  new bootstrap.Modal(document.getElementById('modalEditar')).show();
+}
+
+// Actualizar material
+async function actualizarMaterial(e) {
+  e.preventDefault();
+  const data = {
+    id_material: parseInt(document.getElementById('idEditar').value),
+    nombre: document.getElementById('nombreEditar').value,
+    tipo: document.getElementById('tipoEditar').value,
+    cantidad: parseInt(document.getElementById('cantidadEditar').value),
+    estado: parseInt(document.getElementById('estadoEditar').value)
+  };
+
+  await fetch("../../../resources/api/Laboratorio/apiInventario.php", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  bootstrap.Modal.getInstance(document.getElementById('modalEditar')).hide();
+  cargarMateriales();
+}
+
+// Eliminar material
+async function eliminarMaterial(id) {
+  if (!confirm("¿Seguro que deseas eliminar este material?")) return;
+
+  await fetch("../../../resources/api/Laboratorio/apiInventario.php", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id_material: id })
+  });
+
+  cargarMateriales();
+}
+
+// Armar Kits
+function seleccionarTodos(checkbox) {
+  document.querySelectorAll(".material-checkbox").forEach(cb => cb.checked = checkbox.checked);
+}
+
+function armarKit() {
+  cargarMaterias();
+  new bootstrap.Modal(document.getElementById('modalKit')).show();
+}
+
+async function cargarMaterias() {
+  const res = await fetch("../../../resources/api/Laboratorio/apiKits.php?materias=1");
+  const materias = await res.json();
+
+  let options = '<option value="">-- Selecciona Materia --</option>';
+  materias.forEach(m => {
+    options += `<option value="${m.id_materias}">${m.nombre} (Semestre ${m.semestre})</option>`;
+  });
+
+  document.getElementById("materiaKit").innerHTML = options;
+}
+
+
+async function guardarKit(e) {
+  e.preventDefault();
+  const nombreKit = document.getElementById('nombreKit').value;
+  const idMateria = parseInt(document.getElementById('materiaKit').value);
+
+  if (!idMateria) {
+    alert("Debes seleccionar una materia para el kit");
+    return;
   }
 
-  // Selección de todos los checkboxes
-  function seleccionarTodos(source) {
-    const checkboxes = document.querySelectorAll('.material-checkbox');
-    checkboxes.forEach(checkbox => checkbox.checked = source.checked);
-  }
+  const seleccionados = Array.from(document.querySelectorAll(".material-checkbox:checked")).map(cb => ({
+    id_material: parseInt(cb.dataset.id),
+    cantidad: 1
+  }));
 
-  // Función para armar kit
-  function armarKit() {
-    const seleccionados = Array.from(document.querySelectorAll('.material-checkbox')).filter(cb => cb.checked);
-    if (seleccionados.length === 0) {
-      alert('Selecciona al menos un material para armar un kit.');
-    } else {
-      alert(`Has seleccionado ${seleccionados.length} materiales para armar el kit.`);
-    }
-  }
+  const data = { nombre: nombreKit, id_materias: idMateria, materiales: seleccionados };
+
+  await fetch("../../../resources/api/Laboratorio/apiKits.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  bootstrap.Modal.getInstance(document.getElementById('modalKit')).hide();
+  alert("Kit creado correctamente");
+}
+

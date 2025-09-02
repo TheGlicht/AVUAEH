@@ -1,5 +1,15 @@
-<!-- php logica de programación -->
+<!-- php logica de programacion -->
+<?php
+ session_start();
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 
+if(isset($_SESSION['username'])){
+?>
+
+<!-- php logica de código -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,12 +30,12 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4"><i class="fa-solid fa-toolbox"></i> Kits de Laboratorio por Materia</h2>
 
-  <!-- Botón para armar nuevo kit -->
+  <!-- Botón para armar nuevo kit
   <div class="text-end mb-3">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditarKit">
       <i class="fa-solid fa-pen-to-square"></i> Editar Kits
     </button>
-  </div>
+  </div> -->
 
   <!-- Lista de kits -->
   <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -88,46 +98,17 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
+          
+          <!-- Materia (solo informativa) -->
           <div class="mb-3">
             <label for="materiaKit" class="form-label">Materia</label>
-            <select class="form-select" id="materiaKit" required>
-              <option value="" disabled selected>Selecciona una materia</option>
-              <option>Química</option>
-              <option>Física</option>
-              <option>Biología</option>
-              <option>Electrónica</option>
-            </select>
+            <input type="text" class="form-control" id="materiaKit" name="materia" readonly>
           </div>
 
-          <div id="contenedorMaterialesKit">
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label class="form-label">Material</label>
-                <select class="form-select" id="materiaKit" required>
-                    <option value="" disabled selected>Selecciona un material</option>
-                    <option>Vaso de precipitado</option>
-                    <option>Mechero</option>
-                    <option>Embudo de vidrio</option>
-                    <option>Cintametrica</option>              
-                    </select>              
-                </div>
-              <div class="col-md-4">
-                <label class="form-label">Cantidad</label>
-                <input type="number" class="form-control" name="cantidad[]" min="1" value="1">
-              </div>
-              <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-danger w-100" onclick="this.closest('.row').remove();"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="text-end">
-            <button type="button" class="btn btn-secondary" onclick="agregarMaterialKit()">
-              <i class="fa-solid fa-plus"></i> Agregar Material
-            </button>
-          </div>
+          <!-- Contenedor dinámico -->
+          <div id="contenedorMaterialesKit"></div>
+                    
         </div>
-
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Guardar Cambios</button>
         </div>
@@ -135,6 +116,7 @@
     </div>
   </div>
 </div>
+
 
 <br>
 
@@ -144,30 +126,13 @@
 <script src="../../components/js/jquery-3.7.1.js"></script>
 <script src="../../components/js/bootstrap.bundle.min.js"></script>
 <script src="../../components/js/KitFontAwesome.js"></script>
-
-<script>
-function agregarMaterialKit() {
-  const container = document.getElementById('contenedorMaterialesKit');
-  const row = document.createElement('div');
-  row.className = 'row g-3 mb-3';
-  row.innerHTML = `
-    <div class="col-md-6">
- <select class="form-select" id="materiaKit" required>
-                    <option value="" disabled selected>Selecciona un material</option>
-                    <option>Vaso de precipitado</option>
-                    <option>Mechero</option>
-                    <option>Embudo de vidrio</option>
-                    <option>Cintametrica</option>              
-                    </select>      </div>
-    <div class="col-md-4">
-      <input type="number" class="form-control" name="cantidad[]" value="1" min="1">
-    </div>
-    <div class="col-md-2 d-flex align-items-end">
-      <button type="button" class="btn btn-danger w-100" onclick="this.closest('.row').remove();"><i class="fa-solid fa-trash"></i></button>
-    </div>`;
-  container.appendChild(row);
-}
-</script>
+<script src="../../components/js/Lab/kits.js"></script>
 
 </body>
 </html>
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
+?>

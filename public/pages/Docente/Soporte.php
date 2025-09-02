@@ -22,25 +22,7 @@
     
   <main class="container mb-5">
     <div class="row">
-      <!-- Cambio de idioma -->
-      <section class="col-md-6 mb-4">
-        <div class="card p-4 shadow">
-          <h5 class="fw-bold mb-3"><i class="fa-solid fa-language"></i> Idioma</h5>
-          <select class="form-select" id="languageSelect">
-            <option value="es">Español</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-      </section>
-
-      <!-- Tema oscuro -->
-      <section class="col-md-6 mb-4">
-        <div class="card p-4 shadow">
-          <h5 class="fw-bold mb-3"><i class="fa-solid fa-moon"></i> Tema</h5>
-          <button class="btn btn-dark w-100" id="themeToggle">Cambiar a tema oscuro</button>
-        </div>
-      </section>
-
+      <!-- Aqui se enviaran los reportes con mi correo de InnovaterCode -->
       <!-- Contacto con soporte -->
       <section class="col-12 mb-4">
         <div class="card p-4 shadow">

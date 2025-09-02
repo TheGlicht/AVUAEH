@@ -1,5 +1,20 @@
+<?php
+// Iniciar sesión si no esta iniciada
+if(session_status() === PHP_SESSION_NONE){
+    session_start();
+}
+// Obtener el username de la sesión o mostrar 'Menu' por defecto
+$username = $_SESSION['username'] ?? 'Menú';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+</head>
+<body>
 <nav class="navbar navbar-expand-sm navbar-light bg-primary">
-    <a class="navbar-brand mx-3 text-white">Menú</a>
+<a id="username-menu" class="navbar-brand mx-3 text-white"><?php echo htmlspecialchars($username); ?></a>
     <button
         class="navbar-toggler d-lg-none"
         type="button"
@@ -17,18 +32,6 @@
             <li class="nav-item activate">
                 <a class="nav-link mx-3 text-white" href="./index.php">
                     <i class="fa-solid fa-house"></i> Home
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link mx-3 text-white" href="./calendAlumnos.php">
-                  <i class="fa-solid fa-calendar-days"></i> Calendario Alumnos
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link mx-3 text-white" href="./laboratorios.php">
-                  <i class="fa-solid fa-flask-vial"></i> Laboratorios
                 </a>
             </li>
 
@@ -51,3 +54,15 @@
         </ul>
     </div>
 </nav>
+<script>
+    // Funcion para cerrar sesion modificada para no depender del otro
+    function cerrarSesion(){
+        fetch("../../../resources/api/apiLogout.php")
+        .then(()=> {
+            window.location.href = "../../index.php";
+        })
+        .catch(err => console.warn("Error al cerrar sesión", err));
+    }
+</script>
+</body>
+</html>

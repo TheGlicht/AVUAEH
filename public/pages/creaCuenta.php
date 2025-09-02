@@ -43,6 +43,9 @@
             académicas.
         </p>
       </header>
+      
+        <!-- Para mostrar mensajes -->
+        <div id="mensajeRegistro" class="mt-3"></div>
 
     <!-- Formulario para registrarse -->
       <main class="text-center align-items-center">
@@ -85,10 +88,7 @@
             <button class="submit">Submit</button>
         </form>      
 
-      </main>  
-      
-        <!-- Para mostrar mensajes -->
-        <div id="mensajeRegistro" class="mt-3"></div>
+      </main>        
 
       <footer class="bg-primary">
         <p>&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>

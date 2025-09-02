@@ -1,4 +1,13 @@
-<!-- php logica de programación -->
+<!-- php logica de programacion -->
+<?php
+ session_start();
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if(isset($_SESSION['username'])){
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -100,80 +109,12 @@
   <script src="../../components/js/bootstrap.bundle.min.js"></script>
   <script src="../../components/js/KitFontAwesome.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <script>
-    // Inicializa fecha límite automática
-    const fechaLimite = new Date();
-    fechaLimite.setDate(fechaLimite.getDate() + 14);
-    document.getElementById("fechaLimite").value = fechaLimite.toISOString().split("T")[0];
-
-    function agregarAlumno() {
-      const grupo = document.createElement("div");
-      grupo.classList = "row g-2 mb-2";
-      grupo.innerHTML = `
-        <div class="col-md-6"><input type="text" class="form-control" placeholder="Nombre del alumno" required></div>
-        <div class="col-md-6"><input type="text" class="form-control" placeholder="Número de cuenta" required></div>`;
-      document.getElementById("equipoAlumnos").appendChild(grupo);
-    }
-
-    function agregarMaterial() {
-      const grupo = document.createElement("div");
-      grupo.classList = "row g-2 mb-2";
-      grupo.innerHTML = `
-        <div class="col-md-8">
-          <select class="form-select" name="material[]">
-            <option selected disabled>Selecciona material</option>
-            <option value="Vaso de precipitados">Vaso de precipitados</option>
-            <option value="Probeta">Probeta</option>
-            <option value="Tubos de ensayo">Tubos de ensayo</option>
-            <option value="Matraz Erlenmeyer">Matraz Erlenmeyer</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <input type="number" class="form-control" name="cantidad[]" placeholder="Cantidad" min="1" required>
-        </div>`;
-      document.getElementById("materialRoto").appendChild(grupo);
-    }
-
-    document.getElementById("formReporte").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const encargado = document.getElementById("nombreEncargado").value;
-      const fecha = document.getElementById("fechaLimite").value;
-      const materiales = [...document.querySelectorAll("select[name='material[]']")].map(s => s.value);
-      const cantidades = [...document.querySelectorAll("input[name='cantidad[]']")].map(i => i.value);
-      const alumnos = [...document.querySelectorAll("#equipoAlumnos .row")].map(row => {
-        const inputs = row.querySelectorAll("input");
-        return `${inputs[0].value} (${inputs[1].value})`;
-      }).join(", ");
-
-      materiales.forEach((mat, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${alumnos}</td>
-          <td>${mat}</td>
-          <td>${cantidades[index]}</td>
-          <td>${encargado}</td>
-          <td>${fecha}</td>
-          <td>
-            <button class="btn btn-sm btn-success" onclick="this.closest('tr').remove()"><i class="fa-solid fa-check"></i></button>
-            <button class="btn btn-sm btn-danger" onclick="this.closest('tr').classList.add('table-danger')"><i class="fa-solid fa-xmark"></i></button>
-          </td>`;
-        document.getElementById("tablaReportes").appendChild(row);
-      });
-
-      // Exportar a PDF (simple)
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Reporte de Material Roto", 20, 20);
-      doc.text(`Encargado: ${encargado}`, 20, 30);
-      doc.text(`Fecha límite: ${fecha}`, 20, 40);
-      doc.text(`Equipo: ${alumnos}`, 20, 50);
-      materiales.forEach((mat, i) => {
-        doc.text(`- ${mat} (x${cantidades[i]})`, 20, 60 + i * 10);
-      });
-      doc.save(`Reporte_${encargado}_${fecha}.pdf`);
-    });
-  </script>
+  <script src="../../components/js/Lab/reporte.js"></script>
 </body>
 </html>
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
+?>

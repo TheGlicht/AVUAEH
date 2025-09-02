@@ -1,4 +1,14 @@
-<!-- php de logica de programacion -->
+<!-- php logica de programacion -->
+<?php
+ session_start();
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if(isset($_SESSION['username'])){
+?>
+
 
 <!-- Estructura sitio web -->
 <!DOCTYPE html>
@@ -21,26 +31,8 @@
 
     
   <main class="container mb-5">
-    <div class="row">
-      <!-- Cambio de idioma -->
-      <section class="col-md-6 mb-4">
-        <div class="card p-4 shadow">
-          <h5 class="fw-bold mb-3"><i class="fa-solid fa-language"></i> Idioma</h5>
-          <select class="form-select" id="languageSelect">
-            <option value="es">Español</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-      </section>
-
-      <!-- Tema oscuro -->
-      <section class="col-md-6 mb-4">
-        <div class="card p-4 shadow">
-          <h5 class="fw-bold mb-3"><i class="fa-solid fa-moon"></i> Tema</h5>
-          <button class="btn btn-dark w-100" id="themeToggle">Cambiar a tema oscuro</button>
-        </div>
-      </section>
-
+    <div class="row">    
+      <!-- Aqui se enviaran los reportes a mi correo de Innovater Code -->
       <!-- Contacto con soporte -->
       <section class="col-12 mb-4">
         <div class="card p-4 shadow">
@@ -72,3 +64,9 @@
     <script src="../../components/js/Soporte.js"></script>
 </body>
 </html>
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
+?>

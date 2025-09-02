@@ -32,6 +32,9 @@
     </p>
   </header>
 
+   <!-- Para mostrar mensajes -->
+   <div id="mensajeRegistro" class="mt-3"></div>
+
   <main class="text-center align-items-center">
     <form id="passwordForm" class="form">
       <p class="title">Actualizar Contraseña</p>
@@ -67,10 +70,6 @@
     </form>
   </main>
   
-  <!-- Para mostrar mensajes -->
-  <div id="mensajeRegistro" class="mt-3"></div>
-
-
   <footer class="bg-primary mt-4">
     <p>&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>
   </footer>

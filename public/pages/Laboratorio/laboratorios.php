@@ -1,4 +1,14 @@
 <!-- php logica de programacion -->
+<?php
+ session_start();
+// Evita que el navegador guarde en caché
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+if(isset($_SESSION['username'])){
+?>
+
 
 <!-- Estructutra del sitio web -->
 <!DOCTYPE html>
@@ -138,3 +148,9 @@
 
 </body>
 </html>
+<?php
+} else {
+  header("Location: ../index.php");
+  exit();
+}
+?>

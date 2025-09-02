@@ -1,5 +1,23 @@
+<?php
+// Iniciar sesión si no esta iniciada
+if(session_status() === PHP_SESSION_NONE){
+    session_start();    
+}
+
+// Obtener el username de la sesión o mostrar 'Menu' por defecto
+$username = $_SESSION['username'] ?? 'Menú';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
 <nav class="navbar navbar-expand-sm navbar-light bg-primary">
-    <a class="navbar-brand mx-3 text-white">Menú</a>
+<a id="username-menu" class="navbar-brand mx-3 text-white"><?php echo htmlspecialchars($username); ?></a>
+
     <button
         class="navbar-toggler d-lg-none"
         type="button"
@@ -57,10 +75,30 @@
                             <i class="fa-solid fa-wrench"></i> Soporte
                         </a>
                     </li>
-                    <li><a class="dropdown-item" href="../../index.php"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a></li>
+                    <li>
+                        <a class="dropdown-item" onclick="cerrarSesion()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                        </a>
+                    </li>
+
                 </ul>
             </li>
 
         </ul>
     </div>
+
+    <script>
+        // Función para cerrar sesión modificada para no depender de la API
+        function cerrarSesion() {
+            fetch("../../../resources/api/apiLogout.php")
+                .then(() => {
+                    window.location.href = "../../index.php";
+                })
+                .catch(err => console.warn("Error al cerrar sesión", err));
+        }
+    </script>
+</body>
 </nav>
+</body>
+</html>
+
