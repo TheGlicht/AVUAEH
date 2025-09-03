@@ -74,7 +74,7 @@ if(isset($_SESSION['username'])){
   </div>
 
   <!-- Tabla de eventos registrados -->
-  <div class="container mt-5">
+  <!-- <div class="container mt-5">
     <h2>Eventos Registrados</h2>
     <table class="table">
       <thead>
@@ -84,11 +84,11 @@ if(isset($_SESSION['username'])){
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody id="eventTableBody">
+      <tbody id="eventTableBody"> -->
         <!-- Se llenará desde JS -->
-      </tbody>
+      <!-- </tbody>
     </table>
-  </div>
+  </div> -->
 
 <div class="my-4">
   <br>

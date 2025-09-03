@@ -12,23 +12,53 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 try {
     switch ($action) {
+        // case 'listar':
+        //     $eventos = $eventoDb->getEventosByEmail($_SESSION['username']);
+        //     foreach ($eventos as $ev) {
+        //         echo "<tr data-description='".htmlspecialchars($ev['descripcion'], ENT_QUOTES)."'>
+        //                 <td>{$ev['tituloEvento']}</td>
+        //                 <td>{$ev['fechaEvento']}</td>
+        //                 <td>
+        //                     <button class='btn btn-warning btn-sm me-1 edit-btn' data-id='{$ev['id_evento']}' title='Editar'>
+        //                         <i class='fa-solid fa-pen-to-square'></i>
+        //                     </button>
+        //                     <button class='btn btn-danger btn-sm delete-btn' data-id='{$ev['id_evento']}' title='Eliminar'>
+        //                         <i class='fa-solid fa-trash'></i>
+        //                     </button>
+        //                 </td>
+        //               </tr>";
+        //     }
+        //     break;
+
         case 'listar':
-            $eventos = $eventoDb->getEventosByEmail($_SESSION['username']);
-            foreach ($eventos as $ev) {
-                echo "<tr data-description='".htmlspecialchars($ev['descripcion'], ENT_QUOTES)."'>
-                        <td>{$ev['tituloEvento']}</td>
-                        <td>{$ev['fechaEvento']}</td>
-                        <td>
-                            <button class='btn btn-warning btn-sm me-1 edit-btn' data-id='{$ev['id_evento']}' title='Editar'>
-                                <i class='fa-solid fa-pen-to-square'></i>
-                            </button>
-                            <button class='btn btn-danger btn-sm delete-btn' data-id='{$ev['id_evento']}' title='Eliminar'>
-                                <i class='fa-solid fa-trash'></i>
-                            </button>
-                        </td>
-                      </tr>";
+            $alumnoInfo = $eventoDb->getAlumnoSemestreGrupo($_SESSION['username']);
+            if (!$alumnoInfo) {
+                die(json_encode(['error' => 'Alumno no encontrado']));
             }
+            $semestre = $alumnoInfo['semestre'];
+            $grupo = $alumnoInfo['grupo'];
+        
+            if (empty($semestre) || empty($grupo)) {
+                die(json_encode(['error' => 'Semestre o grupo no definidos para el alumno']));
+            }
+        
+            $eventosAlumno = $eventoDb->getEventosByEmail($_SESSION['username']);
+            $eventosDocente = $eventoDb->getEventosDocentePorSemestreGrupo($semestre, $grupo);
+        
+            foreach ($eventosAlumno as &$ev) {
+                $ev['tipo'] = 'alumno';
+            }
+            foreach ($eventosDocente as &$ev) {
+                $ev['tipo'] = 'docente';
+            }
+        
+            $todosEventos = array_merge($eventosAlumno, $eventosDocente);
+        
+            header('Content-Type: application/json');
+            echo json_encode($todosEventos);
             break;
+        
+        
         
 
             case 'agregar':

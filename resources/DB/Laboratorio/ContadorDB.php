@@ -21,7 +21,7 @@ class ContadorDb {
     }
 
     public function contarSolicitudes(){
-        return $this->countTable('Solicitudes', 'id_solicitud');
+        return $this->countTable('ValesA', 'total');
     }
 
     public function contarPracticas(){ // <- sin 'a' extra

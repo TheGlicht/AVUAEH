@@ -7,6 +7,9 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 if(isset($_SESSION['username'])){
+  require_once dirname(__DIR__, 3) . '/resources/DB/Docente/eventosDB.php';
+  $materiaDb = new MateriasDocente();
+  $materias = $materiaDb->getMateriasDoc($_SESSION['username']);
 ?>
 
 <!-- Estructutra del sitio web -->
@@ -55,18 +58,26 @@ if(isset($_SESSION['username'])){
             <div class="mb-3">
               <label for="eventTitle" class="form-label">Descripción</label>
               <input type="text" class="form-control" id="eventDescription" required>
-            </div>
-            <div class="mb-3">
-              <label for="eventHour" class="form-label">Hora</label>
-              <input type="time" class="form-control" id="eventHour" required>
-            </div>
+            </div>            
             <div class="mb-3">
               <label for="eventMateria" class="form-label">Materia</label>
-              <select name="materia" id="eventMateria" class="form-control" placeholder="Selecciona una..." required></select>
+              <select name="materia" id="eventMateria" class="form-control" placeholder="Selecciona una..." required>
+              <option value="">Seleccione una materia</option>
+                <?php foreach ($materias as $materia): ?>
+                    <option value="<?= htmlspecialchars($materia['id_materias']) ?>">
+                        <?= htmlspecialchars($materia['nombre']) ?> - Semestre <?= htmlspecialchars($materia['semestre']) ?>
+                    </option>
+                <?php endforeach; ?>
+              </select>
             </div>
             <div class="mb-3">
             <label for="eventSemestre" class="form-label">Semestre</label>
-            <select name="semestre" id="eventSemestre" class="form-control" placeholder="Selecciona una..." required></select>
+              <select class="form-select" id="eventSemestre" name="semestre" required>
+                  <option value="">Selecciona</option>
+                  <option value="1">1</option><option value="2">2</option>
+                  <option value="3">3</option><option value="4">4</option>
+                  <option value="5">5</option><option value="6">6</option>
+                </select>
             </div>
             <div class="mb-3">
               <label for="eventGrupo" class="form-label">Grupo</label>
@@ -114,7 +125,7 @@ if(isset($_SESSION['username'])){
     <script src="../../components/js/jquery-3.7.1.js"></script>
     <script src="../../components/js/bootstrap.bundle.min.js"></script>
     <script src="../../components/js/KitFontAwesome.js"></script>
-    <script src="../../components/js/Doc/Calendar.js"></script>
+    <script src="../../components/js/Doc/Calendar2.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </body>
 </html>

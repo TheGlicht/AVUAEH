@@ -102,5 +102,36 @@ class EventoDb {
         return $stmt->execute();
     }
 
+    // ========= Nuevas consultas ==================
+
+    // Funcion para obtener el semestre y grupo del alumno
+    public function getAlumnoSemestreGrupo($username) {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+    
+        $sql = 'SELECT d.semestre, d.grupo 
+                FROM Alumno a
+                JOIN DatosA d ON a.id_alumno = d.id_alumno
+                WHERE a.username = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute([$username]);
+        return $stmt->fetch(PDO::FETCH_ASSOC); // ['semestre' => ..., 'grupo' => ...]
+    }
+      
+
+    // Funcion para obtener los eventos que coincidan
+    public function getEventosDocentePorSemestreGrupo($semestre, $grupo) {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+    
+        $sql = 'SELECT e.id_eventoD AS id_evento, e.tituloEventoD AS tituloEvento, e.descripcionD AS descripcion, e.fechaEventoD AS fechaEvento
+                FROM EventosD e
+                WHERE e.semestre = ? AND e.grupo = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute([$semestre, $grupo]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
 }
 ?>

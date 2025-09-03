@@ -38,33 +38,86 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Función principal para cargar y mostrar eventos
+    // function loadAndDisplayEvents() {
+    //     fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
+    //         .then(response => response.text())
+    //         .then(html => {
+    //             // Actualizar la tabla de eventos
+    //             document.getElementById('eventTableBody').innerHTML = html;
+                
+    //             // Extraer eventos del HTML
+    //             const events = parseEventsFromTable();
+                
+    //             // Limpiar y actualizar calendario
+    //             calendar.getEvents().forEach(event => event.remove());
+                
+    //             events.forEach(ev => {
+    //                 calendar.addEvent({
+    //                     id: ev.id,
+    //                     title: ev.title,
+    //                     start: ev.start,
+    //                     allDay: true,
+    //                     description: ev.description // Asegúrate que tu API devuelva esto
+    //                 });
+    //             });
+    //         })
+    //         .catch(error => console.error('Error al cargar eventos:', error));
+    // }
+
     function loadAndDisplayEvents() {
         fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
-            .then(response => response.text())
-            .then(html => {
-                // Actualizar la tabla de eventos
-                document.getElementById('eventTableBody').innerHTML = html;
-                
-                // Extraer eventos del HTML
-                const events = parseEventsFromTable();
-                
-                // Limpiar y actualizar calendario
+            .then(response => response.json())
+            .then(events => {
                 calendar.getEvents().forEach(event => event.remove());
-                
+    
                 events.forEach(ev => {
                     calendar.addEvent({
-                        id: ev.id,
-                        title: ev.title,
-                        start: ev.start,
+                        id: ev.id_evento,
+                        title: ev.tituloEvento,
+                        start: ev.fechaEvento,
                         allDay: true,
-                        description: ev.description // Asegúrate que tu API devuelva esto
+                        description: ev.descripcion || '',
+                        tipo: ev.tipo, // guardamos el tipo para usarlo luego
+                        color: ev.tipo === 'docente' ? 'yellow' : 'blue' // amarillo para docente, azul para alumno
                     });
                 });
             })
             .catch(error => console.error('Error al cargar eventos:', error));
     }
+    
+    
 
     // Configuración e inicialización del calendario
+    // calendar = new FullCalendar.Calendar(calendarEl, {
+    //     initialView: 'dayGridMonth',
+    //     selectable: true,
+    //     headerToolbar: {
+    //         left: 'prev,next today',
+    //         center: 'title',
+    //         right: ''
+    //     },
+    //     dateClick(info) {
+    //         // Configurar modal para nuevo evento
+    //         eventIdInput.value = '';
+    //         eventTitleInput.value = '';
+    //         eventDescriptionInput.value = '';
+    //         eventDateInput.value = info.dateStr;
+    //         deleteEventBtn.classList.add('d-none');
+    //         eventModal.show();
+    //         document.getElementById('eventModalLabel').textContent = 'Agregar Evento';
+    //     },
+    //     eventClick(info) {
+    //         // Configurar modal para editar evento
+    //         eventIdInput.value = info.event.id;
+    //         eventTitleInput.value = info.event.title;
+    //         eventDescriptionInput.value = info.event.extendedProps.description || ''; // Asegúrate de que esto esté correcto
+    //         eventDateInput.value = info.event.startStr.split('T')[0];
+    //         deleteEventBtn.classList.remove('d-none');
+    //         eventModal.show();
+    //         document.getElementById('eventModalLabel').textContent = 'Editar Evento';
+    //     }        
+    // });
+
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
@@ -74,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
             right: ''
         },
         dateClick(info) {
-            // Configurar modal para nuevo evento
+            // Solo permitir agregar eventos propios
             eventIdInput.value = '';
             eventTitleInput.value = '';
             eventDescriptionInput.value = '';
@@ -84,16 +137,35 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('eventModalLabel').textContent = 'Agregar Evento';
         },
         eventClick(info) {
-            // Configurar modal para editar evento
-            eventIdInput.value = info.event.id;
-            eventTitleInput.value = info.event.title;
-            eventDescriptionInput.value = info.event.extendedProps.description || ''; // Asegúrate de que esto esté correcto
-            eventDateInput.value = info.event.startStr.split('T')[0];
-            deleteEventBtn.classList.remove('d-none');
-            eventModal.show();
-            document.getElementById('eventModalLabel').textContent = 'Editar Evento';
-        }        
+            const event = info.event;
+            eventIdInput.value = event.id;
+            eventTitleInput.value = event.title;
+            eventDescriptionInput.value = event.extendedProps.description || '';
+            eventDateInput.value = event.startStr.split('T')[0];
+    
+            if (event.extendedProps.tipo === 'docente') {
+                // Evento docente: solo lectura, no mostrar botones de eliminar ni permitir editar
+                deleteEventBtn.classList.add('d-none');
+                eventTitleInput.setAttribute('readonly', true);
+                eventDescriptionInput.setAttribute('readonly', true);
+                eventDateInput.setAttribute('readonly', true);
+                // Deshabilitar botón guardar
+                document.getElementById('saveEvent').style.display = 'none';
+                eventModal.show();
+                document.getElementById('eventModalLabel').textContent = 'Evento Docente (Solo lectura)';
+            } else {
+                // Evento alumno: permitir editar y eliminar
+                deleteEventBtn.classList.remove('d-none');
+                eventTitleInput.removeAttribute('readonly');
+                eventDescriptionInput.removeAttribute('readonly');
+                eventDateInput.removeAttribute('readonly');
+                document.getElementById('saveEvent').style.display = 'inline-block';
+                eventModal.show();
+                document.getElementById('eventModalLabel').textContent = 'Editar Evento';
+            }
+        }
     });
+    
 
     // Renderizar calendario
     calendar.render();

@@ -20,7 +20,7 @@ if(isset($_SESSION['username'])){
     // Lee de la BD (maneja ausencias con ?? 0)
     try {
         $r = $db->contarPracticas();   $c_practicas   = (int)($r['id_practica']  ?? 0);
-        $r = $db->contarSolicitudes(); $c_solicitudes = (int)($r['id_solicitud'] ?? 0);
+        $r = $db->contarSolicitudes();  $c_solicitudes = (int)($r['total'] ?? 0);
         $r = $db->contarMaterial();    $c_materiales  = (int)($r['id_material']  ?? 0);
         $r = $db->contarDanos();       $c_reportes    = (int)($r['id_dano']      ?? 0);
     } catch (Throwable $e) {
