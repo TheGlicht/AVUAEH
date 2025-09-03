@@ -9,7 +9,8 @@
     <link rel="icon" type="icon" href="../components/assets/Garza/Garza3.png" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-primary">
+
+    <nav class="navbar navbar-expand-sm navbar-light bg-warning">
         <a class="navbar-brand mx-3 text-white">A crear una cuenta!!</a>
         <button
         class="navbar-toggler d-lg-none"
@@ -36,7 +37,7 @@
         </div>
       </nav>
       <header class="container text-center mt-5 mb-3">
-        <h1 class="fw-bold text-primary">Agenda Virtual UAEH</h1>
+        <h1 class="fw-bold text-danger">Agenda Virtual UAEH</h1>
         <p class="lead text-secondary">
             Regístrate utilizando tu correo institucional y una contraseña nueva, 
             para poder acceder a diversas funciones que facilitaran tus actividades 
@@ -50,7 +51,7 @@
     <!-- Formulario para registrarse -->
       <main class="text-center align-items-center">
         <form id="registroForm" class="form">
-            <p class="title">Registro </p>
+            <p class="title text-danger">Registro </p>
                 <div class="flex">
                 <label>
                   <input id="username" class="input" type="text" placeholder="" required />
@@ -85,12 +86,12 @@
                 <i class="fa-solid fa-eye toggle-password" data-target="confirmPassword"></i>
               </label>
               
-            <button class="submit">Submit</button>
+            <button class="submit bg-danger">Submit</button>
         </form>      
 
       </main>        
 
-      <footer class="bg-primary">
+      <footer class="bg-warning">
         <p>&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>
       </footer>  
     

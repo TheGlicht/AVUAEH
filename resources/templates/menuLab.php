@@ -15,7 +15,7 @@ $username = $_SESSION['username'] ?? 'Menú';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-light bg-primary">
+<nav class="navbar navbar-expand-sm navbar-light bg-warning">
 <a id="username-menu" class="navbar-brand mx-3 text-white"><?php echo htmlspecialchars($username); ?></a>
 
     <button

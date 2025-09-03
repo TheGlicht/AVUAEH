@@ -28,7 +28,7 @@ if(isset($_SESSION['username'])) {
 </head>
 <body>
 <header class="container text-center mt-5 mb-3">
-  <h1 class="fw-bold text-primary"><i class="fa-solid fa-circle-user"></i> Perfil Alumno</h1>
+  <h1 class="fw-bold text-danger"><i class="fa-solid fa-circle-user"></i> Perfil Alumno</h1>
 </header>
 
 <div class="container my-5" style="max-width: 900px;">

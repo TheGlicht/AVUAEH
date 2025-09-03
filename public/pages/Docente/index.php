@@ -32,7 +32,7 @@ if(isset($_SESSION['username'])){
 <body>
     <?php include '../../../resources/templates/menuDocente.php';?>
     <header class="container text-center mt-5 mb-3">
-    <h1 class="fw-bold text-primary"><i class="fa-solid fa-calendar-days"></i> Calendario Alumnos</h1>
+    <h1 class="fw-bold text-danger"><i class="fa-solid fa-calendar-days"></i> Calendario Alumnos</h1>
   </header>
 
   <!-- Calendario -->

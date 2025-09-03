@@ -1,7 +1,6 @@
-<!-- php de logica de programacion -->
+<!-- php logica de programacion -->
 <?php
-session_start();
-
+ session_start();
 // Evita que el navegador guarde en caché
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -26,28 +25,27 @@ if(isset($_SESSION['username'])){
     <?php include '../../../resources/templates/menuDocente.php';?>
   
       <header class="container text-center mt-5 mb-3">
-        <h1 class="fw-bold text-primary"><i class="fa-solid fa-wrench"></i> Soporte</h1>        
+        <h1 class="fw-bold text-danger"><i class="fa-solid fa-wrench"></i> Soporte</h1>        
       </header>
 
     
   <main class="container mb-5">
-    <div class="row">
-      <!-- Aqui se enviaran los reportes con mi correo de InnovaterCode -->
+    <div class="row">    
+      <!-- Aqui se enviaran los reportes a mi correo de Innovater Code -->
       <!-- Contacto con soporte -->
       <section class="col-12 mb-4">
         <div class="card p-4 shadow">
           <h5 class="fw-bold mb-3"><i class="fa-solid fa-envelope"></i> Contacto con soporte técnico</h5>
-          <form>
-            <div class="mb-3">
-              <label for="email" class="form-label">Tu correo:</label>
-              <input type="email" class="form-control" id="email" placeholder="tucorreo@ejemplo.com" required>
-            </div>
+          <form id="supportForm">
             <div class="mb-3">
               <label for="message" class="form-label">Mensaje:</label>
-              <textarea class="form-control" id="message" rows="4" placeholder="Describe tu problema o sugerencia" required></textarea>
+              <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary w-100">Enviar mensaje</button>
           </form>
+        <div id="responseMsg" class="mt-3"></div>
+
+
         </div>
       </section>
     </div>
@@ -61,7 +59,38 @@ if(isset($_SESSION['username'])){
     <script src="../../components/js/jquery-3.7.1.js"></script>
     <script src="../../components/js/bootstrap.bundle.min.js"></script>
     <script src="../../components/js/KitFontAwesome.js"></script>
-    <script src="../../components/js/Alu/Soporte.js"></script>
+    <!-- <script src="../../components/js/Soporte.js"></script> -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('supportForm');
+    const responseMsg = document.getElementById('responseMsg');
+  
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+  
+      const formData = new FormData(form);
+  
+      fetch('../../../resources/api/Soporte/apiSoporte.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.text())
+      .then(data => {
+        if (data.trim() === "OK") {
+          responseMsg.innerHTML = '<div class="alert alert-success">✅ Mensaje enviado correctamente</div>';
+          form.reset();
+        } else {
+          responseMsg.innerHTML = '<div class="alert alert-danger">❌ Error: ' + data + '</div>';
+        }
+      })
+      .catch(err => {
+        responseMsg.innerHTML = '<div class="alert alert-danger">⚠️ Error de red</div>';
+      });
+    });
+  });
+  
+</script>
+
 </body>
 </html>
 <?php

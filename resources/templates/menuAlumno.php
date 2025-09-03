@@ -18,7 +18,7 @@ $username = $_SESSION['username'] ?? 'Menú';
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-primary">
+    <nav class="navbar navbar-expand-sm navbar-light bg-warning">
         <a id="username-menu" class="navbar-brand mx-3 text-white"><?php echo htmlspecialchars($username); ?></a>
         <button
             class="navbar-toggler d-lg-none"

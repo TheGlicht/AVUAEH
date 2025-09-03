@@ -9,7 +9,7 @@
   <link rel="icon" type="icon" href="../components/assets/Garza/Garza3.png" />
 </head>
 <body>
-  <nav class="navbar navbar-expand-sm navbar-light bg-primary">
+  <nav class="navbar navbar-expand-sm navbar-light bg-warning">
     <a class="navbar-brand mx-3 text-white">¿Olvidaste tu contraseña?</a>
     <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse"
       data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
@@ -26,7 +26,7 @@
   </nav>
 
   <header class="container text-center mt-5 mb-3">
-    <h1 class="fw-bold text-primary">Recuperación de Contraseña</h1>
+    <h1 class="fw-bold text-danger">Recuperación de Contraseña</h1>
     <p class="lead text-secondary">
       Restablece tu contraseña ingresando tu correo institucional y eligiendo una nueva clave segura.
     </p>
@@ -37,7 +37,7 @@
 
   <main class="text-center align-items-center">
     <form id="passwordForm" class="form">
-      <p class="title">Actualizar Contraseña</p>
+      <p class="title text-danger">Actualizar Contraseña</p>
 
       <label>
         <select id="rol" class="input" required>
@@ -66,11 +66,11 @@
         <i class="fa-solid fa-eye toggle-password" data-target="CNewPassword"></i>
       </label>
 
-      <button class="submit" id="btnActualizar type="submit">Actualizar</button>
+      <button class="submit bg-danger" id="btnActualizar type="submit">Actualizar</button>
     </form>
   </main>
   
-  <footer class="bg-primary mt-4">
+  <footer class="bg-warning mt-4">
     <p>&copy; 2023 Innovater Code Company. Todos los derechos reservados.</p>
   </footer>
 

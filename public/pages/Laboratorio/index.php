@@ -43,7 +43,7 @@ if(isset($_SESSION['username'])){
   <?php include '../../../resources/templates/menuLab.php';?>
 
   <div class="container mt-4">
-    <h2 class="mb-4 text-center">Panel Principal - Laboratorios</h2>
+    <h2 class="mb-4 text-center text">Panel Principal - Laboratorios</h2>
     <br>
 
     <div class="row g-4">

@@ -31,7 +31,7 @@ if(isset($_SESSION['username'])){
   <?php include '../../../resources/templates/menuAlumno.php';?>
 
   <header class="container text-center mt-5 mb-3">
-    <h1 class="fw-bold text-primary"><i class="fa-solid fa-house"></i> Home</h1>
+    <h1 class="fw-bold text-danger"><i class="fa-solid fa-house"></i> Home</h1>
   </header>
 
   <!-- Calendario -->

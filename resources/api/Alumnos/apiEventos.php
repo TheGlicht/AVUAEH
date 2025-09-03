@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/../../DB/Alumno/eventosDB.php';
+// require_once __DIR__ . '/notificarEventos.php';
 
 // Verificar autenticación
 if(!isset($_SESSION['username'])) {

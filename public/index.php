@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="icon" href="./components/assets/Garza/Garza3.png">
+    <!-- <link rel="stylesheet" href="./components/css/uaeh-theme"> -->
     <link rel="stylesheet" href="./components/css/style.css">
   
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-light bg-warning">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="./components/assets/Garza/Garza3.png" alt="Logo UAEH" width="40" height="40" class="me-2">
@@ -39,7 +40,7 @@
 
     <main class="container my-5">
         <div class="text-center mb-5">
-            <h1 class="fw-bold text-primary">Bienvenido a la Agenda Virtual</h1>
+            <h1 class="fw-bold text-danger">Bienvenido a la Agenda Virtual</h1>
             <p class="lead text-muted">
                 Selecciona tu rol para acceder a la plataforma educativa de la UAEH
             </p>
@@ -51,7 +52,7 @@
         <div class="role-selector" id="roleSelector">
             <div class="role-card card" data-role="Alumno" id="Alumno">
                 <div class="card-body">
-                    <div class="role-icon">
+                    <div class="role-icon text-danger">
                         <i class="fas fa-user-graduate"></i>
                     </div>
                     <h3 class="role-title">Alumno</h3>
@@ -61,9 +62,9 @@
             
             <div class="role-card card" data-role="Docente" id="Docente">
                 <div class="card-body">
-                    <div class="role-icon">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
+                <div class="role-icon text-danger">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
                     <h3 class="role-title">Profesor</h3>
                     <p>Gestiona tus cursos, asistencias y materiales</p>
                 </div>
@@ -71,8 +72,8 @@
             
             <div class="role-card card" data-role="Laboratorio" id="Laboratorio">
                 <div class="card-body">
-                    <div class="role-icon">
-                        <i class="fas fa-flask"></i>
+                <div class="role-icon text-danger">
+                <i class="fas fa-flask"></i>
                     </div>
                     <h3 class="role-title">Laboratorio</h3>
                     <p>Administra recursos y reservas de espacios</p>
@@ -82,7 +83,7 @@
         
         <div id="loginContainer" class="login-container">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-danger">
                     <h2 id="loginTitle">Iniciar Sesión</h2>
                 </div>
                 <div class="login-form">
@@ -101,7 +102,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-submit">Iniciar Sesión</button>
+                        <button type="submit" class="btn btn-submit bg-warning">Iniciar Sesión</button>
                         <button type="button" id="backButton" class="btn btn-submit back-btn">
                             <i class="fas fa-arrow-left me-2"></i> Volver
                         </button>
@@ -112,7 +113,7 @@
 
     </main>
 
-    <footer class="bg-primary text-white py-4">
+    <footer class="bg-warning text-white py-4">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">

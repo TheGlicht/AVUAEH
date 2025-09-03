@@ -1,0 +1,64 @@
+/* Paleta UAEH */
+:root {
+    --uaeh-rojo: #B91116;
+    --uaeh-rojo-oscuro: #511013;
+    --uaeh-rojo-medio: #841816;
+    --uaeh-naranja: #E24622;
+    --uaeh-naranja-claro: #E8641C;
+    --uaeh-dorado: #F8B688;
+  }
+  
+  /* Navbar */
+  .navbar.uaeh-theme {
+    background-color: var(--uaeh-rojo) !important;
+  }
+  .navbar.uaeh-theme .nav-link,
+  .navbar.uaeh-theme .navbar-brand {
+    color: #fff !important;
+  }
+  .navbar.uaeh-theme .nav-link:hover {
+    color: var(--uaeh-dorado) !important;
+  }
+  
+  /* Botones principales */
+  .btn-submit {
+    background-color: var(--uaeh-rojo-medio);
+    border: none;
+    color: white;
+    transition: 0.3s ease-in-out;
+  }
+  .btn-submit:hover {
+    background-color: var(--uaeh-naranja);
+  }
+  
+  /* Encabezados */
+  h1, h2, h3, .fw-bold.text-primary {
+    color: var(--uaeh-rojo) !important;
+  }
+  .lead.text-muted,
+  .lead.text-secondary {
+    color: var(--uaeh-naranja-claro) !important;
+  }
+  
+  /* Tarjetas de roles */
+  .role-card {
+    border: 2px solid var(--uaeh-rojo-oscuro);
+    transition: 0.3s ease-in-out;
+  }
+  .role-card:hover {
+    border-color: var(--uaeh-naranja);
+    transform: scale(1.02);
+  }
+  
+  /* Footer */
+  footer.uaeh-theme {
+    background-color: var(--uaeh-rojo-medio);
+    color: #fff;
+  }
+  footer.uaeh-theme a {
+    color: var(--uaeh-dorado);
+  }
+  footer.uaeh-theme a:hover {
+    color: var(--uaeh-naranja);
+  }
+  

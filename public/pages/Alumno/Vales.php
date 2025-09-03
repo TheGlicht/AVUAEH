@@ -168,7 +168,7 @@ try {
 
   <main class="container py-4">
     <header class="text-center mb-4">
-      <h1 class="fw-bold text-primary"><i class="fa-solid fa-flask-vial"></i> Vales</h1>
+      <h1 class="fw-bold text-danger"><i class="fa-solid fa-flask-vial"></i> Vales</h1>
     </header>
 
     <?php if (!empty($_SESSION['error_vales'])): ?>

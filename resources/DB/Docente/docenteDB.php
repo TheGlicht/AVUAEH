@@ -63,20 +63,20 @@ class DocenteDb {
     // Funcion para actualizar contraseña
     public function updatePasDocente($email, $pass){
         $conexion = Conexion::getInstancia();
-        $dnh = $conexion->getDbh();
-        try{;
-            $consulta = 'SELECT pass FROM Docentes WHERE email = ?';
+        $dbh = $conexion->getDbh();  // corregido $dnh a $dbh
+        try {
+            $consulta = 'UPDATE Docentes SET pass = ? WHERE email = ?';
             $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $email);
+            $stmt->bindParam(1, $pass);
+            $stmt->bindParam(2, $email);
             $stmt->execute();
-            $resultado = $stmt->fetch(POD::FETCH_ASSOC);
-            return $resultado['pass'] ?? null;
             $dbh = null;
-        } catch (PDOException $e){
-            throw new Exception("Error a actualizar contraseña");
+            return true; // o algún indicador de éxito
+        } catch (PDOException $e) {
+            throw new Exception("Error al actualizar contraseña: " . $e->getMessage());
         }
     }
-
+    
     // Funcion para obtener la contraseña por email
     public function getPasswordByEmail($email){
         $conexion = Conexion::getInstancia();

@@ -26,7 +26,7 @@ if(isset($_SESSION['username'])){
 <?php include '../../../resources/templates/menuAlumno.php'; ?>
 
 <header class="container text-center mt-5 mb-3">
-  <h1 class="fw-bold text-primary"><i class="fa-solid fa-book"></i> Materias</h1>
+  <h1 class="fw-bold text-danger"><i class="fa-solid fa-book"></i> Materias</h1>
   <p class="text-muted">Agrega materias, registra tus calificaciones y verifica tu promedio</p>
 </header>
 

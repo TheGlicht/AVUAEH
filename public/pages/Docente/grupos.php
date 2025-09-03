@@ -30,7 +30,7 @@ if(isset($_SESSION['username'])){
 <body>
     <?php include '../../../resources/templates/menuDocente.php';?>
     <header class="container text-center mt-5 mb-3">
-      <h1 class="fw-bold text-primary"><i class="fa-solid fa-people-group"></i> Grupos</h1>
+      <h1 class="fw-bold text-danger"><i class="fa-solid fa-people-group"></i> Grupos</h1>
     </header>
 
     <div class="container mb-5">
