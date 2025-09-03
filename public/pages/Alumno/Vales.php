@@ -160,6 +160,8 @@ try {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="../../components/css/bootstrap.min.css">
   <link rel="stylesheet" href="../../components/css/styleVales.css">
+  <link rel="icon" type="icon" href="../../components/assets/Garza/Garza3.png" />
+
 </head>
 <body>
   <?php include '../../../resources/templates/menuAlumno.php';?>
