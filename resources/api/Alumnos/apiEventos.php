@@ -30,6 +30,34 @@ try {
         //     }
         //     break;
 
+        // case 'listar':
+        //     $alumnoInfo = $eventoDb->getAlumnoSemestreGrupo($_SESSION['username']);
+        //     if (!$alumnoInfo) {
+        //         die(json_encode(['error' => 'Alumno no encontrado']));
+        //     }
+        //     $semestre = $alumnoInfo['semestre'];
+        //     $grupo = $alumnoInfo['grupo'];
+        
+        //     if (empty($semestre) || empty($grupo)) {
+        //         die(json_encode(['error' => 'Semestre o grupo no definidos para el alumno']));
+        //     }
+        
+        //     $eventosAlumno = $eventoDb->getEventosByEmail($_SESSION['username']);
+        //     $eventosDocente = $eventoDb->getEventosDocentePorSemestreGrupo($semestre, $grupo);
+        
+        //     foreach ($eventosAlumno as &$ev) {
+        //         $ev['tipo'] = 'alumno';
+        //     }
+        //     foreach ($eventosDocente as &$ev) {
+        //         $ev['tipo'] = 'docente';
+        //     }
+        
+        //     $todosEventos = array_merge($eventosAlumno, $eventosDocente);
+        
+        //     header('Content-Type: application/json');
+        //     echo json_encode($todosEventos);
+        //     break;
+        
         case 'listar':
             $alumnoInfo = $eventoDb->getAlumnoSemestreGrupo($_SESSION['username']);
             if (!$alumnoInfo) {
@@ -44,6 +72,7 @@ try {
         
             $eventosAlumno = $eventoDb->getEventosByEmail($_SESSION['username']);
             $eventosDocente = $eventoDb->getEventosDocentePorSemestreGrupo($semestre, $grupo);
+            $eventosPracticas = $eventoDb->getPracticasPorSemestreGrupo($semestre, $grupo);
         
             foreach ($eventosAlumno as &$ev) {
                 $ev['tipo'] = 'alumno';
@@ -51,13 +80,15 @@ try {
             foreach ($eventosDocente as &$ev) {
                 $ev['tipo'] = 'docente';
             }
+            foreach ($eventosPracticas as &$ev) {
+                $ev['tipo'] = 'laboratorio';
+            }
         
-            $todosEventos = array_merge($eventosAlumno, $eventosDocente);
+            $todosEventos = array_merge($eventosAlumno, $eventosDocente, $eventosPracticas);
         
             header('Content-Type: application/json');
             echo json_encode($todosEventos);
             break;
-        
         
         
 

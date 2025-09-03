@@ -118,7 +118,6 @@ class EventoDb {
         return $stmt->fetch(PDO::FETCH_ASSOC); // ['semestre' => ..., 'grupo' => ...]
     }
       
-
     // Funcion para obtener los eventos que coincidan
     public function getEventosDocentePorSemestreGrupo($semestre, $grupo) {
         $conexion = Conexion::getInstancia();
@@ -131,7 +130,28 @@ class EventoDb {
         $stmt->execute([$semestre, $grupo]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
+    // ================= Consultas lab ===============
+
+    // Obtener prácticas que coincidan con semestre y grupo
+public function getPracticasPorSemestreGrupo($semestre, $grupo) {
+    $conexion = Conexion::getInstancia();
+    $dbh = $conexion->getDbh();
+
+    $sql = 'SELECT p.id_practica AS id_evento,
+                   COALESCE(m.nombre, "Práctica") AS tituloEvento,
+                   CONCAT("Laboratorio ID: ", p.id_lab, " — Docente: ", COALESCE(d.nombreCompleto, "")) AS descripcion,
+                   p.fecha AS fechaEvento
+            FROM Practicas p
+            LEFT JOIN Materias m ON p.id_materias = m.id_materias
+            LEFT JOIN Docentes d ON p.id_docente = d.id_docente
+            WHERE p.semestre = ? AND p.grupo = ?';
+    $stmt = $dbh->prepare($sql);
+    $stmt->execute([$semestre, $grupo]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 
 }
 ?>

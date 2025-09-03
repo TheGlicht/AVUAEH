@@ -1,6 +1,4 @@
-// Archivo: CalendarJS.js
-// Versión mejorada con cierre automático de modal y actualización en tiempo real
-
+// Archivo: CalendarJS.js (reemplazar)
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     let calendar;
@@ -14,109 +12,48 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventIdInput = document.getElementById('eventId');
     const deleteEventBtn = document.getElementById('deleteEventBtn');
 
-    // Función para parsear eventos desde la tabla HTML
-    function parseEventsFromTable() {
-        const rows = document.querySelectorAll('#eventTableBody tr');
-        const events = [];
-        
-        rows.forEach(row => {
-            const title = row.cells[0].textContent;
-            const date = row.cells[1].textContent;
-            const id = row.querySelector('button')?.getAttribute('data-id');
-            
-            if (id) {
-                events.push({
-                    id: id,
-                    title: title,
-                    start: date,
-                    allDay: true
-                });
-            }
-        });
-        
-        return events;
-    }
-
-    // Función principal para cargar y mostrar eventos
-    // function loadAndDisplayEvents() {
-    //     fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
-    //         .then(response => response.text())
-    //         .then(html => {
-    //             // Actualizar la tabla de eventos
-    //             document.getElementById('eventTableBody').innerHTML = html;
-                
-    //             // Extraer eventos del HTML
-    //             const events = parseEventsFromTable();
-                
-    //             // Limpiar y actualizar calendario
-    //             calendar.getEvents().forEach(event => event.remove());
-                
-    //             events.forEach(ev => {
-    //                 calendar.addEvent({
-    //                     id: ev.id,
-    //                     title: ev.title,
-    //                     start: ev.start,
-    //                     allDay: true,
-    //                     description: ev.description // Asegúrate que tu API devuelva esto
-    //                 });
-    //             });
-    //         })
-    //         .catch(error => console.error('Error al cargar eventos:', error));
-    // }
-
+    // Carga y pinta eventos (robusto ante respuestas no-JSON)
     function loadAndDisplayEvents() {
         fetch('../../../resources/api/Alumnos/apiEventos.php?action=listar')
-            .then(response => response.json())
-            .then(events => {
-                calendar.getEvents().forEach(event => event.remove());
-    
+            .then(response => response.text())
+            .then(text => {
+                let events;
+                try {
+                    events = JSON.parse(text);
+                } catch (err) {
+                    console.error('Respuesta del servidor no es JSON:', text);
+                    return; // no procesamos más
+                }
+
+                if (!Array.isArray(events)) {
+                    if (events && events.error) {
+                        console.error('API error:', events.error);
+                    } else {
+                        console.error('Respuesta inesperada de la API:', events);
+                    }
+                    return;
+                }
+
+                // Limpiar calendario antes de añadir
+                calendar.getEvents().forEach(ev => ev.remove());
+
                 events.forEach(ev => {
+                    // Normalizar start (en tu API restos devuelven fechaEvento)
+                    const start = ev.fechaEvento || ev.fecha || ev.start || '';
+
                     calendar.addEvent({
                         id: ev.id_evento,
                         title: ev.tituloEvento,
-                        start: ev.fechaEvento,
+                        start: start,
                         allDay: true,
                         description: ev.descripcion || '',
-                        tipo: ev.tipo, // guardamos el tipo para usarlo luego
-                        color: ev.tipo === 'docente' ? 'yellow' : 'blue' // amarillo para docente, azul para alumno
+                        tipo: ev.tipo || 'alumno',
+                        color: ev.tipo === 'docente' ? 'yellow' : (ev.tipo === 'laboratorio' ? 'green' : 'blue')
                     });
                 });
             })
             .catch(error => console.error('Error al cargar eventos:', error));
     }
-    
-    
-
-    // Configuración e inicialización del calendario
-    // calendar = new FullCalendar.Calendar(calendarEl, {
-    //     initialView: 'dayGridMonth',
-    //     selectable: true,
-    //     headerToolbar: {
-    //         left: 'prev,next today',
-    //         center: 'title',
-    //         right: ''
-    //     },
-    //     dateClick(info) {
-    //         // Configurar modal para nuevo evento
-    //         eventIdInput.value = '';
-    //         eventTitleInput.value = '';
-    //         eventDescriptionInput.value = '';
-    //         eventDateInput.value = info.dateStr;
-    //         deleteEventBtn.classList.add('d-none');
-    //         eventModal.show();
-    //         document.getElementById('eventModalLabel').textContent = 'Agregar Evento';
-    //     },
-    //     eventClick(info) {
-    //         // Configurar modal para editar evento
-    //         eventIdInput.value = info.event.id;
-    //         eventTitleInput.value = info.event.title;
-    //         eventDescriptionInput.value = info.event.extendedProps.description || ''; // Asegúrate de que esto esté correcto
-    //         eventDateInput.value = info.event.startStr.split('T')[0];
-    //         deleteEventBtn.classList.remove('d-none');
-    //         eventModal.show();
-    //         document.getElementById('eventModalLabel').textContent = 'Editar Evento';
-    //     }        
-    // });
 
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -142,17 +79,17 @@ document.addEventListener('DOMContentLoaded', function() {
             eventTitleInput.value = event.title;
             eventDescriptionInput.value = event.extendedProps.description || '';
             eventDateInput.value = event.startStr.split('T')[0];
-    
-            if (event.extendedProps.tipo === 'docente') {
-                // Evento docente: solo lectura, no mostrar botones de eliminar ni permitir editar
+
+            // TRATAMIENTO: docente o laboratorio => SOLO LECTURA
+            if (event.extendedProps.tipo === 'docente' || event.extendedProps.tipo === 'laboratorio') {
                 deleteEventBtn.classList.add('d-none');
                 eventTitleInput.setAttribute('readonly', true);
                 eventDescriptionInput.setAttribute('readonly', true);
                 eventDateInput.setAttribute('readonly', true);
-                // Deshabilitar botón guardar
                 document.getElementById('saveEvent').style.display = 'none';
                 eventModal.show();
-                document.getElementById('eventModalLabel').textContent = 'Evento Docente (Solo lectura)';
+                document.getElementById('eventModalLabel').textContent = 
+                    event.extendedProps.tipo === 'laboratorio' ? 'Evento Laboratorio (Solo lectura)' : 'Evento Docente (Solo lectura)';
             } else {
                 // Evento alumno: permitir editar y eliminar
                 deleteEventBtn.classList.remove('d-none');
@@ -165,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
 
     // Renderizar calendario
     calendar.render();
@@ -222,75 +158,77 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
    // Manejar eliminación de evento
-deleteEventBtn.addEventListener('click', () => {
-    const id = eventIdInput.value;
-    if (!id || !confirm('¿Está seguro que desea eliminar este evento?')) return;
+   deleteEventBtn.addEventListener('click', () => {
+       const id = eventIdInput.value;
+       if (!id || !confirm('¿Está seguro que desea eliminar este evento?')) return;
 
-    const formData = new FormData();
-    formData.append('action', 'eliminar');
-    formData.append('id_evento', id);
+       const formData = new FormData();
+       formData.append('action', 'eliminar');
+       formData.append('id_evento', id);
 
-    fetch('../../../resources/api/Alumnos/apiEventos.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(result => {
-        if (result === "OK") {
-            loadAndDisplayEvents(); // Actualizar vista
-            eventModal.hide(); // Cerrar modal
-        } else {
-            alert('Error al eliminar: ' + result);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
+       fetch('../../../resources/api/Alumnos/apiEventos.php', {
+           method: 'POST',
+           body: formData
+       })
+       .then(response => response.text())
+       .then(result => {
+           if (result === "OK") {
+               loadAndDisplayEvents(); // Actualizar vista
+               eventModal.hide(); // Cerrar modal
+           } else {
+               alert('Error al eliminar: ' + result);
+           }
+       })
+       .catch(error => console.error('Error:', error));
+   });
 
+    // Delegación de eventos para la tabla (solo si existe la tabla en el DOM)
+    const eventTableBody = document.getElementById('eventTableBody');
+    if (eventTableBody) {
+        eventTableBody.addEventListener('click', function(e) {
+            const target = e.target;
+            
+            // Manejar clic en botones de editar
+            if (target.classList.contains('edit-btn')) {
+                const row = target.closest('tr');
+                const id = target.getAttribute('data-id');
+                const title = row.cells[0].textContent;
+                const description = row.getAttribute('data-description') || '';
+                const date = row.cells[1].textContent;
 
-    // Delegación de eventos para la tabla
-    document.getElementById('eventTableBody').addEventListener('click', function(e) {
-        const target = e.target;
-        
-        // Manejar clic en botones de editar
-        if (target.classList.contains('edit-btn')) {
-            const row = target.closest('tr');
-            const id = target.getAttribute('data-id');
-            const title = row.cells[0].textContent;
-            const description = row.getAttribute('data-description') || '';
-            const date = row.cells[1].textContent;
+                eventIdInput.value = id;
+                eventTitleInput.value = title;
+                eventDescriptionInput.value = description;
+                eventDateInput.value = date;
+                deleteEventBtn.classList.remove('d-none');
+                eventModal.show();
+                document.getElementById('eventModalLabel').textContent = 'Editar Evento';
+            } 
+            // Manejar clic en botones de eliminar
+            else if (target.classList.contains('delete-btn')) {
+                const id = target.getAttribute('data-id');
+                if (id && confirm('¿Seguro que desea eliminar este evento permanentemente?')) {
+                    const formData = new FormData();
+                    formData.append('action', 'eliminar');
+                    formData.append('id_evento', id);
 
-            eventIdInput.value = id;
-            eventTitleInput.value = title;
-            eventDescriptionInput.value = description;
-            eventDateInput.value = date;
-            deleteEventBtn.classList.remove('d-none');
-            eventModal.show();
-            document.getElementById('eventModalLabel').textContent = 'Editar Evento';
-        } 
-        // Manejar clic en botones de eliminar
-      else if (target.classList.contains('delete-btn')) {
-            const id = target.getAttribute('data-id');
-            if (id && confirm('¿Seguro que desea eliminar este evento permanentemente?')) {
-                const formData = new FormData();
-                formData.append('action', 'eliminar');
-                formData.append('id_evento', id);
-
-                fetch('../../../resources/api/Alumnos/apiEventos.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(result => {
-                    if (result === "OK") {
-                        loadAndDisplayEvents(); // Actualizar la vista
-                    } else {
-                        alert('Error al eliminar: ' + result);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                    fetch('../../../resources/api/Alumnos/apiEventos.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(result => {
+                        if (result === "OK") {
+                            loadAndDisplayEvents(); // Actualizar la vista
+                        } else {
+                            alert('Error al eliminar: ' + result);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
             }
-        }
-    });
+        });
+    }
 
     // Console log para confirmar carga
     console.log("CalendarJS cargado correctamente con las siguientes mejoras:");
