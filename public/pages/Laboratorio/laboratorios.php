@@ -7,6 +7,12 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 if(isset($_SESSION['username'])){
+  require_once dirname(__DIR__,3). '/resources/DB/Laboratorio/PracticasDB.php';
+  $materiaDb = new MateriasLab();
+  $materias = $materiaDb->getMateriaLab();
+
+  $docentesDb = new DocentesLab();
+  $docentes = $docentesDb->getDocentes();
 ?>
 
 
@@ -32,33 +38,11 @@ if(isset($_SESSION['username'])){
     
     <div class="container my-4">
     <h2 class="mb-4 text-center">📅 Gestión de Prácticas y Laboratorios</h2>
-
-    <!-- Filtros -->
+   
     <div class="row mb-3">
-      <div class="col-md-3">
-        <select id="filtroLaboratorio" class="form-select">
-          <option value="todos">Todos los Laboratorios</option>
-          <option value="lab1">Laboratorio 1</option>
-          <option value="lab2">Laboratorio 2</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <select id="filtroMateria" class="form-select">
-          <option value="todas">Todas las Materias</option>
-          <option value="quimica">Química</option>
-          <option value="fisica">Física</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <select id="filtroDocente" class="form-select">
-          <option value="todos">Todos los Docentes</option>
-          <option value="profa">Profa. García</option>
-          <option value="profb">Prof. Ramírez</option>
-        </select>
-      </div>
       <div class="col-md-3 text-end">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPreprogramar">
-          <i class="fa-solid fa-calendar-plus me-1"></i> Preprogramar práctica
+          <i class="fa-solid fa-calendar-plus me-1"></i> Programar práctica
         </button>
       </div>
     </div>
@@ -80,13 +64,26 @@ if(isset($_SESSION['username'])){
             <div class="col-md-6">
               <label for="materia" class="form-label">Materia</label>
               <!-- Select para cargar materias con labortaorio -->
-             <select class="form-select" name="materiaKit" id="materiaKit"></select>
+             <select class="form-select" name="materiaKit" id="materiaKit">
+             <?php foreach ($materias as $materia): ?>
+                    <option value="<?= htmlspecialchars($materia['id_materias']) ?>">
+                        <?= htmlspecialchars($materia['nombre']) ?> - Semestre <?= htmlspecialchars($materia['semestre']) ?>
+                    </option>
+                <?php endforeach; ?>
+             </select>
             </div>
             <div class="col-md-6">
               <label for="docente" class="form-label">Docente</label>
               <!-- Select para cargar a los profesores que tengan esa materia -->
-              <select id="docenteLab" class="form-select" required>                
+              <select id="docenteLab" name="docenteLab" class="form-select" required>
+              <option value="">Seleccione un docente</option>
+                  <?php foreach ($docentes as $docente): ?>
+                      <option value="<?= htmlspecialchars($docente['id_docente']) ?>">
+                          <?= htmlspecialchars($docente['nombreCompleto']) ?>
+                      </option>
+                  <?php endforeach; ?>
               </select>
+
             </div>
             <div class="col-md-6">
               <label for="grupo" class="form-label">Semestre</label>
@@ -101,34 +98,31 @@ if(isset($_SESSION['username'])){
             </div>
             <div class="col-md-6">
               <label for="grupo" class="form-label">Grupo</label>
-              <input type="number" min="1" class="form-control" id="grupo" required>
-            </div>
+              <input type="number" min="1" class="form-control" id="grupo" name="grupo" required>
+              </div>
             <div class="col-md-6">
               <label for="laboratorio" class="form-label">Laboratorio</label>
-                  <select id="laboratorio" class="form-select" required>
-                    <option value="" disabled selected>Selecciona un laboratorio</option>
-                    <option value="labElctronica" id="labElctronica">Lab. Electrónica</option>
-                    <option value="labControl" id="labControl">Lab. Control</option>
-                    <option value="labFisQui" id="labFisQui">Lab. Fisico-Quimica</option>
-                    <option value="lab1" id="lab1">Laboratorio 1</option>
-                    <option value="lab2" id="lab2">Laboratorio 2</option>
-                    <option value="lab3" id="lab3">Laboratorio 3</option>
-                    <option value="lab4" id="lab4">Laboratorio 4</option>
-                  </select>
+              <select id="laboratorio" name="laboratorio" class="form-select" required>
+                <option value="" disabled selected>Selecciona un laboratorio</option>
+                <option value="1">Lab. Electrónica</option>
+                <option value="2">Lab. Control</option>
+                <option value="3">Lab. Fisico-Quimica</option>
+                <option value="4">Laboratorio 1</option>
+                <option value="5">Laboratorio 2</option>
+                <option value="6">Laboratorio 3</option>
+                <option value="7">Laboratorio 4</option>
+              </select>
+
             </div>
             <div class="col-md-6">
               <label for="fecha" class="form-label">Fecha</label>
-              <input type="date" id="fecha" class="form-control" required>
-            </div>
+              <input type="date" id="fecha" name="fecha" class="form-control" required>
+              </div>
             <div class="col-md-6">
               <label for="hora" class="form-label">Hora</label>
-              <input type="time" id="hora" class="form-control" required>
-            </div>            
-            <div class="col-md-12">
-              <label for="kit" class="form-label">Kit de materiales</label>
-              <!-- Este select sera automatico de acuerdo a la materia de la practica -->
-              <select id="kit" class="form-select"></select>
-            </div>
+              <input type="time" id="hora" name="hora" class="form-control" required>
+              </div>            
+      
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Guardar</button>
