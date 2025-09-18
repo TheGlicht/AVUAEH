@@ -2,18 +2,6 @@ let rolSeleccionado2 = null;
 
 // Mostrar y ocultar contraseña
 document.addEventListener("DOMContentLoaded", function () {
-    const togglePassword = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("password");
-
-    togglePassword.addEventListener("click", function () {
-        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-        passwordInput.setAttribute("type", type);
-
-        // Cambiar ícono
-        this.querySelector("i").classList.toggle("fa-eye");
-        this.querySelector("i").classList.toggle("fa-eye-slash");
-    });
-
     // Selleccionar rol
     document.querySelectorAll(".role-card").forEach(card => {
         card.addEventListener("click", function () {
@@ -26,6 +14,43 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Toggle password (funciona con elementos con clase .toggle-password y data-target="idDelInput")
+document.addEventListener('click', function (e) {
+    const toggler = e.target.closest('.toggle-password');
+    if (!toggler) return;
+  
+    const targetId = toggler.dataset.target;
+    if (!targetId) return;
+    const input = document.getElementById(targetId);
+    if (!input) return;
+  
+    if (input.type === 'password') {
+      input.type = 'text';
+      toggler.classList.remove('fa-eye');
+      toggler.classList.add('fa-eye-slash');
+      toggler.setAttribute('aria-label', 'Ocultar contraseña');
+    } else {
+      input.type = 'password';
+      toggler.classList.remove('fa-eye-slash');
+      toggler.classList.add('fa-eye');
+      toggler.setAttribute('aria-label', 'Mostrar contraseña');
+    }
+    // mantiene el foco en el input y evita scroll brusco
+    try { input.focus({ preventScroll: true }); } catch (err) { input.focus(); }
+  });
+  
+  // Soporte teclado: Enter o Space activa el toggle si el icono está enfocado
+  document.addEventListener('keydown', function (e) {
+    const active = document.activeElement;
+    if (!active) return;
+    if (!active.classList.contains('toggle-password')) return;
+  
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      active.click();
+    }
+  });
+  
 
 // Funciones de programacion y control de acceso
 document.addEventListener('DOMContentLoaded', function() {

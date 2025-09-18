@@ -92,7 +92,7 @@
                             <label for="email" class="form-label">Correo Institucional</label>
                             <input type="email" class="form-control" id="email" placeholder="tu.correo@uaeh.edu.mx" required>
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="password" class="form-label">Contraseña</label>
                             <div class="input-group">
                                 <input type="password" class="form-control" id="password" placeholder="••••••••" required>
@@ -100,8 +100,27 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                        </div>
-
+                        </div> -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <div class="password-container">
+                                <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                placeholder="••••••••"
+                                required
+                                aria-describedby="togglePassword"
+                                />
+                                <i
+                                class="fa-solid fa-eye toggle-password"
+                                data-target="password"
+                                role="button"
+                                aria-label="Mostrar contraseña"
+                                tabindex="0"
+                                ></i>
+                            </div>
+                        </div>                
                         <button type="submit" class="btn btn-submit bg-warning">Iniciar Sesión</button>
                         <button type="button" id="backButton" class="btn btn-submit back-btn">
                             <i class="fas fa-arrow-left me-2"></i> Volver

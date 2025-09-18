@@ -55,11 +55,43 @@ body {
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-.password-container .toggle-password {
-    border-left: none; /* para que no se vea la línea doble */
+/* .password-container .toggle-password {
+    border-left: none; 
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+   */
+
+   /* Password toggle: estilo integrado (alineado dentro del input) */
+.password-container {
+    position: relative;
+    width: 100%;
+    display: block;
+  }
+  
+  .password-container .form-control {
+    /* deja espacio a la derecha para que el texto no quede bajo el icono */
+    padding-right: 2.75rem;
+    box-sizing: border-box;
+  }
+  
+  .password-container .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 2;
+    font-size: 1.05rem;
+    color: #6c757d; /* gris bootstrap-like */
+    user-select: none;
+  }
+  
+  .password-container .toggle-password:hover,
+  .password-container .toggle-password:focus {
+    color: #343a40;
+    outline: none;
   }
   
 
