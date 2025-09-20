@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         allDay: true,
                         description: ev.descripcion || '',
                         tipo: ev.tipo || 'alumno',
-                        color: ev.tipo === 'docente' ? 'yellow' : (ev.tipo === 'laboratorio' ? 'green' : 'blue')
+                        color: ev.tipo === 'docente' ? 'orange' : (ev.tipo === 'laboratorio' ? 'green' : 'blue')
                     });
                 });
             })
@@ -64,14 +64,23 @@ document.addEventListener('DOMContentLoaded', function() {
             right: ''
         },
         dateClick(info) {
-            // Solo permitir agregar eventos propios
+            // Resetear campos
             eventIdInput.value = '';
             eventTitleInput.value = '';
             eventDescriptionInput.value = '';
             eventDateInput.value = info.dateStr;
+
+            // Restaurar modo edición 
             deleteEventBtn.classList.add('d-none');
+            eventTitleInput.removeAttribute('readonly');
+            eventDescriptionInput.removeAttribute('readonly');
+            eventDateInput.removeAttribute('readonly');
+            document.getElementById('saveEvent').style.display = 'inline-block';
+
+            // Mostrar modal
             eventModal.show();
             document.getElementById('eventModalLabel').textContent = 'Agregar Evento';
+
         },
         eventClick(info) {
             const event = info.event;

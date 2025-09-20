@@ -17,3 +17,17 @@ body{
     max-width: 900px;
     margin: 40px auto;
 }
+
+/* Color para la casilla del dia actual */
+/* .fc-day-today{
+    background-color: #eaf6ff !important;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+} */
+
+.fc-day-today {
+    background-color:rgb(250, 226, 189) !important;
+    border: 2px solid rgb(246, 100, 100);
+    border-radius: 50%;
+  }
+  

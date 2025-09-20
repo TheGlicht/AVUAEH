@@ -20,6 +20,7 @@ if(isset($_SESSION['username'])){
   <!-- Estilos -->
   <link rel="stylesheet" href="../../components/css/bootstrap.min.css">
   <link rel="stylesheet" href="../../components/css/styleHome.css">
+  <!-- <link rel="stylesheet" href="../../components/uaeh-colors.css"> -->
   <link rel="icon" type="icon" href="../../components/assets/Garza/Garza3.png" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <!-- FullCalendar CSS correcto -->
