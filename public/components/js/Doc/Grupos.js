@@ -5,12 +5,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resp = await fetch("../../../resources/api/Docente/apiGrupos.php");
     const alumnos = await resp.json();
 
-    // Agrupar por semestre y grupo
+    // Agrupar por materia + semestre + grupo
     const gruposMap = {};
     alumnos.forEach(al => {
-      const key = `${al.semestre}-${al.grupo}`;
+      const key = `${al.materiaNombre}::${al.semestre}::${al.grupo}`;
       if (!gruposMap[key]) {
         gruposMap[key] = {
+          materia: al.materiaNombre,
           semestre: al.semestre,
           grupo: al.grupo,
           alumnos: []
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       card.innerHTML = `
         <div class="card-header bg-secondary text-white">
-          <strong> Semestre ${g.semestre}</strong> - Grupo: ${g.grupo}
+          <strong>${g.materia}</strong> - Semestre ${g.semestre} - Grupo ${g.grupo}
         </div>
         <div class="card-body">
           <ul class="list-group list-group-flush">

@@ -14,7 +14,11 @@ try {
         case 'listar':
             $eventos = $eventoDb->getEventosByDocente($_SESSION['username']);
             foreach ($eventos as $ev) {
-                echo "<tr data-description='".htmlspecialchars($ev['descripcionD'], ENT_QUOTES)."'>
+                echo "<tr 
+                        data-description='".htmlspecialchars($ev['descripcionD'], ENT_QUOTES)."' 
+                        data-materia='".htmlspecialchars($ev['id_materia'], ENT_QUOTES)."' 
+                        data-semestre='".htmlspecialchars($ev['semestre'], ENT_QUOTES)."' 
+                        data-grupo='".htmlspecialchars($ev['grupo'], ENT_QUOTES)."'>
                         <td>{$ev['tituloEventoD']}</td>
                         <td>{$ev['fechaEventoD']}</td>
                         <td>
@@ -26,7 +30,7 @@ try {
                             </button>
                         </td>
                       </tr>";
-            }
+            }            
             break;
 
         case 'agregar':

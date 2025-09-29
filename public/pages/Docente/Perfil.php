@@ -86,12 +86,16 @@ if(isset($_SESSION['username'])){
                     <?php endforeach; ?>
                   </select>
                 </div>
-                <div class="col-md-6 text-end">
-                  <!-- Boton para guardar la relacion DocMAterias -->
-                  <button type="button" id="agregarMateria" class="btn btn-success mt-2">
-                    <i class="fa-solid fa-plus"></i> Agregar
-                  </button>
-                </div>
+                <div class="col-md-3">
+  <input type="number" id="grupoInput" class="form-control" placeholder="Grupo" required>
+</div>
+<div class="col-md-3 text-end">
+  <!-- Boton para guardar la relacion DocMAterias -->
+  <button type="button" id="agregarMateria" class="btn btn-success mt-2">
+    <i class="fa-solid fa-plus"></i> Agregar
+  </button>
+</div>
+
               </div>
             </div>
           </div>
@@ -105,7 +109,8 @@ if(isset($_SESSION['username'])){
         <table class="table table-bordered text-center align-middle" id="tablaMaterias">
           <thead class="table-dark">
             <tr>
-              <th>Materia</th>              
+              <th>Materia</th>
+              <th>Grupo</th>              
               <th>Acción</th>
             </tr>
           </thead>

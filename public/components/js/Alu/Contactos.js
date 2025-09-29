@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
           .then((result) => {
             if (result === 'OK') {
               loadAndDisplayContacts();
+              loadSugerencias();
               if (idInput.value === id) resetForm(); // Si estaba editando este mismo
             } else {
               alert('Error al eliminar: ' + result);

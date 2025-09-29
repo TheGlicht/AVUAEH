@@ -34,7 +34,7 @@ class PerfilDB {
 
     // =================== CONTROLADOR PARA TABLA DocMateria =====================
     // Guardar relación Docente - Materia
-    public function DocenteMateria($username, $id_materias){
+    public function DocenteMateria($username, $id_materias, $grupo){
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
         try {
@@ -43,16 +43,27 @@ class PerfilDB {
             $stmt->execute([$username]);
             $id_docente = $stmt->fetchColumn();
 
-            if(!$id_docente) return "Docente no encontrado";
+            if(!$id_docente) return false;
 
-            $consulta = 'INSERT INTO DocMateria (id_docente, id_materias) VALUES (?, ?)';
+            // ✅ Validar duplicado
+            $check = $dbh->prepare('SELECT COUNT(*) FROM DocMateria WHERE id_docente = ? AND id_materias = ? AND grupo = ?');
+            $check->execute([$id_docente, $id_materias, $grupo]);
+            if ($check->fetchColumn() > 0) {
+                throw new Exception("Ya existe esta materia con ese grupo para este docente.");
+            }
+
+            $consulta = 'INSERT INTO DocMateria (id_docente, id_materias, grupo) VALUES (?, ?, ?)';
             $stmt = $dbh->prepare($consulta);
-            $stmt->execute([$id_docente, $id_materias]);
+            $stmt->execute([$id_docente, $id_materias, $grupo]);
             return true;
         } catch(PDOException $e){
             return false;
+        } catch(Exception $e) {
+            return false;
         }        
     }
+
+    
 
     // Mostrar relaciones Docente - Materia
     public function showDM($username){
@@ -66,7 +77,7 @@ class PerfilDB {
 
             if(!$id_docente) return [];
 
-            $consulta = 'SELECT dm.id_relacion, m.nombre, m.semestre
+            $consulta = 'SELECT dm.id_relacion, m.nombre, m.semestre, dm.grupo
                          FROM DocMateria dm
                          INNER JOIN Materias m ON dm.id_materias = m.id_materias
                          WHERE dm.id_docente = ?'; 
@@ -79,7 +90,7 @@ class PerfilDB {
     }
 
     // Eliminar relación Docente - Materia
-    public function DeleteDM($username, $id_materias){
+    public function DeleteDM($username, $id_relacion){
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
         try {
@@ -87,16 +98,17 @@ class PerfilDB {
             $stmt = $dbh->prepare($sql);
             $stmt->execute([$username]);
             $id_docente = $stmt->fetchColumn();
-
-            if(!$id_docente) return "Docente no encontrado";
-
-            $consulta = 'DELETE FROM DocMateria WHERE id_docente = ? AND id_materias = ?';
+    
+            if(!$id_docente) return false;
+    
+            $consulta = 'DELETE FROM DocMateria WHERE id_docente = ? AND id_relacion = ?';
             $stmt = $dbh->prepare($consulta);
-            $stmt->execute([$id_docente, $id_materias]);
+            $stmt->execute([$id_docente, $id_relacion]);
             return true;
         } catch(PDOException $e){
             return false;
         }        
     }
+    
 }
 ?>
