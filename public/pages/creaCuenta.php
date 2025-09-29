@@ -86,7 +86,7 @@
                 <i class="fa-solid fa-eye toggle-password" data-target="confirmPassword"></i>
               </label>
               
-            <button class="submit bg-danger">Submit</button>
+            <button class="submit bg-danger">Registrar</button>
         </form>      
 
       </main>        

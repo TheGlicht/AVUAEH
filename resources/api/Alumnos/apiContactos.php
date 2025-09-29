@@ -8,12 +8,14 @@ if (!isset($_SESSION['username'])) {
 }
 
 $contactoDb = new ContactoDb();
-$action = $_GET['action'] ?? $_POST['action'] ?? '';
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
+
+// Debug opcional: 
+// file_put_contents("debug_contactos.log", "Accion: $action\n", FILE_APPEND);
 
 try {
     switch ($action) {
         case 'listar':
-            // Devuelve TRs (HTML) para inyectar en <tbody>, igual que en apiEventos.php
             $contactos = $contactoDb->getContactosByAlumno($_SESSION['username']);
 
             if (empty($contactos)) {
@@ -97,6 +99,41 @@ try {
                 echo "OK";
             } else {
                 echo "ERROR: No se pudo eliminar el contacto";
+            }
+            break;
+        
+        case 'sugerencias':
+            require_once __DIR__ . '/../../DB/Alumno/alumnosDB.php';
+            $dataAlumnoDb = new DataAlumnoDb();
+            $sugerencias = $dataAlumnoDb->getSugerencias($_SESSION['username']);
+
+            if (empty($sugerencias)) {
+                echo "<li class='list-group-item text-muted'>No hay sugerencias por ahora.</li>";
+                break;
+            }
+
+            foreach ($sugerencias as $s) {
+                $nom = htmlspecialchars($s['nombreCompleto'], ENT_QUOTES, 'UTF-8');
+                $usr = htmlspecialchars($s['username'], ENT_QUOTES, 'UTF-8');
+                $sem = htmlspecialchars($s['semestre'], ENT_QUOTES, 'UTF-8');
+                $gru = htmlspecialchars($s['grupo'], ENT_QUOTES, 'UTF-8');
+                $tel = htmlspecialchars($s['telefono'], ENT_QUOTES, 'UTF-8');
+                $cor = htmlspecialchars($s['email'], ENT_QUOTES, 'UTF-8');
+        
+                echo "<li class='list-group-item d-flex justify-content-between align-items-center'>
+                        <div>
+                            <strong>{$nom}</strong> <small class='text-muted'>@$usr</small><br>
+                            <span class='badge bg-primary'>Sem {$sem}</span>
+                            <span class='badge bg-secondary'>Grupo {$gru}</span>
+                        </div>
+                        <button class='btn btn-sm btn-success add-suggest-btn'
+                                data-username='{$usr}'
+                                data-nombre='{$nom}'
+                                data-telefono='{$tel}'
+                                data-correo='{$cor}'>
+                            <i class='fa fa-user-plus'></i> Agregar
+                        </button>
+                    </li>";
             }
             break;
 

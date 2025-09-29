@@ -8,9 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const correoInput = document.getElementById('correo');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
     const tbody = document.getElementById('contactTableBody');
+    const sugerenciasList = document.getElementById('sugerenciasList');
   
     // Cargar contactos al iniciar
     loadAndDisplayContacts();
+    loadSugerencias();
   
     // Función principal para cargar y mostrar contactos
     function loadAndDisplayContacts() {
@@ -21,6 +23,42 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch((err) => console.error('Error al cargar contactos:', err));
     }
+
+    // Función para cargar las sugerencias de contactos
+    function loadSugerencias() {
+      const formData = new FormData();
+      formData.append('action', 'sugerencias');
+    
+      fetch('../../../resources/api/Alumnos/apiContactos.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById('sugerenciasList').innerHTML = html;
+        })
+        .catch(err => console.error('Error al cargar sugerencias:', err));
+    }
+    
+    // Funcion para agregar el contactos desde la sugerencia.   
+      sugerenciasList.addEventListener('click', function (e) {
+        const btn = e.target.closest('.add-suggest-btn');
+        if (!btn) return;
+
+        // Extraer datos desde atributos data-*
+        const nombre   = btn.getAttribute('data-nombre') || '';
+        const telefono = btn.getAttribute('data-telefono') || '';
+        const correo   = btn.getAttribute('data-correo') || '';
+
+        // Pasarlos a los inputs del formulario
+        nombreInput.value = nombre;
+        telefonoInput.value = telefono;
+        correoInput.value = correo;
+
+        // Poner el foco en el botón guardar
+        document.getElementById('saveContactBtn').focus();
+      });
+    
   
     // Envío de formulario (agregar/editar)
     contactForm.addEventListener('submit', function (e) {
@@ -52,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then((result) => {
           if (result === 'OK') {
             loadAndDisplayContacts(); // Actualiza lista
+            loadSugerencias()         // Actualiza sugerencias
             resetForm();               // Limpia formulario y estado
           } else {
             alert('Error: ' + result);

@@ -27,6 +27,7 @@ try {
                     "success" => true,
                     "data" => [
                         "nombreCompleto" => "",
+                        "telefono"       => "",
                         "semestre"       => "",
                         "grupo"          => "",
                         "username"       => $_SESSION['username']
@@ -40,6 +41,7 @@ try {
         case 'editar': {
             // Datos recibidos del formulario
             $nombre       = trim($_POST['nombreCompleto'] ?? '');
+            $telefonoRaw = trim($_POST['telefono'] ?? '');
             $semestreRaw  = $_POST['semestre'] ?? '';
             $grupoRaw     = $_POST['grupo'] ?? '';
             $newUsername  = trim($_POST['username'] ?? '');
@@ -49,9 +51,16 @@ try {
                 echo json_encode(["success" => false, "message" => "Datos incompletos"]);
                 break;
             }
+            // Validacion para el telefono
+            if (!preg_match('/^\d{8,15}$/', $telefonoRaw)) { // validación básica (8 a 15 dígitos)
+                echo json_encode(["success" => false, "message" => "Teléfono inválido"]);
+                break;
+            }
 
             $semestre = (int)$semestreRaw;
             $grupo    = (int)$grupoRaw;
+            $telefono = $telefonoRaw;
+
             if ($semestre < 1 || $semestre > 6 || $grupo < 1) {
                 echo json_encode(["success" => false, "message" => "Valores de semestre/grupo inválidos"]);
                 break;
@@ -59,7 +68,7 @@ try {
 
             $currentUsername = $_SESSION['username'];
 
-            $ok = $alumnosDb->upsertADatos($nombre, $semestre, $grupo, $newUsername, $currentUsername);
+            $ok = $alumnosDb->upsertADatos($nombre, $semestre, $grupo, $telefono, $newUsername, $currentUsername);
 
             if ($ok === true) {
                 // Si se cambió el username, actualizamos la sesión

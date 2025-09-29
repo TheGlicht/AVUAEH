@@ -9,16 +9,72 @@ class AlumnoDb {
         $dbh = $conexion->getDbh();
 
         try {
-            // Verificar si el alumno ya está registrado
+            // ALUMNO
+            // Verificar si el email ya está registrado
             $verifica = 'SELECT COUNT(*) FROM Alumno WHERE email = ?';
             $stmt = $dbh->prepare($verifica);
             $stmt->bindParam(1, $email);
             $stmt->execute();
             $existe = $stmt->fetchColumn();
 
+            // Verificar si el username ya esta registrado
+            $verificaUser = 'SELECT COUNT(*) FROM Alumno WHERE username = ?';
+            $stmt = $dbh->prepare($verificaUser);
+            $stmt->execute([$username]);
+            $existe2 = $stmt->fetchColumn();
+
+            // CONSULTAS
             if ($existe > 0) {
-                throw new Exception("Este correo ya está registrado. Intenta con otro.");
+                throw new Exception("Este correo ya está registrado como Alumno");
             }
+            if ($existe2 > 0){
+                throw new Exception("Este nombre de usuario ya esta registrad Alumno");
+            }
+
+            // DOCENTES
+            // Verificar si el email ya esta registrado
+            $verifica2 = 'SELECT COUNT(*) FROM Docentes WHERE email = ?';
+            $stmt = $dbh->prepare($verifica2);
+            $stmt->bindParam(1, $email);
+            $stmt->execute();
+            $existe3 = $stmt->fetchColumn();
+
+            // Verficiar si el username ya esta registrado
+            $verificaUser2 = 'SELECT COUNT(*) FROM Docentes WHERE username = ?';
+            $stmt = $dbh->prepare($verificaUser2);
+            $stmt->execute([$username]);
+            $existe4 = $stmt->fetchColumn();
+
+            // CONSULTAS
+            if ($existe3 > 0) {
+                throw new Exception("Este correo ya está registrado como Docente");
+            }
+            if ($existe4 > 0){
+                throw new Exception("Este nombre de usuario ya esta registrado como Docente");
+            }
+
+            //LABORATORIO
+            // Verificar si el email ya esta registrado
+            $verifica3 = 'SELECT COUNT(*) FROM Laboratorio WHERE email = ?';
+            $stmt = $dbh->prepare($verifica3);
+            $stmt->bindParam(1, $email);
+            $stmt->execute();
+            $existe5 = $stmt->fetchColumn();
+
+            // Verificar si el username ya esta registrado
+            $verificaUser3 = 'SELECT COUNT(*) FROM Docentes WHERE username = ?';
+            $stmt = $dbh->prepare($verificaUser3);
+            $stmt->execute([$username]);
+            $existe6 = $stmt->fetchColumn();
+
+            // CONSULTAS
+            if ($existe5 > 0) {
+                throw new Exception("Este correo ya está registrado como Encargado de Laboratorio");
+            }
+            if ($existe6 > 0){
+                throw new Exception("Este nombre de usuario ya esta registrado como Encargado de Laboratorio");
+            }
+
 
             // Insertar nuevo alumno
             $consulta = 'INSERT INTO Alumno(username, email, pass) VALUES (?, ?, ?)';
@@ -50,7 +106,6 @@ class AlumnoDb {
             return null;
         }
     }
-
 
     // Funcion para actualizar contraseña
     public function updatePasAlumno($email, $pass){
@@ -106,9 +161,7 @@ class AlumnoDb {
         }
     }   
 }
-
 // Clase relacionada con el perfil general del usuario.
-
 class DataAlumnoDb
 {
     // Funcion para obtener los datos del perfil de los alumnos
@@ -119,15 +172,16 @@ class DataAlumnoDb
             $dbh = $conexion->getDbh();
 
             $sql = 'SELECT 
-                        a.id_alumno,
-                        a.username,
-                        d.id_DatosA,
-                        d.nombreCompleto,
-                        d.semestre,
-                        d.grupo
-                    FROM Alumno a
-                    LEFT JOIN DatosA d ON d.id_alumno = a.id_alumno
-                    WHERE a.username = ?';
+                    a.id_alumno,
+                    a.username,
+                    d.id_DatosA,
+                    d.nombreCompleto,
+                    d.semestre,
+                    d.grupo,
+                    d.numero
+                FROM Alumno a
+                LEFT JOIN DatosA d ON d.id_alumno = a.id_alumno
+                WHERE a.username = ?';
 
             $stmt = $dbh->prepare($sql);
             $stmt->execute([$username]);
@@ -139,6 +193,7 @@ class DataAlumnoDb
 
             return [
                 'nombreCompleto' => $row['nombreCompleto'] ?? '',
+                'telefono'       => $row['numero'] ?? '',
                 'semestre'       => $row['semestre'] ?? '',
                 'grupo'          => $row['grupo'] ?? '',
                 'username'       => $row['username'],
@@ -170,9 +225,6 @@ class DataAlumnoDb
             $check->execute([$id_alumno]);
             $exists = (int)$check->fetchColumn() > 0;
         
-
-            // VEridicar a configuracion y de ser posible cambiar el uso del username al correo del alumno, para garantizar la seguridad
-
             if ($exists) {
                 // Ya existe, actualiza
                 $upd = $dbh->prepare('UPDATE DatosA SET nombreCompleto=?, semestre=?, grupo=? WHERE id_alumno=?');
@@ -188,7 +240,7 @@ class DataAlumnoDb
     }
 
     // Funcion para actualizar los datos del perfil
-    public function upsertADatos(string $nombre, int $semestre, int $grupo, string $newUsername, string $currentUsername)
+    public function upsertADatos(string $nombre, int $semestre, int $grupo, string $telefono , string $newUsername, string $currentUsername)
     {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
@@ -223,12 +275,16 @@ class DataAlumnoDb
             $exists = (int)$check->fetchColumn() > 0;
 
             if ($exists) {
-                $upd = $dbh->prepare('UPDATE DatosA SET nombreCompleto = ?, semestre = ?, grupo = ? WHERE id_alumno = ?');
-                $upd->execute([$nombre, $semestre, $grupo, $id_alumno]);
+                $upd = $dbh->prepare('UPDATE DatosA 
+                                      SET nombreCompleto = ?, semestre = ?, grupo = ?, numero = ? 
+                                      WHERE id_alumno = ?');
+                $upd->execute([$nombre, $semestre, $grupo, $telefono, $id_alumno]);
             } else {
-                $ins = $dbh->prepare('INSERT INTO DatosA (nombreCompleto, semestre, grupo, id_alumno) VALUES (?, ?, ?, ?)');
-                $ins->execute([$nombre, $semestre, $grupo, $id_alumno]);
+                $ins = $dbh->prepare('INSERT INTO DatosA (nombreCompleto, semestre, grupo, numero, id_alumno) 
+                                      VALUES (?, ?, ?, ?, ?)');
+                $ins->execute([$nombre, $semestre, $grupo, $telefono, $id_alumno]);
             }
+            
 
             // Actualizar username si cambió
             if ($newUsername !== $currentUsername) {
@@ -245,5 +301,119 @@ class DataAlumnoDb
             return false;
         }
     }
+
+// Sugerencias de compañeros
+public function getSugerencias(string $username): array {
+    $conexion = Conexion::getInstancia();
+    $dbh = $conexion->getDbh();
+    
+    // Obtener datos del alumno actual
+    $yo = null;
+    try {
+        $sql = 'SELECT a.id_alumno, d.semestre, d.grupo
+                FROM Alumno a
+                LEFT JOIN DatosA d ON d.id_alumno = a.id_alumno
+                WHERE a.username = ?';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute([$username]);
+        $yo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$yo) {
+            error_log("No se encontró alumno con username: $username");
+            return [];
+        }
+    } catch (PDOException $e) {
+        error_log("Error al obtener datos del alumno $username: " . $e->getMessage());
+        return [];
+    }
+
+    $id_alumno = $yo['id_alumno'];
+    $semestre  = $yo['semestre'] ?? null;
+    $grupo     = $yo['grupo'] ?? null;
+
+    // 🔹 Obtener lista de contactos ya guardados (por email o id_alumno)
+    $excluir = [];
+    try {
+        $sqlC = 'SELECT email, id_alumno FROM ContactosA WHERE id_alumno IS NOT NULL OR email IS NOT NULL';
+        $stmtC = $dbh->prepare($sqlC);
+        $stmtC->execute();
+        $contactos = $stmtC->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($contactos as $c) {
+            if (!empty($c['email'])) {
+                $excluir['email'][$c['email']] = true;
+            }
+            if (!empty($c['id_alumno'])) {
+                $excluir['id'][$c['id_alumno']] = true;
+            }
+        }
+    } catch (PDOException $e) {
+        error_log("Error obteniendo contactos guardados: " . $e->getMessage());
+    }
+
+    $sugerencias = [];
+
+    // 🔹 Buscar por grupo/semestre
+    if (!empty($semestre) && !empty($grupo)) {
+        try {
+            $sql1 = 'SELECT a.id_alumno, a.username, a.email, d.nombreCompleto, d.semestre, d.grupo, d.numero AS telefono
+                     FROM Alumno a
+                     JOIN DatosA d ON d.id_alumno = a.id_alumno
+                     WHERE d.semestre = ? AND d.grupo = ? AND a.id_alumno <> ?';
+            $stmt1 = $dbh->prepare($sql1);
+            $stmt1->execute([$semestre, $grupo, $id_alumno]);
+            $grupoCoincide = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($grupoCoincide as $row) {
+                if (
+                    (isset($excluir['id'][$row['id_alumno']])) ||
+                    (isset($excluir['email'][$row['email']]))
+                ) {
+                    continue; // ⚠️ ya existe en ContactosA, no sugerir
+                }
+                $sugerencias[$row['username']] = $row;
+            }
+        } catch (PDOException $e) {
+            error_log("Error en búsqueda por grupo para $username: " . $e->getMessage());
+        }
+    }
+
+    // 🔹 Buscar por materias en común
+    try {
+        $sql2 = 'SELECT DISTINCT a.id_alumno, a.username, a.email, d.nombreCompleto, 
+                        d.semestre, d.grupo, d.numero AS telefono
+                 FROM Alumno a
+                 JOIN DatosA d ON d.id_alumno = a.id_alumno
+                 JOIN AluMateria am ON am.id_alumno = a.id_alumno
+                 WHERE am.id_materias IN (
+                     SELECT id_materias FROM AluMateria WHERE id_alumno = ?
+                 )
+                 AND a.id_alumno <> ? 
+                 AND d.nombreCompleto IS NOT NULL 
+                 AND d.nombreCompleto != ""';
+        $stmt2 = $dbh->prepare($sql2);
+        $stmt2->execute([$id_alumno, $id_alumno]);
+        $materiaCoincide = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($materiaCoincide as $row) {
+            if (
+                (isset($excluir['id'][$row['id_alumno']])) ||
+                (isset($excluir['email'][$row['email']]))
+            ) {
+                continue; // ⚠️ ya existe en ContactosA, no sugerir
+            }
+            $sugerencias[$row['username']] = $row;
+        }
+    } catch (PDOException $e) {
+        error_log("Error en búsqueda por materias para $username: " . $e->getMessage());
+    }
+
+    $resultado = array_values($sugerencias);
+    error_log("Sugerencias generadas para $username: " . count($resultado) . " resultados");
+
+    return $resultado;
+}
+
+
 }
 ?>

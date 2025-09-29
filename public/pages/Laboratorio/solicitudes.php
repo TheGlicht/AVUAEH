@@ -20,11 +20,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
         $sql = "DELETE FROM ValesA WHERE id_vales = ?";
         $stmt = $conn->prepare($sql);
         $stmt->execute([$_POST['delete_id']]);
+        header("Location: solicitudes.php");
+        exit();
     } catch (PDOException $ex) {
         $_SESSION['error_solicitudes'] = "Error al eliminar: " . $ex->getMessage();
     }
-    header("Location: solicitudes.php");
-    exit();
+}
+
+// --- Actualizar estado (AJAX) ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
+    try {
+        $sql = "SELECT estatus FROM ValesA WHERE id_vales = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$_POST['update_id']]);
+        $estatus = $stmt->fetchColumn();
+
+        if ($estatus !== false && $estatus < 2) {
+            $nuevoEstado = $estatus + 1;
+            $sql = "UPDATE ValesA SET estatus = ? WHERE id_vales = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$nuevoEstado, $_POST['update_id']]);
+        } else {
+            $nuevoEstado = $estatus;
+        }
+
+        echo json_encode([
+            "success" => true,
+            "newStatus" => (int)$nuevoEstado
+        ]);
+    } catch (PDOException $ex) {
+        echo json_encode([
+            "success" => false,
+            "error" => $ex->getMessage()
+        ]);
+    }
+    exit; // cortar aquí porque es respuesta AJAX
 }
 
 // --- Consultar solicitudes ---
@@ -32,6 +62,7 @@ try {
     $sql = "SELECT v.id_vales, a.username AS alumno, 
                    m.nombre AS materia, v.diaLab, v.horaLab, v.id_lab,
                    k.nombre AS kit,
+                   v.estatus,
                    GROUP_CONCAT(CONCAT(mat.nombre, ' (', km.cantidad, ')') SEPARATOR ', ') AS materiales
             FROM ValesA v
             LEFT JOIN Alumno a ON v.id_alumno = a.id_alumno
@@ -39,8 +70,8 @@ try {
             LEFT JOIN Kit k ON v.id_kit = k.id_kit
             LEFT JOIN KitMaterial km ON k.id_kit = km.id_kit
             LEFT JOIN Material mat ON km.id_material = mat.id_material
-            GROUP BY v.id_vales, a.username, m.nombre, v.diaLab, v.horaLab, v.id_lab, k.nombre
-            ORDER BY v.diaLab, v.horaLab";
+            GROUP BY v.id_vales, a.username, m.nombre, v.diaLab, v.horaLab, v.id_lab, k.nombre, v.estatus
+            ORDER BY v.diaLab, v.horaLab;";
     $solicitudes = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
     $solicitudes = [];
@@ -92,13 +123,18 @@ try {
             <th>Fecha</th>
             <th>Hora</th>
             <th>Laboratorio</th>
+            <th>Estado</th>
             <th>Opciones</th>
           </tr>
         </thead>
         <tbody>
           <?php if (!empty($solicitudes)): ?>
             <?php foreach ($solicitudes as $s): ?>
-              <tr>
+              <?php
+                $clase = $s['estatus'] == 0 ? 'table-warning' :
+                         ($s['estatus'] == 1 ? 'table-info' : 'table-success');
+              ?>
+              <tr id="row-<?= $s['id_vales'] ?>" class="<?= $clase ?>" data-id="<?= $s['id_vales'] ?>">
                 <td><?= htmlspecialchars($s['alumno']) ?></td>
                 <td><?= htmlspecialchars($s['materia']) ?></td>
                 <td><?= htmlspecialchars($s['kit']) ?></td>
@@ -106,10 +142,30 @@ try {
                 <td><?= htmlspecialchars($s['diaLab']) ?></td>
                 <td><?= htmlspecialchars($s['horaLab']) ?></td>
                 <td><?= htmlspecialchars($s['id_lab']) ?></td>
-                <td>
+                <td class="estado">
+                  <?php
+                    switch ($s['estatus']) {
+                      case 0: echo "Pendiente"; break;
+                      case 1: echo "Entregado"; break;
+                      case 2: echo "Devuelto"; break;
+                    }
+                  ?>
+                </td>
+                <td class="acciones">
+                  <button type="button" 
+                          class="btn btn-success btn-sm updateEstado"
+                          data-id="<?= $s['id_vales'] ?>"
+                          <?= $s['estatus'] == 2 ? 'disabled' : '' ?>>
+                    <?php 
+                      if ($s['estatus'] == 0) echo "Marcar Entregado";
+                      elseif ($s['estatus'] == 1) echo "Marcar Devuelto";
+                      else echo "✔ Finalizado";
+                    ?>
+                  </button>
+
                   <form method="POST" action="solicitudes.php" style="display:inline;">
                     <input type="hidden" name="delete_id" value="<?= htmlspecialchars($s['id_vales']) ?>">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar esta solicitud?')">
+                    <button type="submit" class="btn btn-danger btn-sm">
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </form>
@@ -117,7 +173,7 @@ try {
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
-            <tr><td colspan="8" class="text-center">No hay solicitudes registradas</td></tr>
+            <tr><td colspan="9" class="text-center">No hay solicitudes registradas</td></tr>
           <?php endif; ?>
         </tbody>
       </table>
@@ -129,50 +185,86 @@ try {
   <script src="../../components/js/bootstrap.bundle.min.js"></script>
   <script src="../../components/js/KitFontAwesome.js"></script>
   <script>
-// Filtrado dinámico
-document.addEventListener("DOMContentLoaded", () => {
-  const filtroGrupo   = document.getElementById("filtroGrupo");
-  const filtroMateria = document.getElementById("filtroMateria");
-  const filtroFecha   = document.getElementById("filtroFecha");
-  const tabla         = document.querySelector("table tbody");
+  document.addEventListener("DOMContentLoaded", () => {
+    // Filtrado dinámico
+    const filtroGrupo   = document.getElementById("filtroGrupo");
+    const filtroMateria = document.getElementById("filtroMateria");
+    const filtroFecha   = document.getElementById("filtroFecha");
+    const tabla         = document.querySelector("table tbody");
 
-  function filtrarTabla() {
-    const valGrupo   = filtroGrupo.value.trim().toLowerCase();
-    const valMateria = filtroMateria.value.trim().toLowerCase();
-    const valFecha   = filtroFecha.value.trim();
+    function filtrarTabla() {
+      const valGrupo   = filtroGrupo.value.trim().toLowerCase();
+      const valMateria = filtroMateria.value.trim().toLowerCase();
+      const valFecha   = filtroFecha.value.trim();
 
-    for (let fila of tabla.rows) {
-      let mostrar = true;
+      for (let fila of tabla.rows) {
+        let mostrar = true;
 
-      // Columna grupo (en tu tabla corresponde al campo "id_lab", es la 6ta (index 6))
-      const grupo = fila.cells[6]?.textContent.toLowerCase() || "";
+        const grupo = fila.cells[6]?.textContent.toLowerCase() || "";
+        const materia = fila.cells[1]?.textContent.toLowerCase() || "";
+        const fecha = fila.cells[4]?.textContent || "";
 
-      // Columna materia (2da, index 1)
-      const materia = fila.cells[1]?.textContent.toLowerCase() || "";
+        if (valGrupo && !grupo.includes(valGrupo)) mostrar = false;
+        if (valMateria && !materia.includes(valMateria)) mostrar = false;
+        if (valFecha && fecha !== valFecha) mostrar = false;
 
-      // Columna fecha (5ta, index 4)
-      const fecha = fila.cells[4]?.textContent || "";
-
-      // Validaciones de filtros
-      if (valGrupo && !grupo.includes(valGrupo)) {
-        mostrar = false;
+        fila.style.display = mostrar ? "" : "none";
       }
-      if (valMateria && !materia.includes(valMateria)) {
-        mostrar = false;
-      }
-      if (valFecha && fecha !== valFecha) {
-        mostrar = false;
-      }
-
-      fila.style.display = mostrar ? "" : "none";
     }
-  }
 
-  filtroGrupo.addEventListener("input", filtrarTabla);
-  filtroMateria.addEventListener("input", filtrarTabla);
-  filtroFecha.addEventListener("input", filtrarTabla);
-});
-</script>
+    filtroGrupo.addEventListener("input", filtrarTabla);
+    filtroMateria.addEventListener("input", filtrarTabla);
+    filtroFecha.addEventListener("input", filtrarTabla);
 
+    // --- Manejo AJAX para actualizar estado ---
+    document.querySelectorAll(".updateEstado").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+
+        btn.disabled = true;
+        btn.textContent = "Actualizando...";
+
+        fetch("solicitudes.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "update_id=" + encodeURIComponent(id)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const fila = document.getElementById("row-" + id);
+            const estadoCell = fila.querySelector(".estado");
+            const accionesCell = fila.querySelector(".acciones");
+
+            if (data.newStatus === 1) {
+              estadoCell.textContent = "Entregado";
+              fila.classList.remove("table-warning");
+              fila.classList.add("table-info");
+              btn.textContent = "Marcar Devuelto";
+              btn.disabled = false;
+            } else if (data.newStatus === 2) {
+              estadoCell.textContent = "Devuelto";
+              fila.classList.remove("table-info");
+              fila.classList.add("table-success");
+              accionesCell.innerHTML = `
+                <form method="POST" action="solicitudes.php" style="display:inline;">
+                  <input type="hidden" name="delete_id" value="${id}">
+                  <button type="submit" class="btn btn-danger btn-sm">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </form>`;
+            }
+          } else {
+            alert("Error: " + data.error);
+          }
+        })
+        .catch(err => {
+          alert("Error de conexión");
+          console.error(err);
+        });
+      });
+    });
+  });
+  </script>
 </body>
 </html>

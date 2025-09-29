@@ -9,14 +9,24 @@ if(isset($_SESSION['username'])) {
 
   $idAlumno = $_GET['id'] ?? null;
   $alumno = null;
+  $materias = [];
 
   if ($idAlumno) {
-      $stmt = $dbh->prepare("SELECT d.nombreCompleto, d.semestre, d.grupo, a.username, a.email
-                             FROM DatosA d
-                             INNER JOIN Alumno a ON d.id_alumno = a.id_alumno
-                             WHERE a.id_alumno = ?");
-      $stmt->execute([$idAlumno]);
-      $alumno = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Consulta para datos básicos del alumno
+    $stmt = $dbh->prepare("SELECT d.nombreCompleto, d.semestre, d.grupo, a.username, a.email
+                           FROM DatosA d
+                           INNER JOIN Alumno a ON d.id_alumno = a.id_alumno
+                           WHERE a.id_alumno = ?");
+    $stmt->execute([$idAlumno]);
+    $alumno = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Consulta para las materias del alumno
+    $stmt1 = $dbh->prepare("SELECT m.nombre, m.semestre, m.laboratorio 
+                            FROM AluMateria am
+                            INNER JOIN Materias m ON am.id_materias = m.id_materias
+                            WHERE am.id_alumno = ?");
+    $stmt1->execute([$idAlumno]);
+    $materias = $stmt1->fetchAll(PDO::FETCH_ASSOC);
   }
 ?>
 <!DOCTYPE html>
@@ -65,6 +75,40 @@ if(isset($_SESSION['username'])) {
     </div>
   </div>
 
+  <!-- Materias del Alumno -->
+  <div class="card mb-4 shadow">
+    <div class="card-header bg-success text-white fw-bold">
+      <i class="fa-solid fa-book"></i> Materias Inscritas
+    </div>
+    <div class="card-body">
+      <?php if (!empty($materias)) : ?>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Nombre de la Materia</th>
+                <th>Semestre</th>
+                <th>¿Laboratorio?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($materias as $index => $m): ?>
+                <tr>
+                  <td><?= $index + 1 ?></td>
+                  <td><?= htmlspecialchars($m['nombre']) ?></td>
+                  <td><?= htmlspecialchars($m['semestre']) ?></td>
+                  <td><?= $m['laboratorio'] ? 'Sí' : 'No' ?></td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      <?php else : ?>
+        <p class="text-muted">Este alumno no tiene materias registradas.</p>
+      <?php endif; ?>
+    </div>
+  </div>
 
   <div class="text-center mt-4">
     <a href="grupos.php" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Volver</a>

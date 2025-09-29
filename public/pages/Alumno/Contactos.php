@@ -76,7 +76,18 @@ if (isset($_SESSION['username'])) {
         </table>
       </div>
     </div>
+  
+    <!-- Sugerencias de contactos -->
+  <div class="mt-5">
+    <h2>Sugerencias de Contactos</h2>
+    <ul class="list-group" id="sugerenciasList">
+    </ul>
+   </div>
+
+
   </div>
+
+  <br>
 
   <?php include '../../../resources/templates/footer.php'; ?>
 

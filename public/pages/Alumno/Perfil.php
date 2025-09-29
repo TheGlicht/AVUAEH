@@ -50,6 +50,10 @@ if (!isset($_SESSION['username'])) {
                      value="<?php echo htmlspecialchars($_SESSION['username'], ENT_QUOTES, 'UTF-8'); ?>" required>
             </div>
             <div class="col-md-4">
+              <label class="form-label">Teléfono</label>
+              <input type="number" class="form-control" id="telefono" name="telefono" required>
+            </div>
+            <div class="col-md-4">
               <label class="form-label">Semestre</label>
               <select class="form-select" id="semestre" name="semestre" required>
                 <option value="">Selecciona</option>
@@ -80,27 +84,7 @@ if (!isset($_SESSION['username'])) {
       <div class="card-header bg-secondary text-white fw-bold">
         <i class="fa-solid fa-chart-line"></i> Avance de Materias
       </div>
-      <div class="card-body">
-        <!-- <ul class="list-group" id="avanceMaterias">
-          <li class="list-group-item">
-            <strong>Matemáticas</strong>
-            <div class="progress mt-2" style="height: 20px;">
-              <div class="progress-bar bg-primary" style="width: 80%">80%</div>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <strong>Física</strong>
-            <div class="progress mt-2" style="height: 20px;">
-              <div class="progress-bar bg-success" style="width: 100%">100%</div>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <strong>Química</strong>
-            <div class="progress mt-2" style="height: 20px;">
-              <div class="progress-bar bg-warning" style="width: 60%">60%</div>
-            </div>
-          </li>
-        </ul> -->
+      <div class="card-body">       
         <ul class="list-group" id="avanceMaterias">
           <!-- Aquí se cargarán dinámicamente las materias con su progreso -->
         </ul>

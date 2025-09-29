@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const profileData = result.data || {};
       document.getElementById('nombre').value   = profileData.nombreCompleto || "";
       document.getElementById('usuario').value  = profileData.username || document.getElementById('usuario').value;
+      document.getElementById('telefono').value = profileData.telefono || "";
       document.getElementById('semestre').value = profileData.semestre || "";
       document.getElementById('grupo').value    = profileData.grupo || "";
     })
