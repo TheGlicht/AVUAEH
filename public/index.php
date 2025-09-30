@@ -42,7 +42,7 @@
         <div class="text-center mb-5">
             <h1 class="fw-bold text-danger">Bienvenido a la Agenda Virtual</h1>
             <p class="lead text-muted">
-                Selecciona tu rol para acceder a la plataforma educativa de la UAEH
+                Selecciona tu rol para acceder a la nueva Plataforma de la UAEH ESTi
             </p>
         </div>
 
@@ -56,7 +56,7 @@
                         <i class="fas fa-user-graduate"></i>
                     </div>
                     <h3 class="role-title">Alumno</h3>
-                    <p>Accede a tus clases, tareas y calendario académico</p>
+                    <p>Ve tus actividades, genera tus vales y habla con tu grupo</p>
                 </div>
             </div>
             
@@ -66,7 +66,7 @@
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
                     <h3 class="role-title">Profesor</h3>
-                    <p>Gestiona tus cursos, asistencias y materiales</p>
+                    <p>Gestiona tus cursos, organiza tus actividdes para tu grupo</p>
                 </div>
             </div>
             
