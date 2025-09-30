@@ -79,43 +79,48 @@ const laboratoriosMap = {
 
   // Manejar envío del formulario (agregar o editar)
   form.addEventListener('submit', function(e) {
-      e.preventDefault();
+    e.preventDefault();
 
-      const formData = new FormData(form);
+    const fechaSeleccionada = new Date(fechaInput.value);
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0); // limpiar hora para comparar solo fechas
 
-      // Añadir id_practica si estamos editando
-      if (currentPracticaId) {
-          formData.append('id_practica', currentPracticaId);
-      }
+    if (fechaSeleccionada < hoy) {
+        alert("No puedes programar prácticas en días pasados.");
+        return;
+    }
 
-      // El valor de laboratorio ya es numérico en el select
-      formData.set('laboratorio', laboratorioSelect.value);
+    const formData = new FormData(form);
 
-      // Determinar acción
-      const action = currentPracticaId ? 'editar' : 'agregar';
-      formData.set('action', action);
+    if (currentPracticaId) {
+        formData.append('id_practica', currentPracticaId);
+    }
 
-      fetch('../../../resources/api/Laboratorio/apiPracticas.php', {
-          method: 'POST',
-          body: formData
-      })
-      .then(res => res.text())
-      .then(result => {
-          if (result === 'OK') {
-              alert(`Práctica ${action === 'agregar' ? 'guardada' : 'actualizada'} correctamente`);
-              calendar.refetchEvents();
-              modal.hide();
-              form.reset();
-              currentPracticaId = null;
-          } else {
-              alert('Error: ' + result);
-          }
-      })
-      .catch(err => {
-          console.error('Error al guardar práctica:', err);
-          alert('Error al guardar práctica');
-      });
-  });
+    formData.set('laboratorio', laboratorioSelect.value);
+    const action = currentPracticaId ? 'editar' : 'agregar';
+    formData.set('action', action);
+
+    fetch('../../../resources/api/Laboratorio/apiPracticas.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.text())
+    .then(result => {
+        if (result === 'OK') {
+            alert(` Práctica ${action === 'agregar' ? 'guardada' : 'actualizada'} correctamente`);
+            calendar.refetchEvents();
+            modal.hide();
+            form.reset();
+            currentPracticaId = null;
+        } else {
+            alert('Error: ' + result);
+        }
+    })
+    .catch(err => {
+        console.error('Error al guardar práctica:', err);
+        alert('Error al guardar práctica');
+    });
+});
 
   // Crear botón eliminar dinámicamente en el modal footer
   const modalFooter = modalEl.querySelector('.modal-footer');

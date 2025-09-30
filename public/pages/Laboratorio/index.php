@@ -53,7 +53,7 @@ if(isset($_SESSION['username'])){
           <div class="card-body d-flex align-items-center">
             <i class="fa-solid fa-calendar-check fa-2x text-success me-3"></i>
             <div>
-              <h6 class="card-title mb-0">Próximas prácticas</h6>
+              <h6 class="card-title mb-0">Próximas prácticas en semana</h6>
               <p class="card-text fs-5 fw-bold" id="practicas"><?= $c_practicas ?> Programadas</p>
             </div>
           </div>
