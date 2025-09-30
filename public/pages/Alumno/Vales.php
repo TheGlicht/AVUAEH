@@ -23,30 +23,38 @@ if (isset($_GET['action'])) {
     $action = $_GET['action'];
 
     try {
-        if ($action === 'materias') {
-            $stmt = $conn->query("SELECT id_materias, nombre FROM Materias WHERE laboratorio = 1");
-            echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-            exit();
-        }
+      if ($action === 'materias') {
+        $sql = "SELECT m.id_materias, m.nombre
+                FROM Materias m
+                INNER JOIN AluMateria am ON am.id_materias = m.id_materias
+                INNER JOIN Alumno a ON a.id_alumno = am.id_alumno
+                WHERE a.username = ? AND m.laboratorio = 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$_SESSION['username']]);
+        echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+        exit();
+    }
+    
 
-        if ($action === 'docentes') {
-            $id_materia = $_GET['id_materia'] ?? null;
-            if (!$id_materia) { echo json_encode([]); exit(); }
-
-            $sql = "SELECT DISTINCT d.id_docente, d.nombreCompleto
-                    FROM Docentes d
-                    INNER JOIN ValesA v ON v.id_docente = d.id_docente
-                    WHERE v.id_materias = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([$id_materia]);
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if (empty($rows)) {
-                $rows = $conn->query("SELECT id_docente, nombreCompleto FROM Docentes")->fetchAll(PDO::FETCH_ASSOC);
-            }
-            echo json_encode($rows);
-            exit();
-        }
+    if ($action === 'docentes') {
+      $id_materia = $_GET['id_materia'] ?? null;
+      if (!$id_materia) { echo json_encode([]); exit(); }
+  
+      $sql = "SELECT DISTINCT d.id_docente, d.nombreCompleto
+              FROM Docentes d
+              INNER JOIN DocMateria dm ON dm.id_docente = d.id_docente
+              INNER JOIN Alumno a ON a.username = ?
+              INNER JOIN DatosA da ON da.id_alumno = a.id_alumno
+              WHERE dm.id_materias = ?
+                AND dm.grupo = da.grupo";
+      $stmt = $conn->prepare($sql);
+      $stmt->execute([$_SESSION['username'], $id_materia]);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+      echo json_encode($rows);
+      exit();
+  }
+  
 
         if ($action === 'kits') {
             $id_materia = $_GET['id_materia'] ?? null;
@@ -124,16 +132,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
             $_POST['id_kit'],
             $_SESSION['username']
         ]);
+
+        // No seteamos mensaje de éxito para que no aparezca ningún ícono/palomita
+        // $_SESSION['success_vales'] = "Vale creado correctamente.";  <-- eliminado
     } catch (PDOException $ex) {
         $_SESSION['error_vales'] = "Error al guardar: " . $ex->getMessage();
     }
+
+    //Siempre redirigimos: esto limpia el formulario al recargar la vista
     header("Location: Vales.php");
     exit();
 }
 
+
 // ----------- Consultas para la vista ----------
 try {
-    $materias = $conn->query("SELECT id_materias, nombre FROM Materias WHERE laboratorio = 1")->fetchAll(PDO::FETCH_ASSOC);
+  // Materias que tiene el alumno con
+    $sqlMaterias = "SELECT m.id_materias, m.nombre
+    FROM Materias m
+    INNER JOIN AluMateria am ON am.id_materias = m.id_materias
+    INNER JOIN Alumno a ON a.id_alumno = am.id_alumno
+    WHERE a.username = ? AND m.laboratorio = 1";
+  $stmt = $conn->prepare($sqlMaterias);
+  $stmt->execute([$_SESSION['username']]);
+  $materias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     $kits = $conn->query("SELECT id_kit, nombre, id_materias FROM Kit")->fetchAll(PDO::FETCH_ASSOC);
 
     $sqlVales = "SELECT v.id_vales, m.nombre AS materia, d.nombreCompleto AS docente,
