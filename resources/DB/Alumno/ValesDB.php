@@ -10,7 +10,7 @@ class ValesDb {
         $this->username = $username;
     }
 
-    // 🔹 Obtener id_alumno a partir del username actual
+    //  Obtener id_alumno a partir del username actual
     private function getAlumnoId() {
         $sql = "SELECT id_alumno FROM Alumno WHERE username = ?";
         $stmt = $this->conn->prepare($sql);
@@ -19,7 +19,7 @@ class ValesDb {
         return $id_alumno ?: false;
     }
 
-    // 🔹 Crear vale
+    //  Crear vale
     public function agregarVale($id_materias, $id_docente, $diaLab, $horaLab, $id_lab, $id_kit) {
         $id_alumno = $this->getAlumnoId();
         if (!$id_alumno) return false;
@@ -30,7 +30,7 @@ class ValesDb {
         return $stmt->execute([$id_materias, $id_docente, $diaLab, $horaLab, $id_lab, $id_kit, $id_alumno]);
     }
 
-    // 🔹 Obtener vales por alumno
+    //  Obtener vales por alumno
     public function obtenerValesPorAlumno() {
         $id_alumno = $this->getAlumnoId();
         if (!$id_alumno) return [];
@@ -47,7 +47,7 @@ class ValesDb {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 🔹 Eliminar vale
+    //  Eliminar vale
     public function eliminarVale($id_vales) {
         $id_alumno = $this->getAlumnoId();
         if (!$id_alumno) return false;
@@ -57,14 +57,14 @@ class ValesDb {
         return $stmt->execute([$id_vales, $id_alumno]);
     }
 
-    // 🔹 Obtener materias que tienen laboratorio
+    //  Obtener materias que tienen laboratorio
     public function obtenerMaterias() {
         $sql = "SELECT id_materias, nombre FROM Materias WHERE laboratorio = 1";
         $stmt = $this->conn->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 🔹 Obtener docentes que han tenido relación con una materia
+    //  Obtener docentes que han tenido relación con una materia
     public function obtenerDocentesPorMateria($id_materia) {
         $sql = "SELECT DISTINCT d.id_docente, d.nombreCompleto
                 FROM Docentes d
@@ -75,7 +75,7 @@ class ValesDb {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // 🔹 Obtener kits de una materia
+    //  Obtener kits de una materia
     public function obtenerKitsPorMateria($id_materia) {
         $sql = "SELECT id_kit, nombre FROM Kit WHERE id_materias = ?";
         $stmt = $this->conn->prepare($sql);

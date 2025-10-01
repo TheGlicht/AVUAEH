@@ -30,11 +30,17 @@ document.addEventListener('DOMContentLoaded', function () {
           });
   
           if (resp.ok) {
-            alert("Vale generado correctamente ✅");
+            alert("Vale generado correctamente");
             // refrescar tabla sin recargar página
             cargarVales();
+            form.reset(); //  limpia el formulario
+
+            // volver a poner la opción por defecto en selects
+            docente.innerHTML = '<option value="" disabled selected>Selecciona un docente</option>';
+            kit.innerHTML = '<option value="" disabled selected>Selecciona un kit</option>';
+
           } else {
-            alert("Error al guardar el vale ❌");
+            alert("Error al guardar el vale");
           }
         } catch (err) {
           console.error("Error en fetch:", err);
@@ -123,6 +129,43 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (err) {
         console.error("Error cargando vales:", err);
       }
+    }
+
+     // -------- Evento cambio de materia (docentes + kits) --------
+     if (materia) {
+      materia.addEventListener("change", async function () {
+        const id = this.value;
+
+        // // Cargar docentes
+        // try {
+        //   const respDoc = await fetch(`Vales.php?action=docentes&id_materia=${encodeURIComponent(id)}`);
+        //   const dataDoc = await respDoc.json();
+        //   docente.innerHTML = '<option value="" disabled selected>Selecciona un docente</option>';
+        //   dataDoc.forEach(d => {
+        //     const o = document.createElement('option');
+        //     o.value = d.id_docente;
+        //     o.textContent = d.nombre;
+        //     docente.appendChild(o);
+        //   });
+        // } catch (err) {
+        //   console.error("Error cargando docentes:", err);
+        // }
+
+        // Cargar kits
+        try {
+          const respKits = await fetch(`Vales.php?action=kits&id_materia=${encodeURIComponent(id)}`);
+          const dataKits = await respKits.json();
+          kit.innerHTML = '<option value="" disabled selected>Selecciona un kit</option>';
+          dataKits.forEach(k => {
+            const o = document.createElement('option');
+            o.value = k.id_kit;
+            o.textContent = k.nombre;
+            kit.appendChild(o);
+          });
+        } catch (err) {
+          console.error("Error cargando kits:", err);
+        }
+      });
     }
   });
   
