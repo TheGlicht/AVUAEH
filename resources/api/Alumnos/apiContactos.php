@@ -29,6 +29,8 @@ try {
                 $tel = htmlspecialchars($c['telefono'], ENT_QUOTES, 'UTF-8');
                 $cor = htmlspecialchars($c['email'], ENT_QUOTES, 'UTF-8');
 
+                $usr = $contactoDb->findUsernameByEmail($c['email']);
+
                 echo "<tr>
                         <td>{$nom}</td>
                         <td>{$tel}</td>
@@ -42,6 +44,12 @@ try {
                                   data-correo='{$cor}'>
                             <i class='fa-solid fa-pen-to-square'></i>
                           </button>
+                          
+                       <button class='btn btn-info btn-sm chat-btn'
+                  data-username='".htmlspecialchars($usr, ENT_QUOTES)."' data-nombre='{$nom}'>
+            <i class='fa-solid fa-comment'></i>
+          </button>
+
 
                           <button class='btn btn-danger btn-sm delete-btn'
                                   title='Eliminar'

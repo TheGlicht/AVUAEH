@@ -334,9 +334,12 @@ public function getSugerencias(string $username): array {
     // 🔹 Obtener lista de contactos ya guardados (por email o id_alumno)
     $excluir = [];
     try {
-        $sqlC = 'SELECT email, id_alumno FROM ContactosA WHERE id_alumno IS NOT NULL OR email IS NOT NULL';
+        $sqlC = 'SELECT c.email, c.id_contacto, a.id_alumno AS id_owner
+        FROM ContactosA c
+        JOIN Alumno a ON a.id_alumno = c.id_alumno
+        WHERE a.username = ?';
         $stmtC = $dbh->prepare($sqlC);
-        $stmtC->execute();
+        $stmtC->execute([$username]);
         $contactos = $stmtC->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($contactos as $c) {
@@ -413,6 +416,8 @@ public function getSugerencias(string $username): array {
 
     return $resultado;
 }
+
+
 
 
 }

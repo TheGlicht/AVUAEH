@@ -83,11 +83,60 @@ if (isset($_SESSION['username'])) {
     <ul class="list-group" id="sugerenciasList">
     </ul>
    </div>
-
-
   </div>
 
+<!-- Seccion de los mensajes -->
+<style>
+
+  .chat-container {
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+}
+.chat-window {
+  width: 300px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  flex-direction: column;
+}
+.chat-header {
+  background: #0d6efd;
+  color: #fff;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+.chat-footer {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+}
+.chat-bubble {
+  max-width: 70%;
+  margin: 3px 0;
+  padding: 6px 10px;
+  border-radius: 15px;
+}
+.chat-bubble.me { background: #0d6efd; color: #fff; margin-left: auto; }
+.chat-bubble.other { background: #f1f1f1; color: #000; margin-right: auto; }
+</style>
+
+<div id="chatContainer" class="chat-container"></div>
+
+
   <br>
+
 
   <?php include '../../../resources/templates/footer.php'; ?>
 
@@ -95,7 +144,18 @@ if (isset($_SESSION['username'])) {
   <script src="../../components/js/jquery-3.7.1.js"></script>
   <script src="../../components/js/bootstrap.bundle.min.js"></script>
   <script src="../../components/js/KitFontAwesome.js"></script>
+  <!-- <script>
+    window.myUser = "<?php echo $_SESSION['username']; ?>";
+  </script> -->
+
+  <script>
+    // Inyectamos valores desde PHP de forma segura
+    window.myUser    = <?php echo json_encode($_SESSION['username']); ?>;
+    window.API_CHAT  = <?php echo json_encode('../../../resources/api/Alumnos/apiChat.php'); ?>;
+    window.API_CONT  = <?php echo json_encode('../../../resources/api/Alumnos/apiContactos.php'); ?>;
+  </script>
   <script src="../../components/js/Alu/Contactos.js"></script>
+
 </body>
 </html>
 

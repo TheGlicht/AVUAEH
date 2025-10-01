@@ -104,4 +104,19 @@ class ContactoDb {
             return false;
         }
     }
+
+    // Devuelve username si existe un Alumno con ese email, sino cadena vacía
+    public function findUsernameByEmail($email) {
+        try {
+            $dbh = Conexion::getInstancia()->getDbh();
+            $sql = 'SELECT username FROM Alumno WHERE email = ? LIMIT 1';
+            $stmt = $dbh->prepare($sql);
+            $stmt->execute([$email]);
+            return $stmt->fetchColumn() ?: '';
+        } catch (PDOException $e) {
+            error_log("findUsernameByEmail error: " . $e->getMessage());
+            return '';
+        }
+    }
+
 }
