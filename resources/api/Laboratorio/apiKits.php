@@ -26,25 +26,44 @@ try {
             break;
         
 
-        case 'POST':
-            $data = json_decode(file_get_contents("php://input"), true);
-            $nombre = $data['nombre'];
-            $id_materias = $data['id_materias'];
-            $materiales = $data['materiales'];
-
-            $dbh = Conexion::getInstancia()->getDbh();
-            $dbh->beginTransaction();
-
-            $kitDB->addKit($nombre, $id_materias);
-            $id_kit = $dbh->lastInsertId();
-
-            foreach ($materiales as $m) {
-                $kitDB->addMaterialToKit($id_kit, $m['id_material'], $m['cantidad']);
-            }
-
-            $dbh->commit();
-            echo json_encode(['success' => true]);
-            break;
+            case 'POST':
+                $data = json_decode(file_get_contents("php://input"), true);
+                $nombre = $data['nombre'];
+                $id_materias = $data['id_materias'];
+                $materiales = $data['materiales'];
+            
+                // Validación: no permitir kits sin materiales
+                if (empty($materiales) || count($materiales) === 0) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false, 
+                        'message' => 'No puedes crear un kit sin agregar al menos un material'
+                    ]);
+                    exit;
+                }
+            
+                $dbh = Conexion::getInstancia()->getDbh();
+                try {
+                    $dbh->beginTransaction();
+            
+                    // Crear cabecera del kit
+                    $kitDB->addKit($nombre, $id_materias);
+                    $id_kit = $dbh->lastInsertId();
+            
+                    // Insertar materiales en la tabla intermedia
+                    foreach ($materiales as $m) {
+                        $kitDB->addMaterialToKit($id_kit, $m['id_material'], $m['cantidad']);
+                    }
+            
+                    $dbh->commit();
+                    echo json_encode(['success' => true]);
+                } catch (Exception $e) {
+                    $dbh->rollBack();
+                    http_response_code(500);
+                    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+                }
+                break;
+            
         
             case 'PUT':
                 $data = json_decode(file_get_contents("php://input"), true);

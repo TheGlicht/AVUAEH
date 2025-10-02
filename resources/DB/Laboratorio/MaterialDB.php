@@ -23,44 +23,67 @@ class MaterialDb{
     }
 
     // Funcion para guardar los materiales
-    public function addMaterial($nombre, $tipo, $cantidad, $estado){
+    public function addMaterial($nombre, $tipo, $cantidad, $funcional, $danado, $faltante) {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
-        try{
-            $consulta = "INSERT INTO Material(nombre, tipo, cantidad, estado) 
-                        VALUES (?,?,?,?)";
-            $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $nombre);
-            $stmt->bindParam(2, $tipo);
-            $stmt->bindParam(3, $cantidad);
-            $stmt->bindParam(4, $estado);
-            return $stmt->execute();
-        } catch(PDOException $e){
-            error_log("Error en addMaterial:" . $e->getMessage());
+        try {
+            // Validacion deconsistencia
+            if(($funcional + $danado + $faltante) > $cantidad){
+                throw new Exception("La suma de funcional, dañado y faltante no puede ser mayor a la cantidad todal");
+            }
+            // Consulta para insetar
+            $sql = "INSERT INTO Material (nombre, tipo, cantidad, cantidad_funcional, cantidad_danado, cantidad_faltante) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $dbh->prepare($sql);
+            return $stmt->execute([$nombre, $tipo, $cantidad, $funcional, $danado, $faltante]);
+        } catch(PDOException $e) {
+            error_log("Error en addMaterial: ". $e->getMessage());
             return false;
         }
     }
+    
+    // Funcion para editar los materiales
+    public function updateMaterial($id, $nombre, $tipo, $cantidad, $funcional, $danado, $faltante) {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+        try{
+            // Validación de consistencia
+            if (($funcional + $danado + $faltante) > $cantidad) {
+                throw new Exception("La suma de funcional, dañado y faltante no puede ser mayor que la cantidad total");
+            }            
+            // Consulta para actualizar
+            $sql = "UPDATE Material 
+                    SET nombre=?, tipo=?, cantidad=?, cantidad_funcional=?, cantidad_danado=?, cantidad_faltante=? 
+                    WHERE id_material=?";
+            $stmt = $dbh->prepare($sql);
+            return $stmt->execute([$nombre, $tipo, $cantidad, $funcional, $danado, $faltante, $id]);
+        } catch(PDOException $e){
+            error_log("Error en updateMaterial: ". $e->getMessage());
+            return false;
+        }
+    }
+    
 
     // Funcion para editar los materiales
-    public function updateMaterial($id_material, $nombre, $tipo, $cantidad, $estado){
-        $conexion = Conexion::getInstancia();
-        $dbh = $conexion->getDbh();
-        try{
-            $consulta = "UPDATE Material
-            SET nombre=?, tipo=?, cantidad=?, estado=? 
-            WHERE id_material = ?";
-            $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $nombre);
-            $stmt->bindParam(2, $tipo);
-            $stmt->bindParam(3, $cantidad);
-            $stmt->bindParam(4, $estado);
-            $stmt->bindParam(5, $id_material);
-            return $stmt->execute();
-        } catch(PDOException $e){
-            error_log("Error en addMaterial:" . $e->getMessage());
-            return false;
-        }
-    }
+    // public function updateMaterial($id_material, $nombre, $tipo, $cantidad, $estado){
+    //     $conexion = Conexion::getInstancia();
+    //     $dbh = $conexion->getDbh();
+    //     try{
+    //         $consulta = "UPDATE Material
+    //         SET nombre=?, tipo=?, cantidad=?, estado=? 
+    //         WHERE id_material = ?";
+    //         $stmt = $dbh->prepare($consulta);
+    //         $stmt->bindParam(1, $nombre);
+    //         $stmt->bindParam(2, $tipo);
+    //         $stmt->bindParam(3, $cantidad);
+    //         $stmt->bindParam(4, $estado);
+    //         $stmt->bindParam(5, $id_material);
+    //         return $stmt->execute();
+    //     } catch(PDOException $e){
+    //         error_log("Error en addMaterial:" . $e->getMessage());
+    //         return false;
+    //     }
+    // }
     // Funcion para eliminar los materiales
     public function deleteMaterial($id_material){
         $conexion = Conexion::getInstancia();

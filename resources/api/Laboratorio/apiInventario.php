@@ -19,27 +19,41 @@ try {
             $materiales = $materialDB->showMaterial();
             echo json_encode($materiales);
             break;
-
-        case 'POST': // Agregar material
-            $data = json_decode(file_get_contents("php://input"), true);
-            if ($materialDB->addMaterial($data['nombre'], $data['tipo'], $data['cantidad'], $data['estado'])) {
-                echo json_encode(['success' => true, 'message' => 'Material agregado']);
-            } else {
-                http_response_code(400);
-                echo json_encode(['success' => false, 'message' => 'Error al agregar']);
-            }
-            break;
-
-        case 'PUT': // Actualizar material
-            $data = json_decode(file_get_contents("php://input"), true);
-            if ($materialDB->updateMaterial($data['id_material'], $data['nombre'], $data['tipo'], $data['cantidad'], $data['estado'])) {
-                echo json_encode(['success' => true, 'message' => 'Material actualizado']);
-            } else {
-                http_response_code(400);
-                echo json_encode(['success' => false, 'message' => 'Error al actualizar']);
-            }
-            break;
-
+            case 'POST': // Agregar material
+                $data = json_decode(file_get_contents("php://input"), true);
+                if ($materialDB->addMaterial(
+                    $data['nombre'], 
+                    $data['tipo'], 
+                    $data['cantidad'], 
+                    $data['cantidad_funcional'], 
+                    $data['cantidad_danado'], 
+                    $data['cantidad_faltante']
+                )) {
+                    echo json_encode(['success' => true, 'message' => 'Material agregado']);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'message' => 'Error al agregar']);
+                }
+                break;
+            
+            case 'PUT': // Actualizar material
+                $data = json_decode(file_get_contents("php://input"), true);
+                if ($materialDB->updateMaterial(
+                    $data['id_material'], 
+                    $data['nombre'], 
+                    $data['tipo'], 
+                    $data['cantidad'], 
+                    $data['cantidad_funcional'], 
+                    $data['cantidad_danado'], 
+                    $data['cantidad_faltante']
+                )) {
+                    echo json_encode(['success' => true, 'message' => 'Material actualizado']);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'message' => 'Error: La suma de funcional, dañado y faltante no puede superar la cantidad total.']);
+                }
+                break;
+            
         case 'DELETE': // Eliminar material
             $data = json_decode(file_get_contents("php://input"), true);
             if ($materialDB->deleteMaterial($data['id_material'])) {

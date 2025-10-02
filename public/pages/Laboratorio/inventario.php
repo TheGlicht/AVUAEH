@@ -43,6 +43,10 @@ if(isset($_SESSION['username'])){
         <input type="checkbox" id="selectAll" onclick="seleccionarTodos(this)"> Seleccionar todos
     </div>
 
+    <div class="mb-3">
+      <input type="text" id="buscador" class="form-control" placeholder="Buscar material">
+    </div>
+
     <!-- Tabla -->
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -51,7 +55,9 @@ if(isset($_SESSION['username'])){
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th>Cantidad</th>
-                <th>Estado</th>
+                <th>Funcional</th>
+                <th>Dañado</th>
+                <th>Faltante</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -68,15 +74,14 @@ if(isset($_SESSION['username'])){
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <input type="text" id="nombreMaterial" class="form-control mb-2" placeholder="Nombre" required>
-        <input type="text" id="tipoMaterial" class="form-control mb-2" placeholder="Tipo" required>
-        <input type="number" id="cantidadMaterial" class="form-control mb-2" placeholder="Cantidad" required>
-        <select id="estadoMaterial" class="form-select" required>
-          <option value="1">Funcional</option>
-          <option value="2">Dañado</option>
-          <option value="3">Faltante</option>
-        </select>
+          <input type="text" id="nombreMaterial" class="form-control mb-2" placeholder="Nombre" required>
+          <input type="text" id="tipoMaterial" class="form-control mb-2" placeholder="Tipo" required>
+          <input type="number" id="cantidadMaterial" class="form-control mb-2" placeholder="Cantidad total" min="1"required>
+          <input type="number" id="cantidadFuncional" class="form-control mb-2" placeholder="Cantidad funcional" min="0" required>
+          <input type="number" id="cantidadDanado" class="form-control mb-2" placeholder="Cantidad dañado" min="0" required>
+          <input type="number" id="cantidadFaltante" class="form-control mb-2" placeholder="Cantidad faltante" min="0" required>
       </div>
+
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" class="btn btn-primary">Guardar</button>
@@ -94,16 +99,15 @@ if(isset($_SESSION['username'])){
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <input type="hidden" id="idEditar">
-        <input type="text" id="nombreEditar" class="form-control mb-2" required>
-        <input type="text" id="tipoEditar" class="form-control mb-2" required>
-        <input type="number" id="cantidadEditar" class="form-control mb-2" required>
-        <select id="estadoEditar" class="form-select" required>
-          <option value="1">Funcional</option>
-          <option value="2">Dañado</option>
-          <option value="3">Faltante</option>
-        </select>
+          <input type="hidden" id="idEditar">
+          <input type="text" id="nombreEditar" class="form-control mb-2" required>
+          <input type="text" id="tipoEditar" class="form-control mb-2" required>
+          <input type="number" id="cantidadEditar" class="form-control mb-2" required>
+          <input type="number" id="funcionalEditar" class="form-control mb-2" required>
+          <input type="number" id="danadoEditar" class="form-control mb-2" required>
+          <input type="number" id="faltanteEditar" class="form-control mb-2" required>
       </div>
+
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" class="btn btn-warning">Actualizar</button>
@@ -114,7 +118,7 @@ if(isset($_SESSION['username'])){
 
 <!-- Modal Armar Kit -->
 <div class="modal fade" id="modalKit" tabindex="-1">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg"> <!-- modal más ancho -->
     <form id="formKit" class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title">Armar Kit</h5>
@@ -123,8 +127,21 @@ if(isset($_SESSION['username'])){
       <div class="modal-body">
         <input type="text" id="nombreKit" class="form-control mb-2" placeholder="Nombre del Kit" required>
         
-        <!-- Aquí se cargan las materias dinámicamente -->
-        <select id="materiaKit" class="form-select mb-2" required></select>
+        <!-- Selección de materia -->
+        <select id="materiaKit" class="form-select mb-3" required></select>
+
+        <!-- Tabla dinámica de materiales -->
+        <h6>Materiales seleccionados:</h6>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Funcional Disponible</th>
+              <th>Cantidad en Kit</th>
+            </tr>
+          </thead>
+          <tbody id="tablaMaterialesKit"></tbody>
+        </table>
       </div>    
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -133,6 +150,7 @@ if(isset($_SESSION['username'])){
     </form>
   </div>
 </div>
+
 
 
 

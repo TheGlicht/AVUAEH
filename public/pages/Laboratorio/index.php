@@ -93,7 +93,7 @@ if(isset($_SESSION['username'])){
             <i class="fa-solid fa-triangle-exclamation fa-2x text-secondary me-3"></i>
             <div>
               <h6 class="card-title mb-0">Reportes de daño</h6>
-              <p class="card-text fs-5 fw-bold" id="reportes"><?= $c_reportes ?> sin resivir</p>
+              <p class="card-text fs-5 fw-bold" id="reportes"><?= $c_reportes ?> pendientes</p>
             </div>
           </div>
         </div>
