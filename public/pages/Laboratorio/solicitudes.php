@@ -60,17 +60,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
 // --- Consultar solicitudes ---
 try {
     $sql = "SELECT v.id_vales, a.username AS alumno, 
-                   m.nombre AS materia, v.diaLab, v.horaLab, v.id_lab,
+                   m.nombre AS materia, v.diaLab, v.horaLab,
+                   da.grupo,
+                   CASE v.id_lab
+                       WHEN 1 THEN 'Lab. Electrónica'
+                       WHEN 2 THEN 'Lab. Control'
+                       WHEN 3 THEN 'Lab. Fisico-Quimica'
+                       WHEN 4 THEN 'Laboratorio 1'
+                       WHEN 5 THEN 'Laboratorio 2'
+                       WHEN 6 THEN 'Laboratorio 3'
+                       WHEN 7 THEN 'Laboratorio 4'
+                       ELSE 'Desconocido'
+                   END AS laboratorio,
                    k.nombre AS kit,
                    v.estatus,
                    GROUP_CONCAT(CONCAT(mat.nombre, ' (', km.cantidad, ')') SEPARATOR ', ') AS materiales
             FROM ValesA v
             LEFT JOIN Alumno a ON v.id_alumno = a.id_alumno
+            LEFT JOIN DatosA da ON a.id_alumno = da.id_alumno
             LEFT JOIN Materias m ON v.id_materias = m.id_materias
             LEFT JOIN Kit k ON v.id_kit = k.id_kit
             LEFT JOIN KitMaterial km ON k.id_kit = km.id_kit
             LEFT JOIN Material mat ON km.id_material = mat.id_material
-            GROUP BY v.id_vales, a.username, m.nombre, v.diaLab, v.horaLab, v.id_lab, k.nombre, v.estatus
+            GROUP BY v.id_vales, a.username, m.nombre, v.diaLab, v.horaLab, v.id_lab, k.nombre, v.estatus, da.grupo
             ORDER BY v.diaLab, v.horaLab;";
     $solicitudes = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $ex) {
@@ -122,6 +134,7 @@ try {
             <th>Materiales Solicitados</th>
             <th>Fecha</th>
             <th>Hora</th>
+            <th>Grupo</th>
             <th>Laboratorio</th>
             <th>Estado</th>
             <th>Opciones</th>
@@ -141,7 +154,8 @@ try {
                 <td><?= htmlspecialchars($s['materiales']) ?></td>
                 <td><?= htmlspecialchars($s['diaLab']) ?></td>
                 <td><?= htmlspecialchars($s['horaLab']) ?></td>
-                <td><?= htmlspecialchars($s['id_lab']) ?></td>
+                <td><?= htmlspecialchars($s['grupo']) ?></td>
+                <td><?= htmlspecialchars($s['laboratorio']) ?></td>
                 <td class="estado">
                   <?php
                     switch ($s['estatus']) {
@@ -173,7 +187,7 @@ try {
               </tr>
             <?php endforeach; ?>
           <?php else: ?>
-            <tr><td colspan="9" class="text-center">No hay solicitudes registradas</td></tr>
+            <tr><td colspan="10" class="text-center">No hay solicitudes registradas</td></tr>
           <?php endif; ?>
         </tbody>
       </table>

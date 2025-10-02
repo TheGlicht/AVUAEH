@@ -65,6 +65,7 @@ if(isset($_SESSION['username'])){
               <label for="materia" class="form-label">Materia</label>
               <!-- Select para cargar materias con labortaorio -->
              <select class="form-select" name="materiaKit" id="materiaKit">
+             <option value="">Seleccione un materia</option>
              <?php foreach ($materias as $materia): ?>
                     <option value="<?= htmlspecialchars($materia['id_materias']) ?>">
                         <?= htmlspecialchars($materia['nombre']) ?> - Semestre <?= htmlspecialchars($materia['semestre']) ?>
@@ -88,6 +89,7 @@ if(isset($_SESSION['username'])){
             <div class="col-md-6">
               <label for="grupo" class="form-label">Semestre</label>
               <select name="semestre" id="semestre"  class="form-select">
+              <option value="">Seleccione semestre</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
