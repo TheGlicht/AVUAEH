@@ -22,12 +22,18 @@ function fetchJSON(url, options) {
 // ===== Alumnos =====
 function agregarAlumno() {
   const grupo = document.createElement("div");
-  grupo.classList = "row g-2 mb-2";
+  grupo.classList = "row g-2 mb-2 alumno-row";
   grupo.innerHTML = `
-    <div class="col-md-6"><input type="text" class="form-control" placeholder="Nombre del alumno" required></div>
-    <div class="col-md-6"><input type="text" class="form-control" placeholder="Número de cuenta" required></div>`;
+    <div class="col-md-5"><input type="text" class="form-control" placeholder="Nombre del alumno" required></div>
+    <div class="col-md-5"><input type="text" class="form-control" placeholder="Número de cuenta" required></div>
+    <div class="col-md-2 d-flex justify-content-center">
+      <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.alumno-row').remove()">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>`;
   document.getElementById("equipoAlumnos").appendChild(grupo);
 }
+
 
 // ===== Materiales =====
 let opcionesMaterialesHTML = '<option selected disabled>Selecciona material</option>';
@@ -52,31 +58,34 @@ function cargarOpcionesMateriales() {
 }
 
 // ======= Agregar Material ========
-
 function agregarMaterial() {
   const grupo = document.createElement("div");
-  grupo.classList = "row g-2 mb-2";
+  grupo.classList = "row g-2 mb-2 material-row";
   grupo.innerHTML = `
-    <div class="col-md-8">
+    <div class="col-md-7">
       <select class="form-select" name="material[]">
         ${opcionesMaterialesHTML}
       </select>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <input type="number" class="form-control" name="cantidad[]" placeholder="Cantidad" min="1" required>
+    </div>
+    <div class="col-md-2 d-flex justify-content-center">
+      <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.material-row').remove()">
+        <i class="fa-solid fa-trash"></i>
+      </button>
     </div>`;
   document.getElementById("materialRoto").appendChild(grupo);
 }
 
 // ===== Tabla de reportes =====
 function cargarReportes() {
-  // añade timestamp para evitar caché si hiciera falta
   fetchJSON(`${API_URL}?_=${Date.now()}`)
     .then((data) => {
       const tbody = document.getElementById("tablaReportes");
       tbody.innerHTML = "";
       data.forEach((dano) => {
-        const materialTexto = dano.materialNombre || dano.nombreMaterial || dano.id_material || "Desconocido";
+        const materialTexto = dano.material || "Desconocido"; // 👈 corrección
         const cantidad = dano.cantidad ?? 1;
         const encargado = dano.encargado || "-";
         const nombreEquipo = (dano.nombreAlu ? `${dano.nombreAlu} (${dano.numeroCuenta || "-"})` : "-");
@@ -89,7 +98,9 @@ function cargarReportes() {
           <td>${encargado}</td>
           <td>${dano.fechaLimite || "-"}</td>
           <td>
-            <button class="btn btn-sm btn-danger" onclick="eliminarReporte(${dano.id_dano}, this)"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarReporte(${dano.id_dano}, this)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </td>`;
         tbody.appendChild(row);
       });

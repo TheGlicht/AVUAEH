@@ -73,9 +73,14 @@ try {
                         $estatus,
                         $encargado
                     );
+                    if ($res) {
+                        // Actualizar stock dañado
+                        $valesDb->aumentarDanado($mat['id_material'], $mat['cantidad']);
+                    }
                     if (!$res) $success = false;
                 }
             }
+            
 
             echo json_encode(['success' => $success]);
             exit;

@@ -41,40 +41,50 @@ if(isset($_SESSION['username'])){
         </div>
       </div>
 
-      <div id="equipoAlumnos" class="mb-3">
-        <label class="form-label">Alumnos del equipo</label>
-        <div class="row g-2 mb-2">
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Nombre del alumno" required>
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Número de cuenta" required>
-          </div>
-        </div>
-      </div>
-      <button type="button" class="btn btn-sm btn-outline-secondary mb-3" onclick="agregarAlumno()">+ Agregar alumno</button>
+      <!-- Alumnos responsables -->
+<div id="equipoAlumnos" class="mb-3">
+  <label class="form-label">Alumnos del equipo</label>
+  <div class="row g-2 mb-2 alumno-row">
+    <div class="col-md-5">
+      <input type="text" class="form-control" placeholder="Nombre del alumno" required>
+    </div>
+    <div class="col-md-5">
+      <input type="text" class="form-control" placeholder="Número de cuenta" required>
+    </div>
+    <div class="col-md-2 d-flex justify-content-center">
+      <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.alumno-row').remove()">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<button type="button" class="btn btn-sm btn-outline-secondary mb-3" onclick="agregarAlumno()">+ Agregar alumno</button>
 
-      <!-- Material roto -->
-      <div class="mb-3">
-        <label class="form-label">Material Roto</label>
-        <div id="materialRoto">
-          <div class="row g-2 mb-2">
-            <div class="col-md-8">
-              <select class="form-select" name="material[]">
-                <option selected disabled>Selecciona material</option>
-                <option value="Vaso de precipitados">Vaso de precipitados</option>
-                <option value="Probeta">Probeta</option>
-                <option value="Tubos de ensayo">Tubos de ensayo</option>
-                <option value="Matraz Erlenmeyer">Matraz Erlenmeyer</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <input type="number" class="form-control" name="cantidad[]" placeholder="Cantidad" min="1" required>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-secondary mb-3" onclick="agregarMaterial()">+ Agregar otro material</button>
+<!-- Material roto -->
+<div class="mb-3">
+  <label class="form-label">Material Roto</label>
+  <div id="materialRoto">
+    <div class="row g-2 mb-2 material-row">
+      <div class="col-md-7">
+        <select class="form-select" name="material[]">
+          <option selected disabled>Selecciona material</option>
+        </select>
       </div>
+      <div class="col-md-3">
+        <input type="number" class="form-control" name="cantidad[]" placeholder="Cantidad" min="1" required>
+      </div>
+      <div class="col-md-2 d-flex justify-content-center">
+        <button type="button" class="btn btn-sm btn-danger" onclick="this.closest('.material-row').remove()">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-sm btn-outline-secondary mb-3" onclick="agregarMaterial()">+ Agregar otro material</button>
+</div>
+
+<!-- ... lo demás igual ... -->
+
 
       <button type="submit" class="btn btn-success"><i class="fa-solid fa-check"></i> Generar Reporte</button>
     </form>

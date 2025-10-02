@@ -173,7 +173,7 @@ try {
                     <?php 
                       if ($s['estatus'] == 0) echo "Marcar Entregado";
                       elseif ($s['estatus'] == 1) echo "Marcar Devuelto";
-                      else echo "✔ Finalizado";
+                      else echo "Finalizado";
                     ?>
                   </button>
 

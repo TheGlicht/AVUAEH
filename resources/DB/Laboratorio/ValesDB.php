@@ -79,37 +79,50 @@ class ValesDb {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
         try {
-            $consulta = "SELECT * FROM Danos";
+            $consulta = "SELECT d.id_dano,
+                                d.nombreAlu,
+                                d.numeroCuenta,
+                                m.nombre AS material,
+                                d.id_laboratorio,
+                                d.fechaLimite,
+                                d.estatus,
+                                d.encargado
+                         FROM Danos d
+                         INNER JOIN Material m ON d.id_material = m.id_material
+                         ORDER BY d.id_dano DESC";
             $stmt = $dbh->prepare($consulta);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error en showDanos: " . $e->getMessage());
-            return false;
+            return [];
         }
     }
 
     // Si en tu tabla ya existe 'encargado' (NULL por defecto)
-    public function addDano($nombreAlu, $numeroCuenta, $id_material, $id_laboratorio, $fechaLimite, $estatus = 0, $encargado = null) {
+    public function aumentarDanado($id_material, $cantidad) {
         $conexion = Conexion::getInstancia();
         $dbh = $conexion->getDbh();
         try {
-            $consulta = "INSERT INTO Danos (nombreAlu, numeroCuenta, id_material, id_laboratorio, fechaLimite, estatus, encargado)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $dbh->prepare($consulta);
-            $stmt->bindParam(1, $nombreAlu);
-            $stmt->bindParam(2, $numeroCuenta);
-            $stmt->bindParam(3, $id_material);
-            $stmt->bindParam(4, $id_laboratorio);
-            $stmt->bindParam(5, $fechaLimite);
-            $stmt->bindParam(6, $estatus);
-            $stmt->bindParam(7, $encargado);
-            return $stmt->execute();
+            // Verificar cantidades actuales
+            $stmt = $dbh->prepare("SELECT cantidad, cantidad_danado FROM Material WHERE id_material=?");
+            $stmt->execute([$id_material]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) return false;
+    
+            $nuevoDanado = $row['cantidad_danado'] + $cantidad;
+            if ($nuevoDanado > $row['cantidad']) {
+                $nuevoDanado = $row['cantidad']; // nunca pasa del total
+            }
+    
+            $stmt = $dbh->prepare("UPDATE Material SET cantidad_danado=? WHERE id_material=?");
+            return $stmt->execute([$nuevoDanado, $id_material]);
         } catch (PDOException $e) {
-            error_log("Error en addDano: " . $e->getMessage());
+            error_log("Error en aumentarDanado: " . $e->getMessage());
             return false;
         }
     }
+    
 
     public function updateDano($id_dano, $estatus) {
         $conexion = Conexion::getInstancia();
@@ -155,5 +168,29 @@ class ValesDb {
             return false;
         }
     }
+
+    public function addDano($nombreAlu, $numeroCuenta, $id_material, $id_laboratorio, $fechaLimite, $estatus, $encargado) {
+        $conexion = Conexion::getInstancia();
+        $dbh = $conexion->getDbh();
+        try {
+            $consulta = "INSERT INTO Danos 
+                         (nombreAlu, numeroCuenta, id_material, id_laboratorio, fechaLimite, estatus, encargado) 
+                         VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $dbh->prepare($consulta);
+            return $stmt->execute([
+                $nombreAlu,
+                $numeroCuenta,
+                $id_material,
+                $id_laboratorio,
+                $fechaLimite,
+                $estatus,
+                $encargado
+            ]);
+        } catch (PDOException $e) {
+            error_log("Error en addDano: " . $e->getMessage());
+            return false;
+        }
+    }
+    
 }
 ?>
