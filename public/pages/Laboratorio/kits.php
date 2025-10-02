@@ -30,12 +30,10 @@ if(isset($_SESSION['username'])){
 <div class="container mt-4">
   <h2 class="text-center mb-4"><i class="fa-solid fa-toolbox"></i> Kits de Laboratorio por Materia</h2>
 
-  <!-- Botón para armar nuevo kit
-  <div class="text-end mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditarKit">
-      <i class="fa-solid fa-pen-to-square"></i> Editar Kits
-    </button>
-  </div> -->
+  <!-- Buscador -->
+  <div class="mb-3">
+    <input type="text" id="buscarMateria" class="form-control" placeholder="Buscar por materia...">
+  </div>
 
   <!-- Lista de kits -->
   <div class="row row-cols-1 row-cols-md-2 g-4">

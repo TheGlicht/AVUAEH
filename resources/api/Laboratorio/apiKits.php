@@ -65,31 +65,57 @@ try {
                 break;
             
         
-            case 'PUT':
-                $data = json_decode(file_get_contents("php://input"), true);
-                $id_kit = $data['id_kit'];
-                $nombre = $data['nombre'];
-                $id_materias = $data['id_materias'];
-                $materiales = $data['materiales'];
-            
-                $dbh = Conexion::getInstancia()->getDbh();
-                $dbh->beginTransaction();
-            
-                // Actualizar info del kit
-                $kitDB->updateKit2($id_kit, $id_material, $cantidad);
-            
-                // Limpiar materiales viejos
-                $stmt = $dbh->prepare("DELETE FROM KitMaterial WHERE id_kit=?");
-                $stmt->execute([$id_kit]);
-            
-                // Insertar materiales nuevos
-                foreach ($materiales as $m) {
-                    $kitDB->addMaterialToKit($id_kit, $m['id_material'], $m['cantidad']);
-                }
-            
-                $dbh->commit();
-                echo json_encode(['success' => true]);
-                break;
+                case 'PUT':
+                    $data = json_decode(file_get_contents("php://input"), true);
+                    $id_kit = $data['id_kit'];
+                    $nombre = isset($data['nombre']) ? $data['nombre'] : null;
+                    $id_materias = isset($data['id_materias']) ? $data['id_materias'] : null;
+                    $materiales = $data['materiales'];
+                
+                    // Validación: no permitir actualizar si no hay materiales
+                    if (empty($materiales) || count($materiales) === 0) {
+                        http_response_code(400);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'No puedes actualizar un kit sin materiales'
+                        ]);
+                        exit;
+                    }
+                
+                    $dbh = Conexion::getInstancia()->getDbh();
+                
+                    try {
+                        $dbh->beginTransaction();
+                
+                        // Si también quieres actualizar nombre/materia (opcional)
+                        if ($nombre !== null && $id_materias !== null) {
+                            $kitDB->updateKit($id_kit, $nombre, $id_materias);
+                        }
+                
+                        // Limpiar materiales viejos
+                        $stmt = $dbh->prepare("DELETE FROM KitMaterial WHERE id_kit=?");
+                        $stmt->execute([$id_kit]);
+                
+                        // Insertar materiales nuevos
+                        foreach ($materiales as $m) {
+                            $kitDB->addMaterialToKit($id_kit, $m['id_material'], $m['cantidad']);
+                        }
+                
+                        $dbh->commit();
+                        echo json_encode([
+                            'success' => true,
+                            'message' => 'Kit actualizado correctamente'
+                        ]);
+                    } catch (Exception $e) {
+                        $dbh->rollBack();
+                        http_response_code(500);
+                        echo json_encode([
+                            'success' => false,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                    break;
+                
             
             case 'DELETE':
                 parse_str(file_get_contents("php://input"), $data);

@@ -151,9 +151,6 @@ if(isset($_SESSION['username'])){
   </div>
 </div>
 
-
-
-
     <?php include '../../../resources/templates/footer.php';?>
     
     <!-- Scripts -->
