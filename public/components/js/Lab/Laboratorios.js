@@ -49,7 +49,15 @@ const laboratoriosMap = {
       return {
         id: eventData.id_practica,
         title: eventData.materia + " - " + laboratoriosMap[eventData.id_lab],
-        start: eventData.fecha + "T" + eventData.hora
+        start: eventData.fecha + "T" + eventData.hora,
+        extendedProps: {
+          id_materia: eventData.id_materias,
+          id_docente: eventData.id_docente,
+          id_lab: eventData.id_lab,
+          semestre: eventData.semestre,
+          grupo: eventData.grupo,
+          hora: eventData.hora
+        }
       };
     },
   
@@ -60,7 +68,20 @@ const laboratoriosMap = {
       // Aquí ya puedes usar event.extendedProps si necesitas
       fechaInput.value = event.startStr.split('T')[0];
       horaInput.value = event.startStr.split('T')[1]?.substring(0,5) || '';
-  
+      // Materia
+      selectOptionByValue(materiaSelect, event.extendedProps.id_materia);
+
+      // Docente
+      selectOptionByValue(docenteSelect, event.extendedProps.id_docente);
+    
+      // Semestre
+      selectOptionByValue(semestreSelect, event.extendedProps.semestre);
+    
+      // Grupo
+      grupoInput.value = event.extendedProps.grupo;
+    
+      // Laboratorio
+      selectOptionByValue(laboratorioSelect, event.extendedProps.id_lab);
       modal.show();
     }
   });
