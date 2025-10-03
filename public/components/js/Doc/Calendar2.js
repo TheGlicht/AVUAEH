@@ -132,6 +132,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 eventModal.hide();
                 eventForm.reset();
                 eventIdInput.value = '';
+
+                const docenteId = document.getElementById('docenteId').value;
+
+                const notifyData = new FormData();
+                notifyData.append('titulo', titulo);
+                notifyData.append('descripcion', descripcion);
+                notifyData.append('fecha', fecha);
+                notifyData.append('materia', materia);
+                notifyData.append('semestre', semestre);
+                notifyData.append('grupo', grupo);
+                notifyData.append('docente', docenteId); 
+                
+                fetch('../../../resources/api/Soporte/apiNotificaciones2.php', {
+                    method: 'POST',
+                    body: notifyData
+                })
+                .then(res => res.text())
+                .then(resp => {
+                    if (resp !== "OK") {
+                        console.warn(" Error al enviar correos:", resp);
+                    }
+                })
+                .catch(err => console.error("Error al enviar correos:", err));
+
             } else {
                 alert('Error: ' + result);
             }

@@ -10,7 +10,26 @@ if(isset($_SESSION['username'])){
   require_once dirname(__DIR__, 3) . '/resources/DB/Docente/eventosDB.php';
   $materiaDb = new MateriasDocente();
   $materias = $materiaDb->getMateriasDoc($_SESSION['username']);
+
 ?>
+
+<?php
+require_once __DIR__ . '/../../../resources/DB/conexion.php';
+$conexion = Conexion::getInstancia();
+$pdo = $conexion->getDbh();
+
+// Obtengo el id_docente a partir del username de la sesión
+$idDocente = 0;
+if (isset($_SESSION['username'])) {
+    $stmt = $pdo->prepare("SELECT id_docente FROM Docentes WHERE username = :username");
+    $stmt->execute([':username' => $_SESSION['username']]);
+    $docente = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($docente) {
+        $idDocente = $docente['id_docente'];
+    }
+}
+?>
+
 
 <!-- Estructutra del sitio web -->
 <!DOCTYPE html>
@@ -51,8 +70,10 @@ if(isset($_SESSION['username'])){
         <div class="modal-body">
           <form id="eventForm">
             <input type="hidden" id="eventId">
-            <div class="mb-3">
-              <label for="eventTitle" class="form-label">Título del Evento</label>
+            <div class="mb-3">         
+
+            <input type="hidden" id="docenteId" value="<?= htmlspecialchars($idDocente) ?>">
+            <label for="eventTitle" class="form-label">Título del Evento</label>
               <input type="text" class="form-control" id="eventTitle" required>
             </div>            
             <div class="mb-3">
