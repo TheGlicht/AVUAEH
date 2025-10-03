@@ -112,6 +112,23 @@ const laboratoriosMap = {
             modal.hide();
             form.reset();
             currentPracticaId = null;
+
+            // Enviar correos SOLO si fue agregar
+            if (action === 'agregar') {
+              fetch('../../../resources/api/Soporte/apiNotificaciones.php', {
+                  method: 'POST',
+                  body: formData
+              })
+              .then(res => res.text())
+              .then(notifResult => {
+                  if (notifResult === 'OK') {
+                      console.log(' Correos enviados correctamente');
+                  } else {
+                      console.warn(' Error al enviar correos:', notifResult);
+                  }
+              })
+              .catch(err => console.error(' Error en notificaciones:', err));
+          }
         } else {
             alert('Error: ' + result);
         }
